@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Shield, FileText, Clock, CheckCircle, XCircle, AlertTriangle } from "lucide-react";
+import { API_BASE_URL } from "@/lib/api";
 
 interface Document {
   id: string;
@@ -18,7 +19,7 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("http://localhost:8000/api/documents")
+    fetch(`${API_BASE_URL}/api/documents`)
       .then((res) => res.json())
       .then((data) => {
         setDocuments(data.documents || []);

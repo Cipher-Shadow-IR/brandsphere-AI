@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Shield, BarChart3, AlertTriangle, TrendingUp, FileText } from "lucide-react";
+import { API_BASE_URL } from "@/lib/api";
 
 interface Analytics {
   overview: {
@@ -26,7 +27,7 @@ export default function AnalyticsPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("http://localhost:8000/api/analytics")
+    fetch(`${API_BASE_URL}/api/analytics`)
       .then((res) => res.json())
       .then((data) => {
         setAnalytics(data);

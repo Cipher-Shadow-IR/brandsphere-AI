@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Shield, Upload, FileText, Loader2 } from "lucide-react";
+import { Shield, Upload, FileText, Loader2, CheckCircle, AlertCircle } from "lucide-react";
+import { API_BASE_URL } from "@/lib/api";
 import { useRouter } from "next/navigation";
 
 export default function UploadPage() {
@@ -14,23 +15,35 @@ export default function UploadPage() {
     author: ""
   });
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<any>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    setError(null);
     try {
-      const response = await fetch("http://localhost:8000/api/documents/upload", {
+      const response = await fetch(`${API_BASE_URL}/api/documents/upload`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(formData),
       });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => null);
+        const detailMsg = errorData?.detail
+          ? (typeof errorData.detail === "string" ? errorData.detail : JSON.stringify(errorData.detail))
+          : `Server returned HTTP ${response.status}`;
+        throw new Error(detailMsg);
+      }
+
       const data = await response.json();
       setResult(data);
-    } catch (error) {
-      console.error("Error:", error);
+    } catch (err: any) {
+      console.error("Upload error:", err);
+      setError(err.message || "Failed to submit content for analysis. Please ensure the backend is running.");
     } finally {
       setLoading(false);
     }
@@ -60,6 +73,16 @@ export default function UploadPage() {
           <h1 className="text-3xl font-bold text-white mb-2">Upload Content for Review</h1>
           <p className="text-gray-400">Submit your content for AI-powered brand governance analysis</p>
         </div>
+
+        {error && (
+          <div className="mb-6 p-4 rounded-xl border border-red-500/40 bg-red-500/10 flex items-start gap-3 text-red-200">
+            <AlertCircle className="w-5 h-5 text-red-400 shrink-0 mt-0.5" />
+            <div>
+              <p className="font-semibold text-red-300">Submission Error</p>
+              <p className="text-sm mt-1">{error}</p>
+            </div>
+          </div>
+        )}
 
         {!result ? (
           <form onSubmit={handleSubmit} className="space-y-6">

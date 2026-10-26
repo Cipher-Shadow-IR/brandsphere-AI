@@ -4,6 +4,7 @@ import { useEffect, useState, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { Shield, CheckCircle, XCircle, AlertTriangle, MessageSquare, User } from "lucide-react";
+import { API_BASE_URL } from "@/lib/api";
 
 interface Issue {
   id: string;
@@ -30,44 +31,72 @@ function ReviewContent() {
   const router = useRouter();
   const docId = searchParams.get("id");
   const [document, setDocument] = useState<Document | null>(null);
+  const [availableDocs, setAvailableDocs] = useState<Document[]>([]);
   const [loading, setLoading] = useState(true);
   const [reviewComment, setReviewComment] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   useEffect(() => {
+    setErrorMessage(null);
     if (docId) {
-      fetch(`http://localhost:8000/api/documents/${docId}`)
-        .then((res) => res.json())
+      setLoading(true);
+      fetch(`${API_BASE_URL}/api/documents/${docId}`)
+        .then(async (res) => {
+          if (!res.ok) {
+            const err = await res.json().catch(() => null);
+            throw new Error(err?.detail || `Document fetch failed with status ${res.status}`);
+          }
+          return res.json();
+        })
         .then((data) => {
           setDocument(data.document);
           setLoading(false);
         })
         .catch((err) => {
-          console.error(err);
+          console.error("Error loading document:", err);
+          setErrorMessage(err.message || "Unable to load document");
           setLoading(false);
         });
     } else {
-      setLoading(false);
+      // If no ID provided, fetch recent documents for the queue selector
+      fetch(`${API_BASE_URL}/api/documents`)
+        .then((res) => res.json())
+        .then((data) => {
+          setAvailableDocs(data.documents || []);
+          setLoading(false);
+        })
+        .catch(() => {
+          setLoading(false);
+        });
     }
   }, [docId]);
 
   const handleReview = async (status: string) => {
     if (!document) return;
     setSubmitting(true);
+    setErrorMessage(null);
     try {
-      await fetch("http://localhost:8000/api/reviews/submit", {
+      const response = await fetch(`${API_BASE_URL}/api/reviews/submit`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           document_id: document.id,
           reviewer_id: "reviewer-001",
           status: status,
-          comments: reviewComment
+          comments: reviewComment.trim() || undefined
         }),
       });
+
+      if (!response.ok) {
+        const errData = await response.json().catch(() => null);
+        throw new Error(errData?.detail || `Review action failed with status ${response.status}`);
+      }
+
       router.push("/dashboard");
-    } catch (error) {
-      console.error("Error:", error);
+    } catch (error: any) {
+      console.error("Review submission error:", error);
+      setErrorMessage(error.message || "Failed to record review action. Please retry.");
     } finally {
       setSubmitting(false);
     }
