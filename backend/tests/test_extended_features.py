@@ -168,3 +168,49 @@ def test_certified_publication_export(client):
     assert cert["status"] == "approved"
     assert "BS-SHA256-" in cert["verification_hash"]
     assert cert["compliance_score"] >= 80.0
+
+
+def test_delete_document_and_cascading_cleanup(client):
+    upload_res = client.post("/api/documents/upload", json={
+        "title": "Document To Delete",
+        "content": "This content has issues like legacy systems and awesome speed.",
+        "author": "Delete Tester"
+    })
+    doc_id = upload_res.json()["document"]["id"]
+
+    # Add a comment and review
+    client.post(f"/api/documents/{doc_id}/comments", json={
+        "author": "Tester",
+        "role": "Reviewer",
+        "text": "Comment on doc to be deleted"
+    })
+    client.post("/api/reviews/submit", json={
+        "document_id": doc_id,
+        "reviewer_id": "rev-del",
+        "status": "needs_revision"
+    })
+
+    # Delete the document
+    del_res = client.delete(f"/api/documents/{doc_id}")
+    assert del_res.status_code == status.HTTP_200_OK
+    assert del_res.json()["deleted_id"] == doc_id
+
+    # Confirm it is 404 now
+    get_res = client.get(f"/api/documents/{doc_id}")
+    assert get_res.status_code == status.HTTP_404_NOT_FOUND
+
+
+def test_seed_demo_documents_endpoint(client):
+    seed_res = client.post("/api/demo/seed")
+    assert seed_res.status_code == status.HTTP_200_OK
+    data = seed_res.json()
+    assert data["success"] is True
+    assert data["seeded_count"] == 3
+    assert len(data["documents"]) == 3
+
+    # Check docs are retrieved via GET /api/documents
+    list_res = client.get("/api/documents")
+    assert list_res.status_code == status.HTTP_200_OK
+    titles = [d["title"] for d in list_res.json()["documents"]]
+    assert "Q4 Enterprise Cloud Launch Announcement" in titles
+    assert "Product Performance Benchmark Summary" in titles

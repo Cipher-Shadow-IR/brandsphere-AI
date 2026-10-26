@@ -298,6 +298,23 @@ async def upload_document(doc: ContentUpload, db: Session = Depends(get_db)):
     )
     db.add(new_doc)
 
+    # Multimodal image analysis if creative graphic is attached
+    if doc.image_url:
+        try:
+            import base64
+            header_split = doc.image_url.split(",")
+            base64_data = header_split[1] if len(header_split) > 1 else header_split[0]
+            img_bytes = base64.b64decode(base64_data)
+            visual_res = analyze_image_bytes(img_bytes)
+            if visual_res.get("dominant_colors"):
+                new_doc.dominant_colors = ", ".join(visual_res["dominant_colors"][:4])
+            if "contrast_compliant_aa" in visual_res:
+                new_doc.wcag_score = 95.0 if visual_res["contrast_compliant_aa"] else 60.0
+            for v_iss in visual_res.get("issues", []):
+                raw_issues.append(v_iss)
+        except Exception:
+            pass
+
     for issue_data in raw_issues:
         issue_model = IssueModel(
             id=issue_data["id"],
@@ -362,6 +379,176 @@ async def get_document(doc_id: str, db: Session = Depends(get_db)):
             detail="Document not found"
         )
     return {"document": doc.to_dict()}
+
+
+@app.delete("/api/documents/{doc_id}")
+async def delete_document(doc_id: str, db: Session = Depends(get_db)):
+    """Deletes a document and its cascading issues, revisions, comments, and audit logs."""
+    doc = db.query(DocumentModel).filter(DocumentModel.id == doc_id).first()
+    if not doc:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Document not found"
+        )
+    db.delete(doc)
+    db.commit()
+    return {"success": True, "deleted_id": doc_id}
+
+
+@app.post("/api/demo/seed")
+async def seed_demo_documents(db: Session = Depends(get_db)):
+    """Seeds rich demo documents across pending, revision, and approved states."""
+    if db.query(GuidelineModel).count() == 0:
+        seed_default_knowledge_base(db)
+
+    seeded_docs = []
+
+    # Demo 1: High-Risk Launch Copy (Pending Review)
+    doc1_id = str(uuid.uuid4())
+    doc1_content = "BrandSphere is officially the fastest cloud platform in the world! Our totally amazing new release is #1 rated across all benchmarks. We have completely eliminated the legacy architecture and old version bottlenecks to bring you an unbeatable price with guaranteed 100% zero downtime. This is an awesome revolution in business computing that your team will totally love."
+    raw_issues1 = analyze_content(doc1_content, db)
+    doc1 = DocumentModel(
+        id=doc1_id,
+        title="Q4 Enterprise Cloud Launch Announcement",
+        content=doc1_content,
+        content_type="document",
+        author="Growth Marketing Team",
+        status="pending_review",
+        created_at=datetime.now(timezone.utc).isoformat(),
+        version=1,
+        readability_score=compute_readability(doc1_content)["flesch_reading_ease"],
+        wcag_score=95.0
+    )
+    db.add(doc1)
+    for iss in raw_issues1:
+        db.add(IssueModel(
+            id=iss["id"],
+            document_id=doc1_id,
+            type=iss["type"],
+            severity=iss["severity"],
+            description=iss["description"],
+            guideline_reference=iss["guideline_reference"],
+            suggestion=iss["suggestion"],
+            citation=iss["citation"],
+            location=iss["location"],
+            resolved=False,
+            original_text=iss.get("original_text")
+        ))
+    db.add(RevisionModel(
+        id=str(uuid.uuid4()),
+        document_id=doc1_id,
+        version=1,
+        content=doc1_content,
+        change_summary="Initial marketing draft with unverified superlatives",
+        edited_by="Growth Marketing Team",
+        created_at=datetime.now(timezone.utc).isoformat()
+    ))
+    db.add(AuditLogModel(
+        id=str(uuid.uuid4()),
+        document_id=doc1_id,
+        actor="Growth Marketing Team",
+        role="Creator",
+        action="DOCUMENT_UPLOADED",
+        details=f"Uploaded initial marketing draft. {len(raw_issues1)} governance issues flagged.",
+        created_at=datetime.now(timezone.utc).isoformat()
+    ))
+    seeded_docs.append(doc1)
+
+    # Demo 2: Compliant Enterprise Benchmark (Approved & Certified)
+    doc2_id = str(uuid.uuid4())
+    doc2_content = "BrandSphere AI delivers up to an 80% reduction in content review turnaround cycles according to the Inkloom Enterprise Study 2026. The platform maintains 99.5% accuracy in detecting unsupported promotional claims, upholding high standards of enterprise credibility. All published collateral retains a cryptographically verifiable audit trail compliant with SOC 2 requirements."
+    doc2 = DocumentModel(
+        id=doc2_id,
+        title="Product Performance Benchmark Summary",
+        content=doc2_content,
+        content_type="document",
+        author="Compliance & Communications Lead",
+        status="approved",
+        created_at=datetime.now(timezone.utc).isoformat(),
+        version=2,
+        readability_score=compute_readability(doc2_content)["flesch_reading_ease"],
+        wcag_score=100.0
+    )
+    db.add(doc2)
+    db.add(RevisionModel(
+        id=str(uuid.uuid4()),
+        document_id=doc2_id,
+        version=2,
+        content=doc2_content,
+        change_summary="Substantiated all metrics with Inkloom 2026 enterprise study citations",
+        edited_by="Compliance & Communications Lead",
+        created_at=datetime.now(timezone.utc).isoformat()
+    ))
+    db.add(ReviewModel(
+        id=str(uuid.uuid4()),
+        document_id=doc2_id,
+        reviewer_id="reviewer-legal-admin",
+        status="approved",
+        comments="Fully grounded against Canonical Fact Sheet §4.2. Approved for immediate release.",
+        role="Legal Admin",
+        created_at=datetime.now(timezone.utc).isoformat()
+    ))
+    db.add(AuditLogModel(
+        id=str(uuid.uuid4()),
+        document_id=doc2_id,
+        actor="Legal Admin",
+        role="Legal Admin",
+        action="REVIEW_DECISION",
+        details="Document approved for publication with compliance certification.",
+        created_at=datetime.now(timezone.utc).isoformat()
+    ))
+    seeded_docs.append(doc2)
+
+    # Demo 3: Social Omni-Channel Campaign (Needs Revision)
+    doc3_id = str(uuid.uuid4())
+    doc3_content = "Excited to showcase our Autonomous Brand Governance Agent! With continuous pre-publication checks, teams protect brand voice and visual consistency seamlessly. Experience reliable, explainable AI assistance designed for modern marketing workflows. #BrandSphere #Governance"
+    doc3 = DocumentModel(
+        id=doc3_id,
+        title="Autonomous Brand Agent Feature Campaign",
+        content=doc3_content,
+        content_type="social",
+        author="Digital Media Agency",
+        status="needs_revision",
+        created_at=datetime.now(timezone.utc).isoformat(),
+        version=1,
+        readability_score=compute_readability(doc3_content)["flesch_reading_ease"],
+        wcag_score=95.0
+    )
+    db.add(doc3)
+    db.add(RevisionModel(
+        id=str(uuid.uuid4()),
+        document_id=doc3_id,
+        version=1,
+        content=doc3_content,
+        change_summary="Initial social ad copy draft",
+        edited_by="Digital Media Agency",
+        created_at=datetime.now(timezone.utc).isoformat()
+    ))
+    db.add(CommentModel(
+        id=str(uuid.uuid4()),
+        document_id=doc3_id,
+        author="Brand Reviewer Team",
+        role="Reviewer",
+        text="Please ensure the accompanying banner creative adheres to 24px logo safe zone padding before final sign-off.",
+        created_at=datetime.now(timezone.utc).isoformat()
+    ))
+    db.add(AuditLogModel(
+        id=str(uuid.uuid4()),
+        document_id=doc3_id,
+        actor="Brand Reviewer",
+        role="Reviewer",
+        action="REVISION_REQUESTED",
+        details="Requested revision regarding visual asset logo clearance.",
+        created_at=datetime.now(timezone.utc).isoformat()
+    ))
+    seeded_docs.append(doc3)
+
+    db.commit()
+    return {
+        "success": True,
+        "seeded_count": len(seeded_docs),
+        "documents": [d.to_dict() for d in seeded_docs]
+    }
 
 
 # =====================================================================

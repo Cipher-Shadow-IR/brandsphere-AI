@@ -23,8 +23,13 @@ import {
   Check,
   Palette,
   ExternalLink,
-  Lock
+  Lock,
+  ArrowLeft,
+  Loader2,
+  Copy,
+  Printer
 } from "lucide-react";
+import Navbar from "@/components/Navbar";
 import { API_BASE_URL } from "@/lib/api";
 
 interface Issue {
@@ -88,8 +93,8 @@ function ReviewContent() {
   // Persona / Role Switcher: Creator, Reviewer, Legal Admin
   const [activeRole, setActiveRole] = useState<"Creator" | "Reviewer" | "Legal Admin">("Reviewer");
 
-  // View mode: 'document' | 'diff' | 'revisions' | 'certificate'
-  const [viewTab, setViewTab] = useState<"document" | "revisions" | "audit">("document");
+  // View mode: 'document' | 'revisions'
+  const [viewTab, setViewTab] = useState<"document" | "revisions">("document");
 
   // Review decision states
   const [reviewComment, setReviewComment] = useState("");
@@ -104,6 +109,7 @@ function ReviewContent() {
   // Certificate modal
   const [certificateData, setCertificateData] = useState<any>(null);
   const [showCertModal, setShowCertModal] = useState(false);
+  const [copiedHash, setCopiedHash] = useState(false);
 
   // Direct draft edit mode
   const [isEditing, setIsEditing] = useState(false);
@@ -234,7 +240,7 @@ function ReviewContent() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           document_id: document.id,
-          reviewer_id: `reviewer-${activeRole.toLowerCase().replace(/\s+/g, '-')}`,
+          reviewer_id: `reviewer-${activeRole.toLowerCase().replace(/\s+/g, "-")}`,
           status: status,
           comments: reviewComment.trim() || undefined,
           role: activeRole
@@ -271,71 +277,88 @@ function ReviewContent() {
     }
   };
 
-  const getSeverityColor = (severity: string) => {
+  const getSeverityBadge = (severity: string) => {
     switch (severity) {
       case "Critical":
-        return "bg-red-500/10 text-red-400 border-red-500/30";
+        return "bg-rose-500/15 text-rose-300 border-rose-500/30";
       case "Moderate":
-        return "bg-yellow-500/10 text-yellow-400 border-yellow-500/30";
+        return "bg-amber-500/15 text-amber-300 border-amber-500/30";
       default:
-        return "bg-blue-500/10 text-blue-400 border-blue-500/30";
+        return "bg-cyan-500/15 text-cyan-300 border-cyan-500/30";
     }
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-950 via-indigo-950 to-slate-950 flex items-center justify-center text-gray-400">
-        Loading governance workspace...
+      <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col items-center justify-center gap-3">
+        <Loader2 className="w-8 h-8 text-cyan-400 animate-spin" />
+        <span className="text-slate-400 text-sm">Loading governance review studio...</span>
       </div>
     );
   }
 
+  // Queue Selector View (when no docId specified)
   if (!document) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-950 via-indigo-950 to-slate-950">
-        <header className="border-b border-indigo-500/20 bg-slate-950/50 backdrop-blur-sm">
-          <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-            <Link href="/" className="flex items-center gap-3">
-              <Shield className="w-8 h-8 text-cyan-400" />
-              <span className="text-2xl font-bold bg-gradient-to-r from-cyan-400 to-indigo-400 bg-clip-text text-transparent">
-                BrandSphere AI
-              </span>
-            </Link>
-            <nav className="flex items-center gap-6">
-              <Link href="/dashboard" className="text-gray-300 hover:text-white">Dashboard</Link>
-              <Link href="/upload" className="text-gray-300 hover:text-white">Upload Content</Link>
-              <Link href="/review" className="text-white">Review Queue</Link>
-              <Link href="/guidelines" className="text-gray-300 hover:text-white">Guidelines & KB</Link>
-              <Link href="/analytics" className="text-gray-300 hover:text-white">Analytics</Link>
-            </nav>
+      <div className="min-h-screen bg-slate-950 text-slate-100 relative selection:bg-cyan-500/20 selection:text-cyan-200 overflow-x-hidden">
+        <div className="fixed inset-0 bg-ambient-mesh pointer-events-none" />
+        <Navbar />
+
+        <main className="relative max-w-4xl mx-auto px-4 sm:px-6 py-12 md:py-16 text-center">
+          <div className="w-16 h-16 rounded-2xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center mx-auto mb-4">
+            <FileText className="w-8 h-8 text-cyan-400" />
           </div>
-        </header>
-        <main className="max-w-4xl mx-auto px-6 py-16 text-center">
-          <FileText className="w-16 h-16 text-gray-600 mx-auto mb-4" />
-          <h2 className="text-2xl font-bold text-white mb-2">Review Queue Selector</h2>
-          <p className="text-gray-400 mb-6">Select a document from the queue to start reviewing</p>
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight mb-2">
+            Governance Review Queue
+          </h1>
+          <p className="text-slate-400 text-sm max-w-md mx-auto mb-8">
+            Select a document draft to open the collaborative compliance workspace with 1-click remediation suggestions.
+          </p>
+
           {availableDocs.length > 0 ? (
-            <div className="space-y-3 max-w-xl mx-auto text-left">
+            <div className="space-y-3 max-w-2xl mx-auto text-left">
               {availableDocs.map((d) => (
                 <Link
                   key={d.id}
                   href={`/review?id=${d.id}`}
-                  className="block p-4 rounded-xl border border-indigo-500/30 bg-slate-900/40 hover:border-cyan-400 transition-all"
+                  className="block glass-panel p-5 rounded-2xl border border-slate-850 hover:border-cyan-500/50 bg-slate-900/60 transition-all group hover:scale-[1.01]"
                 >
-                  <div className="flex items-center justify-between">
-                    <span className="text-white font-semibold">{d.title}</span>
-                    <span className="text-xs px-2.5 py-0.5 rounded bg-indigo-500/20 text-indigo-300 uppercase">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-white font-bold group-hover:text-cyan-300 transition-colors text-base">
+                      {d.title}
+                    </span>
+                    <span
+                      className={`text-xs px-2.5 py-0.5 rounded-full font-semibold uppercase tracking-wider border ${
+                        d.status === "approved"
+                          ? "bg-emerald-500/15 text-emerald-300 border-emerald-500/30"
+                          : d.status === "rejected"
+                          ? "bg-rose-500/15 text-rose-300 border-rose-500/30"
+                          : d.status === "needs_revision"
+                          ? "bg-amber-500/15 text-amber-300 border-amber-500/30"
+                          : "bg-blue-500/15 text-blue-300 border-blue-500/30"
+                      }`}
+                    >
                       {d.status.replace("_", " ")}
                     </span>
                   </div>
-                  <span className="text-xs text-gray-400">By {d.author} • {d.issues?.length || 0} issues</span>
+                  <div className="flex items-center justify-between text-xs text-slate-400">
+                    <span>By <strong className="text-slate-300">{d.author}</strong></span>
+                    <span className="font-mono text-cyan-400">{d.issues?.length || 0} issues flagged</span>
+                  </div>
                 </Link>
               ))}
             </div>
           ) : (
-            <Link href="/upload" className="text-cyan-400 hover:underline">
-              Upload your first document to scan
-            </Link>
+            <div className="glass-panel p-8 rounded-2xl border border-slate-800 bg-slate-900/50 max-w-md mx-auto space-y-4">
+              <p className="text-slate-400 text-sm">No documents found in the active database.</p>
+              <Link
+                href="/upload"
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 to-indigo-600 text-white font-semibold text-sm hover:opacity-95 shadow-lg shadow-cyan-500/20"
+              >
+                <Sparkles className="w-4 h-4" />
+                Upload New Document Draft
+              </Link>
+            </div>
           )}
         </main>
       </div>
@@ -346,58 +369,45 @@ function ReviewContent() {
   const totalCount = document.issues?.length || 0;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-indigo-950 to-slate-950 text-gray-200">
-      {/* Header */}
-      <header className="border-b border-indigo-500/20 bg-slate-950/50 backdrop-blur-sm sticky top-0 z-40">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-3">
-            <Shield className="w-8 h-8 text-cyan-400" />
-            <span className="text-2xl font-bold bg-gradient-to-r from-cyan-400 to-indigo-400 bg-clip-text text-transparent">
-              BrandSphere AI
-            </span>
-          </Link>
-          <nav className="flex items-center gap-6">
-            <Link href="/dashboard" className="text-gray-300 hover:text-white transition-colors">Dashboard</Link>
-            <Link href="/upload" className="text-gray-300 hover:text-white transition-colors">Upload Content</Link>
-            <Link href="/review" className="text-white font-medium">Review Queue</Link>
-            <Link href="/guidelines" className="text-gray-300 hover:text-white transition-colors">Guidelines & KB</Link>
-            <Link href="/analytics" className="text-gray-300 hover:text-white transition-colors">Analytics</Link>
-          </nav>
-        </div>
-      </header>
+    <div className="min-h-screen bg-slate-950 text-slate-100 relative selection:bg-cyan-500/20 selection:text-cyan-200 overflow-x-hidden">
+      <div className="fixed inset-0 bg-ambient-mesh pointer-events-none" />
 
-      {/* Role Switcher Ribbon */}
-      <div className="border-b border-indigo-500/20 bg-slate-950/70 px-6 py-2.5">
-        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
-          <div className="flex items-center gap-2 text-gray-400">
-            <span className="font-semibold text-gray-300">Active Persona / Role:</span>
-            <div className="flex bg-slate-900 border border-indigo-500/30 rounded-lg p-0.5">
+      {/* Shared Executive Navbar */}
+      <Navbar />
+
+      {/* Role Switcher & Telemetry Ribbon */}
+      <div className="border-b border-slate-800/80 bg-slate-950/70 backdrop-blur-md px-4 sm:px-6 py-2.5 sticky top-[65px] z-30">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-3 text-xs">
+          {/* Active Persona Pill Selector */}
+          <div className="flex items-center gap-2.5 text-slate-400">
+            <span className="font-semibold text-slate-300">Active Persona:</span>
+            <div className="flex bg-slate-900/90 border border-slate-800 rounded-xl p-1 gap-1">
               <button
                 onClick={() => setActiveRole("Creator")}
-                className={`px-3 py-1 rounded-md transition-all ${
+                className={`px-3 py-1 rounded-lg font-semibold transition-all cursor-pointer ${
                   activeRole === "Creator"
-                    ? "bg-cyan-500 text-slate-950 font-bold shadow"
-                    : "text-gray-400 hover:text-white"
+                    ? "bg-cyan-500 text-slate-950 shadow-md shadow-cyan-500/20"
+                    : "text-slate-400 hover:text-white"
                 }`}
               >
                 ✍️ Content Creator
               </button>
               <button
                 onClick={() => setActiveRole("Reviewer")}
-                className={`px-3 py-1 rounded-md transition-all ${
+                className={`px-3 py-1 rounded-lg font-semibold transition-all cursor-pointer ${
                   activeRole === "Reviewer"
-                    ? "bg-indigo-500 text-white font-bold shadow"
-                    : "text-gray-400 hover:text-white"
+                    ? "bg-indigo-600 text-white shadow-md shadow-indigo-500/20"
+                    : "text-slate-400 hover:text-white"
                 }`}
               >
                 🛡️ Brand Reviewer
               </button>
               <button
                 onClick={() => setActiveRole("Legal Admin")}
-                className={`px-3 py-1 rounded-md transition-all ${
+                className={`px-3 py-1 rounded-lg font-semibold transition-all cursor-pointer ${
                   activeRole === "Legal Admin"
-                    ? "bg-purple-600 text-white font-bold shadow"
-                    : "text-gray-400 hover:text-white"
+                    ? "bg-purple-600 text-white shadow-md shadow-purple-500/20"
+                    : "text-slate-400 hover:text-white"
                 }`}
               >
                 ⚖️ Legal & Compliance
@@ -405,20 +415,21 @@ function ReviewContent() {
             </div>
           </div>
 
+          {/* Telemetry Chips & Certificate Trigger */}
           <div className="flex items-center gap-3">
-            <span className="text-gray-400 font-mono">
+            <div className="px-2.5 py-1 rounded-lg bg-slate-900 border border-slate-800 font-mono text-slate-400">
               Version: <span className="text-cyan-400 font-bold">v{document.version || 1}</span>
-            </span>
-            <span className="text-gray-400 font-mono">
-              Reading Ease: <span className="text-green-400 font-bold">{document.readability_score || 72}/100</span>
-            </span>
+            </div>
+            <div className="px-2.5 py-1 rounded-lg bg-slate-900 border border-slate-800 font-mono text-slate-400">
+              Readability: <span className="text-emerald-400 font-bold">{document.readability_score || 72}/100</span>
+            </div>
             {document.status === "approved" && (
               <button
                 onClick={handleViewCertificate}
-                className="px-3 py-1 bg-gradient-to-r from-emerald-500 to-cyan-500 text-slate-950 font-bold rounded-lg flex items-center gap-1.5 shadow hover:opacity-90 transition-all text-xs"
+                className="px-3 py-1 bg-gradient-to-r from-emerald-500 to-cyan-500 text-slate-950 font-bold rounded-lg flex items-center gap-1.5 shadow-md shadow-emerald-500/20 hover:opacity-90 transition-all text-xs cursor-pointer active:scale-95"
               >
                 <Award className="w-3.5 h-3.5" />
-                View Compliance Certificate
+                <span>View Compliance Certificate</span>
               </button>
             )}
           </div>
@@ -426,24 +437,33 @@ function ReviewContent() {
       </div>
 
       {/* Main Review Studio */}
-      <main className="max-w-7xl mx-auto px-6 py-8">
-        <div className="mb-4 flex items-center justify-between">
-          <Link href="/dashboard" className="text-cyan-400 hover:underline text-sm flex items-center gap-1">
-            ← Back to Content Dashboard
+      <main className="relative max-w-7xl mx-auto px-4 sm:px-6 py-6 md:py-8">
+        {/* Navigation & Tab Toggle */}
+        <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
+          <Link
+            href="/dashboard"
+            className="text-xs font-semibold text-slate-400 hover:text-cyan-300 transition-colors flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-900/60 border border-slate-800"
+          >
+            <ArrowLeft className="w-3.5 h-3.5" />
+            Back to Dashboard
           </Link>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 bg-slate-900 border border-slate-800 rounded-xl p-1">
             <button
               onClick={() => setViewTab("document")}
-              className={`px-3 py-1 rounded text-xs font-semibold ${
-                viewTab === "document" ? "bg-indigo-600 text-white" : "bg-slate-900 text-gray-400"
+              className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                viewTab === "document"
+                  ? "bg-indigo-600 text-white shadow-sm"
+                  : "text-slate-400 hover:text-white"
               }`}
             >
               Document Studio
             </button>
             <button
               onClick={() => setViewTab("revisions")}
-              className={`px-3 py-1 rounded text-xs font-semibold ${
-                viewTab === "revisions" ? "bg-indigo-600 text-white" : "bg-slate-900 text-gray-400"
+              className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                viewTab === "revisions"
+                  ? "bg-indigo-600 text-white shadow-sm"
+                  : "text-slate-400 hover:text-white"
               }`}
             >
               Revisions ({document.revisions?.length || 1})
@@ -452,9 +472,9 @@ function ReviewContent() {
         </div>
 
         {errorMessage && (
-          <div className="mb-6 p-4 rounded-xl border border-red-500/40 bg-red-500/10 text-red-300 text-sm flex items-center gap-2">
-            <AlertTriangle className="w-4 h-4 text-red-400 shrink-0" />
-            {errorMessage}
+          <div className="mb-6 p-4 rounded-xl border border-rose-500/40 bg-rose-500/10 text-rose-300 text-sm flex items-center gap-2.5">
+            <AlertTriangle className="w-4 h-4 text-rose-400 shrink-0" />
+            <span>{errorMessage}</span>
           </div>
         )}
 
@@ -462,24 +482,30 @@ function ReviewContent() {
           {/* LEFT 2 COLUMNS: CONTENT VIEWER & COLLABORATION */}
           <div className="lg:col-span-2 space-y-6">
             {viewTab === "document" ? (
-              <div className="p-6 rounded-xl border border-indigo-500/30 bg-gradient-to-br from-slate-900/50 to-indigo-900/20 backdrop-blur-sm">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4 pb-4 border-b border-indigo-500/20">
+              <div className="glass-panel p-6 sm:p-7 rounded-2xl border border-slate-800/80 bg-slate-900/60 shadow-xl space-y-5">
+                {/* Document Header & State */}
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-800">
                   <div>
-                    <h1 className="text-2xl font-bold text-white mb-1">{document.title}</h1>
-                    <p className="text-gray-400 text-xs flex items-center gap-2">
-                      <User className="w-3.5 h-3.5 text-cyan-400" /> {document.author} • Format: {document.content_type} • {new Date(document.created_at).toLocaleString()}
+                    <h1 className="text-xl sm:text-2xl font-bold text-white mb-1.5">{document.title}</h1>
+                    <p className="text-slate-400 text-xs flex items-center gap-2">
+                      <User className="w-3.5 h-3.5 text-cyan-400" />
+                      <span>{document.author}</span>
+                      <span>•</span>
+                      <span className="capitalize">{document.content_type} format</span>
+                      <span>•</span>
+                      <span>{new Date(document.created_at).toLocaleDateString()}</span>
                     </p>
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2.5">
                     <span
                       className={`px-3 py-1 rounded-full text-xs font-bold border uppercase tracking-wider ${
                         document.status === "approved"
-                          ? "bg-green-500/10 text-green-400 border-green-500/30"
+                          ? "bg-emerald-500/15 text-emerald-300 border-emerald-500/30"
                           : document.status === "rejected"
-                          ? "bg-red-500/10 text-red-400 border-red-500/30"
+                          ? "bg-rose-500/15 text-rose-300 border-rose-500/30"
                           : document.status === "needs_revision"
-                          ? "bg-yellow-500/10 text-yellow-400 border-yellow-500/30"
-                          : "bg-blue-500/10 text-blue-400 border-blue-500/30"
+                          ? "bg-amber-500/15 text-amber-300 border-amber-500/30"
+                          : "bg-blue-500/15 text-blue-300 border-blue-500/30"
                       }`}
                     >
                       {document.status.replace("_", " ")}
@@ -487,15 +513,15 @@ function ReviewContent() {
                     {!isEditing ? (
                       <button
                         onClick={() => setIsEditing(true)}
-                        className="px-3 py-1 border border-indigo-500/40 rounded-lg text-xs text-gray-300 hover:text-white hover:border-cyan-400 flex items-center gap-1.5 transition-all"
+                        className="px-3 py-1.5 border border-slate-700 bg-slate-950/60 rounded-xl text-xs text-slate-300 hover:text-white hover:border-cyan-400 flex items-center gap-1.5 transition-all cursor-pointer"
                       >
-                        <Edit3 className="w-3.5 h-3.5" />
+                        <Edit3 className="w-3.5 h-3.5 text-cyan-400" />
                         Edit Draft
                       </button>
                     ) : (
                       <button
                         onClick={() => setIsEditing(false)}
-                        className="px-3 py-1 border border-red-500/40 rounded-lg text-xs text-red-300 hover:text-white"
+                        className="px-3 py-1.5 border border-rose-500/40 bg-rose-500/10 rounded-xl text-xs text-rose-300 hover:text-white cursor-pointer"
                       >
                         Cancel
                       </button>
@@ -505,34 +531,34 @@ function ReviewContent() {
 
                 {/* Multimodal Image Creative Attachment Preview */}
                 {document.image_url && (
-                  <div className="mb-4 p-3 bg-slate-950/60 rounded-xl border border-indigo-500/20">
-                    <span className="text-xs font-semibold text-cyan-400 block mb-2 flex items-center gap-1.5">
+                  <div className="p-4 bg-slate-950/80 rounded-xl border border-slate-800 space-y-2">
+                    <span className="text-xs font-semibold text-cyan-400 flex items-center gap-1.5">
                       <Palette className="w-3.5 h-3.5" />
                       Audited Creative Asset Attachment
                     </span>
-                    <div className="flex items-center gap-4">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
                       <img
                         src={document.image_url}
                         alt="Creative asset"
-                        className="max-h-36 rounded-lg border border-indigo-500/30 object-contain bg-black/40"
+                        className="max-h-36 rounded-lg border border-slate-700 object-contain bg-black/40"
                       />
-                      <div className="text-xs text-gray-400 space-y-1">
-                        <p className="text-gray-300 font-medium">Visual Brand Compliance Verified</p>
-                        <p>• Color palette adheres to enterprise tokens</p>
-                        <p>• Contrast ratio meets WCAG 2.1 AA standards</p>
+                      <div className="text-xs text-slate-400 space-y-1">
+                        <p className="text-slate-200 font-medium">Visual Brand Compliance Verified</p>
+                        <p>• Color palette conforms to corporate branding tokens</p>
+                        <p>• Contrast ratio meets WCAG 2.1 AA legibility minimum</p>
                       </div>
                     </div>
                   </div>
                 )}
 
-                {/* Main Content Area: Viewer or Live Editor */}
+                {/* Main Draft Area: Viewer or Live Editor */}
                 {!isEditing ? (
-                  <div className="p-5 bg-slate-950/60 rounded-xl border border-indigo-500/20">
-                    <div className="flex items-center justify-between mb-3 text-xs text-gray-400">
-                      <span className="font-semibold text-gray-300 uppercase tracking-wide">Document Draft Content</span>
-                      <span>Version {document.version || 1} • {document.content.split(/\s+/).length} words</span>
+                  <div className="p-5 sm:p-6 bg-slate-950/80 rounded-xl border border-slate-800">
+                    <div className="flex items-center justify-between mb-3 text-xs text-slate-400">
+                      <span className="font-semibold text-slate-300 uppercase tracking-wide">Document Draft Content</span>
+                      <span className="font-mono">Version {document.version || 1} • {document.content.split(/\s+/).filter(Boolean).length} words</span>
                     </div>
-                    <div className="text-gray-100 whitespace-pre-wrap leading-relaxed text-sm font-sans selection:bg-cyan-500 selection:text-slate-950">
+                    <div className="text-slate-100 whitespace-pre-wrap leading-relaxed text-sm font-sans selection:bg-cyan-500/20 selection:text-cyan-200">
                       {document.content}
                     </div>
                   </div>
@@ -542,19 +568,19 @@ function ReviewContent() {
                       value={editedContent}
                       onChange={(e) => setEditedContent(e.target.value)}
                       rows={10}
-                      className="w-full p-4 bg-slate-950 border border-cyan-500/50 rounded-xl text-white text-sm leading-relaxed resize-none focus:outline-none"
+                      className="w-full p-4 bg-slate-950 border border-cyan-500/50 rounded-xl text-white text-sm leading-relaxed resize-none focus:outline-none focus:ring-2 focus:ring-cyan-500/20 font-sans"
                     />
-                    <div className="flex items-center gap-3">
+                    <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
                       <input
                         type="text"
                         value={editSummary}
                         onChange={(e) => setEditSummary(e.target.value)}
-                        placeholder="Summary of revisions made (e.g., Aligned superlative claim with benchmark)"
-                        className="flex-1 px-3 py-2 bg-slate-950 border border-indigo-500/30 rounded-lg text-xs text-white"
+                        placeholder="Summary of revisions made (e.g., Aligned claim with benchmark study)"
+                        className="flex-1 px-4 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500/50"
                       />
                       <button
                         onClick={handleSaveRevision}
-                        className="px-4 py-2 bg-gradient-to-r from-cyan-500 to-indigo-500 text-white rounded-lg text-xs font-semibold hover:shadow-lg transition-all"
+                        className="px-5 py-2.5 bg-gradient-to-r from-cyan-500 to-indigo-600 text-white rounded-xl text-xs font-bold hover:shadow-lg hover:shadow-cyan-500/20 transition-all cursor-pointer shrink-0"
                       >
                         Save as v{(document.version || 1) + 1}
                       </button>
@@ -564,115 +590,121 @@ function ReviewContent() {
               </div>
             ) : (
               /* REVISION HISTORY TAB */
-              <div className="p-6 rounded-xl border border-indigo-500/30 bg-gradient-to-br from-slate-900/50 to-indigo-900/20 backdrop-blur-sm space-y-4">
-                <h3 className="text-lg font-bold text-white flex items-center gap-2">
+              <div className="glass-panel p-6 sm:p-7 rounded-2xl border border-slate-800/80 bg-slate-900/60 shadow-xl space-y-4">
+                <h3 className="text-base font-bold text-white flex items-center gap-2">
                   <History className="w-5 h-5 text-cyan-400" />
                   Version History & Revision Snapshots
                 </h3>
                 {document.revisions && document.revisions.length > 0 ? (
                   document.revisions.map((rev) => (
-                    <div key={rev.id} className="p-4 rounded-xl border border-indigo-500/20 bg-slate-950/60 space-y-2">
+                    <div key={rev.id} className="p-4 rounded-xl border border-slate-800 bg-slate-950/70 space-y-2">
                       <div className="flex items-center justify-between">
-                        <span className="px-2.5 py-0.5 rounded bg-cyan-500/10 text-cyan-400 border border-cyan-500/30 text-xs font-bold font-mono">
-                          Version v{rev.version}
+                        <span className="px-2.5 py-0.5 rounded-full bg-cyan-500/10 text-cyan-300 border border-cyan-500/30 text-xs font-bold font-mono">
+                          v{rev.version}
                         </span>
-                        <span className="text-xs text-gray-400">
+                        <span className="text-xs text-slate-500">
                           {rev.edited_by} • {new Date(rev.created_at).toLocaleString()}
                         </span>
                       </div>
                       <p className="text-xs text-indigo-300 font-medium">{rev.change_summary}</p>
-                      <div className="p-3 bg-slate-900/80 rounded border border-indigo-500/10 text-xs text-gray-300 max-h-32 overflow-y-auto whitespace-pre-wrap font-mono">
+                      <div className="p-3 bg-slate-900/80 rounded-lg border border-slate-850 text-xs text-slate-300 max-h-36 overflow-y-auto whitespace-pre-wrap font-mono">
                         {rev.content}
                       </div>
                     </div>
                   ))
                 ) : (
-                  <p className="text-gray-400 text-xs">No prior revisions recorded.</p>
+                  <p className="text-slate-500 text-xs py-4">No prior revisions recorded.</p>
                 )}
               </div>
             )}
 
-            {/* REVIEW DECISION PANEL (PRESERVED & ENHANCED) */}
-            <div className="p-6 rounded-xl border border-indigo-500/30 bg-gradient-to-br from-slate-900/50 to-indigo-900/20 backdrop-blur-sm">
-              <h2 className="text-xl font-semibold text-white mb-2 flex items-center gap-2">
-                <MessageSquare className="w-5 h-5 text-cyan-400" />
-                Collaborative Review Decision
-              </h2>
-              <p className="text-xs text-gray-400 mb-3">
-                Decide on release readiness as <span className="text-cyan-300 font-semibold">{activeRole}</span>. Authorized approvals produce an official Brand Compliance Certificate.
-              </p>
+            {/* REVIEW DECISION ACTION PANEL */}
+            <div className="glass-panel p-6 sm:p-7 rounded-2xl border border-slate-800/80 bg-slate-900/60 shadow-xl space-y-4">
+              <div>
+                <h2 className="text-base sm:text-lg font-bold text-white flex items-center gap-2">
+                  <MessageSquare className="w-5 h-5 text-cyan-400" />
+                  Collaborative Review Decision
+                </h2>
+                <p className="text-xs text-slate-400 mt-1">
+                  Decide on publication readiness as <strong className="text-cyan-300">{activeRole}</strong>. Authorizations stamp an official Brand Compliance Certificate.
+                </p>
+              </div>
+
               <textarea
                 value={reviewComment}
                 onChange={(e) => setReviewComment(e.target.value)}
-                placeholder="Add reviewer notes, revision guidance, or compliance sign-off remarks..."
+                placeholder="Add reviewer guidance, compliance conditions, or approval notes..."
                 rows={3}
-                className="w-full px-4 py-3 bg-slate-950/50 border border-indigo-500/30 rounded-lg text-white text-sm focus:outline-none focus:border-cyan-500/50 resize-none mb-4"
+                className="w-full px-4 py-3 bg-slate-950/80 border border-slate-800 rounded-xl text-white text-sm focus:outline-none focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/20 resize-none placeholder-slate-500"
               />
-              <div className="flex flex-col sm:flex-row gap-3">
+
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <button
                   onClick={() => handleReview("approved")}
                   disabled={submitting}
-                  className="flex-1 px-5 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg font-semibold transition-all disabled:opacity-50 flex items-center justify-center gap-2 text-sm shadow-lg shadow-green-900/20"
+                  className="py-3 px-4 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold transition-all disabled:opacity-50 flex items-center justify-center gap-2 text-xs shadow-lg shadow-emerald-900/30 cursor-pointer active:scale-95"
                 >
                   <CheckCircle className="w-4 h-4" />
-                  Approve Publication
+                  <span>Approve Publication</span>
                 </button>
                 <button
                   onClick={() => handleReview("needs_revision")}
                   disabled={submitting}
-                  className="flex-1 px-5 py-3 bg-yellow-600 hover:bg-yellow-700 text-white rounded-lg font-semibold transition-all disabled:opacity-50 flex items-center justify-center gap-2 text-sm shadow-lg shadow-yellow-900/20"
+                  className="py-3 px-4 bg-amber-600 hover:bg-amber-500 text-white rounded-xl font-bold transition-all disabled:opacity-50 flex items-center justify-center gap-2 text-xs shadow-lg shadow-amber-900/30 cursor-pointer active:scale-95"
                 >
                   <AlertTriangle className="w-4 h-4" />
-                  Request Revision
+                  <span>Request Revision</span>
                 </button>
                 <button
                   onClick={() => handleReview("rejected")}
                   disabled={submitting}
-                  className="flex-1 px-5 py-3 bg-red-600 hover:bg-red-700 text-white rounded-lg font-semibold transition-all disabled:opacity-50 flex items-center justify-center gap-2 text-sm shadow-lg shadow-red-900/20"
+                  className="py-3 px-4 bg-rose-600 hover:bg-rose-500 text-white rounded-xl font-bold transition-all disabled:opacity-50 flex items-center justify-center gap-2 text-xs shadow-lg shadow-rose-900/30 cursor-pointer active:scale-95"
                 >
                   <XCircle className="w-4 h-4" />
-                  Reject Draft
+                  <span>Reject Draft</span>
                 </button>
               </div>
             </div>
 
             {/* THREADED COLLABORATION COMMENTS */}
-            <div className="p-6 rounded-xl border border-indigo-500/30 bg-gradient-to-br from-slate-900/50 to-indigo-900/20 backdrop-blur-sm">
-              <h3 className="text-lg font-semibold text-white mb-3 flex items-center gap-2">
+            <div className="glass-panel p-6 sm:p-7 rounded-2xl border border-slate-800/80 bg-slate-900/60 shadow-xl space-y-4">
+              <h3 className="text-base font-bold text-white flex items-center gap-2">
                 <MessageSquare className="w-4 h-4 text-cyan-400" />
                 Collaborative Review Thread ({document.comments?.length || 0})
               </h3>
-              <div className="space-y-3 mb-4 max-h-56 overflow-y-auto">
+              <div className="space-y-2.5 max-h-56 overflow-y-auto pr-1">
                 {document.comments && document.comments.length > 0 ? (
                   document.comments.map((c) => (
-                    <div key={c.id} className="p-3 rounded-lg bg-slate-950/60 border border-indigo-500/20 text-xs">
-                      <div className="flex items-center justify-between mb-1">
+                    <div key={c.id} className="p-3.5 rounded-xl bg-slate-950/80 border border-slate-850 text-xs space-y-1">
+                      <div className="flex items-center justify-between">
                         <span className="font-semibold text-cyan-300">{c.author}</span>
-                        <span className="text-gray-500">{new Date(c.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                        <span className="text-slate-500 font-mono text-[11px]">
+                          {new Date(c.created_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                        </span>
                       </div>
-                      <p className="text-gray-200">{c.text}</p>
+                      <p className="text-slate-200 leading-relaxed">{c.text}</p>
                     </div>
                   ))
                 ) : (
-                  <p className="text-xs text-gray-500 italic py-2">No review discussion comments yet. Add the first note below.</p>
+                  <p className="text-xs text-slate-500 italic py-2">No review discussion notes recorded yet. Add the first comment below.</p>
                 )}
               </div>
 
-              <form onSubmit={handleAddComment} className="flex gap-2">
+              <form onSubmit={handleAddComment} className="flex gap-2.5 pt-2">
                 <input
                   type="text"
                   value={newCommentText}
                   onChange={(e) => setNewCommentText(e.target.value)}
                   placeholder={`Comment as ${activeRole}...`}
-                  className="flex-1 px-3 py-2 bg-slate-950 border border-indigo-500/30 rounded-lg text-xs text-white focus:outline-none focus:border-cyan-400"
+                  className="flex-1 px-4 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500/60"
                 />
                 <button
                   type="submit"
                   disabled={postingComment || !newCommentText.trim()}
-                  className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all disabled:opacity-50"
+                  className="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all disabled:opacity-50 cursor-pointer"
                 >
                   <Send className="w-3.5 h-3.5" />
-                  Send
+                  <span>Send</span>
                 </button>
               </form>
             </div>
@@ -680,57 +712,57 @@ function ReviewContent() {
 
           {/* RIGHT COLUMN: AI FINDINGS & 1-CLICK REMEDIATION */}
           <div className="space-y-4">
-            <div className="p-6 rounded-xl border border-indigo-500/30 bg-gradient-to-br from-slate-900/50 to-indigo-900/20 backdrop-blur-sm">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-bold text-white flex items-center gap-2">
-                  <Sparkles className="w-5 h-5 text-cyan-400" />
-                  AI Governance Audit
+            <div className="glass-panel p-5 sm:p-6 rounded-2xl border border-slate-800/80 bg-slate-900/60 shadow-xl space-y-4 sticky top-[125px]">
+              <div className="flex items-center justify-between pb-3 border-b border-slate-800">
+                <h2 className="text-base font-bold text-white flex items-center gap-2">
+                  <Sparkles className="w-4 h-4 text-cyan-400" />
+                  <span>Governance Audit</span>
                 </h2>
-                <span className="text-xs px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 font-semibold">
+                <span className="text-xs px-2.5 py-0.5 rounded-full bg-indigo-500/15 text-indigo-300 font-semibold border border-indigo-500/25">
                   {resolvedCount}/{totalCount} Resolved
                 </span>
               </div>
 
-              <div className="space-y-3 max-h-[700px] overflow-y-auto pr-1">
+              <div className="space-y-3 max-h-[calc(100vh-220px)] overflow-y-auto pr-1">
                 {document.issues && document.issues.length > 0 ? (
                   document.issues.map((issue) => (
                     <div
                       key={issue.id}
-                      className={`p-3.5 rounded-xl border transition-all ${
+                      className={`p-4 rounded-xl border transition-all space-y-2.5 ${
                         issue.resolved
-                          ? "border-green-500/30 bg-green-950/20 opacity-80"
-                          : "border-indigo-500/30 bg-slate-950/70"
+                          ? "border-emerald-500/30 bg-emerald-950/15 opacity-80"
+                          : "border-slate-800 bg-slate-950/70 hover:border-slate-700"
                       }`}
                     >
-                      <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center justify-between">
                         <div className="flex items-center gap-1.5">
-                          <span className={`px-2 py-0.5 rounded text-[11px] font-semibold border ${getSeverityColor(issue.severity)}`}>
+                          <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold border uppercase tracking-wider ${getSeverityBadge(issue.severity)}`}>
                             {issue.severity}
                           </span>
-                          <span className="px-2 py-0.5 bg-purple-500/10 text-purple-400 border border-purple-500/20 rounded text-[11px] uppercase font-medium">
+                          <span className="px-2 py-0.5 bg-slate-800 text-slate-300 border border-slate-700 rounded-full text-[10px] uppercase font-medium">
                             {issue.type}
                           </span>
                         </div>
                         {issue.resolved && (
-                          <span className="text-green-400 text-xs font-semibold flex items-center gap-1">
+                          <span className="text-emerald-400 text-xs font-semibold flex items-center gap-1">
                             <Check className="w-3.5 h-3.5" />
                             Resolved
                           </span>
                         )}
                       </div>
 
-                      <p className="text-white text-xs font-semibold mb-2 leading-snug">{issue.description}</p>
-                      
-                      <div className="space-y-1.5 text-[11px] mb-3">
-                        <p className="text-gray-400">
+                      <p className="text-slate-100 text-xs font-semibold leading-snug">{issue.description}</p>
+
+                      <div className="space-y-1.5 text-[11px] bg-slate-900/60 p-2.5 rounded-lg border border-slate-850">
+                        <p className="text-slate-400">
                           <span className="text-cyan-400 font-medium">Policy: </span>
                           {issue.guideline_reference}
                         </p>
-                        <p className="text-green-300">
-                          <span className="text-green-400 font-medium">Remediation: </span>
+                        <p className="text-emerald-300">
+                          <span className="text-emerald-400 font-medium">Remediation: </span>
                           {issue.suggestion}
                         </p>
-                        <p className="text-gray-500 italic">
+                        <p className="text-slate-400 italic">
                           <span className="text-indigo-400 not-italic font-medium">Canonical Source: </span>
                           {issue.citation}
                         </p>
@@ -741,19 +773,28 @@ function ReviewContent() {
                         <button
                           onClick={() => handleApplyRemediation(issue.id)}
                           disabled={remediatingId === issue.id}
-                          className="w-full py-1.5 px-3 bg-gradient-to-r from-cyan-500/20 to-indigo-500/20 hover:from-cyan-500/30 hover:to-indigo-500/30 text-cyan-300 border border-cyan-500/40 rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 transition-all disabled:opacity-50"
+                          className="w-full py-2 px-3 bg-gradient-to-r from-cyan-500/20 to-indigo-500/20 hover:from-cyan-500/30 hover:to-indigo-500/30 text-cyan-300 border border-cyan-500/40 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition-all disabled:opacity-50 cursor-pointer shadow-sm active:scale-95"
                         >
-                          <Wand2 className="w-3.5 h-3.5 text-cyan-400" />
-                          {remediatingId === issue.id ? "Applying Fix..." : "1-Click Context Remediation"}
+                          {remediatingId === issue.id ? (
+                            <>
+                              <Loader2 className="w-3.5 h-3.5 animate-spin text-cyan-400" />
+                              <span>Applying Remediation...</span>
+                            </>
+                          ) : (
+                            <>
+                              <Wand2 className="w-3.5 h-3.5 text-cyan-400" />
+                              <span>1-Click Context Remediation</span>
+                            </>
+                          )}
                         </button>
                       )}
                     </div>
                   ))
                 ) : (
-                  <div className="text-center py-8">
-                    <CheckCircle className="w-10 h-10 text-green-400 mx-auto mb-2" />
-                    <p className="text-white text-sm font-semibold">100% Brand Compliant</p>
-                    <p className="text-gray-400 text-xs mt-1">No violations detected against enterprise policies.</p>
+                  <div className="text-center py-10">
+                    <CheckCircle className="w-10 h-10 text-emerald-400 mx-auto mb-2.5" />
+                    <p className="text-white text-sm font-bold">100% Brand Compliant</p>
+                    <p className="text-slate-400 text-xs mt-1">No violations detected against enterprise policies.</p>
                   </div>
                 )}
               </div>
@@ -764,65 +805,82 @@ function ReviewContent() {
 
       {/* OFFICIAL COMPLIANCE CERTIFICATE MODAL */}
       {showCertModal && certificateData && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4">
-          <div className="bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 border-2 border-cyan-500/50 rounded-2xl max-w-xl w-full p-8 shadow-2xl relative text-center">
-            <div className="absolute top-4 right-4">
-              <button
-                onClick={() => setShowCertModal(false)}
-                className="text-gray-400 hover:text-white text-lg font-bold p-1"
-              >
-                ✕
-              </button>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4 animate-fadeIn">
+          <div className="glass-panel bg-slate-900 border-2 border-cyan-500/50 rounded-2xl max-w-xl w-full p-6 sm:p-8 shadow-2xl relative text-center space-y-5">
+            <button
+              onClick={() => setShowCertModal(false)}
+              className="absolute top-4 right-4 text-slate-400 hover:text-white text-lg font-bold p-1 cursor-pointer"
+            >
+              ✕
+            </button>
+
+            <div className="w-16 h-16 rounded-full bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center mx-auto shadow-lg shadow-cyan-500/20">
+              <Award className="w-9 h-9 text-cyan-400" />
             </div>
 
-            <Award className="w-16 h-16 text-cyan-400 mx-auto mb-3" />
-            <span className="text-xs uppercase tracking-widest text-indigo-300 font-semibold block mb-1">
-              Official Inkloom Enterprise Governance
-            </span>
-            <h2 className="text-2xl font-bold text-white mb-2">
-              Brand Compliance Certificate
-            </h2>
-            <p className="text-xs text-gray-400 max-w-md mx-auto mb-6">
-              This publication draft has been audited against corporate guidelines, canonical fact bases, and accessibility standards.
-            </p>
+            <div>
+              <span className="text-[11px] uppercase tracking-widest text-indigo-300 font-semibold block mb-1">
+                Official Inkloom Enterprise Governance
+              </span>
+              <h2 className="text-2xl font-black text-white">Brand Compliance Certificate</h2>
+              <p className="text-xs text-slate-400 max-w-md mx-auto mt-1">
+                This collateral has undergone cryptographic pre-publication verification against corporate guidelines, approved metrics, and accessibility standards.
+              </p>
+            </div>
 
-            <div className="p-4 bg-slate-950/70 rounded-xl border border-indigo-500/30 text-left text-xs space-y-2 mb-6">
-              <div className="flex justify-between border-b border-indigo-500/20 pb-1.5">
-                <span className="text-gray-400">Document Title:</span>
+            <div className="p-4 bg-slate-950/80 rounded-xl border border-slate-800 text-left text-xs space-y-2.5">
+              <div className="flex justify-between border-b border-slate-850 pb-2">
+                <span className="text-slate-400">Document Title:</span>
                 <span className="text-white font-semibold">{certificateData.title}</span>
               </div>
-              <div className="flex justify-between border-b border-indigo-500/20 pb-1.5">
-                <span className="text-gray-400">Author / Origin:</span>
-                <span className="text-white">{certificateData.author}</span>
+              <div className="flex justify-between border-b border-slate-850 pb-2">
+                <span className="text-slate-400">Author / Origin:</span>
+                <span className="text-slate-200">{certificateData.author}</span>
               </div>
-              <div className="flex justify-between border-b border-indigo-500/20 pb-1.5">
-                <span className="text-gray-400">Verified By:</span>
-                <span className="text-cyan-300">{certificateData.reviewer_id}</span>
+              <div className="flex justify-between border-b border-slate-850 pb-2">
+                <span className="text-slate-400">Verified By:</span>
+                <span className="text-cyan-300 font-mono">{certificateData.reviewer_id}</span>
               </div>
-              <div className="flex justify-between border-b border-indigo-500/20 pb-1.5">
-                <span className="text-gray-400">Approval Timestamp:</span>
-                <span className="text-white">{new Date(certificateData.approved_at).toLocaleString()}</span>
+              <div className="flex justify-between border-b border-slate-850 pb-2">
+                <span className="text-slate-400">Approval Timestamp:</span>
+                <span className="text-slate-200">{new Date(certificateData.approved_at).toLocaleString()}</span>
               </div>
-              <div className="flex justify-between border-b border-indigo-500/20 pb-1.5">
-                <span className="text-gray-400">Compliance Rating:</span>
-                <span className="text-green-400 font-bold">{certificateData.compliance_score}% Verified</span>
+              <div className="flex justify-between border-b border-slate-850 pb-2">
+                <span className="text-slate-400">Compliance Rating:</span>
+                <span className="text-emerald-400 font-bold">{certificateData.compliance_score}% Certified</span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-gray-400">Cryptographic Verification Hash:</span>
-                <span className="text-indigo-300 font-mono text-[10px]">{certificateData.verification_hash}</span>
+              <div className="flex flex-col gap-1 pt-1">
+                <div className="flex items-center justify-between">
+                  <span className="text-slate-400">Cryptographic SHA-256 Hash:</span>
+                  <button
+                    onClick={() => {
+                      navigator.clipboard.writeText(certificateData.verification_hash);
+                      setCopiedHash(true);
+                      setTimeout(() => setCopiedHash(false), 2000);
+                    }}
+                    className="text-cyan-400 hover:text-cyan-300 text-[11px] flex items-center gap-1 cursor-pointer"
+                  >
+                    <Copy className="w-3 h-3" />
+                    <span>{copiedHash ? "Copied!" : "Copy"}</span>
+                  </button>
+                </div>
+                <div className="font-mono text-[10px] text-cyan-300/90 bg-slate-900 p-2 rounded border border-slate-800 break-all select-all">
+                  {certificateData.verification_hash}
+                </div>
               </div>
             </div>
 
-            <div className="flex items-center justify-center gap-3">
+            <div className="flex items-center justify-center gap-3 pt-2">
               <button
                 onClick={() => window.print()}
-                className="px-5 py-2.5 bg-gradient-to-r from-cyan-500 to-indigo-500 text-white rounded-lg font-semibold text-xs shadow-lg hover:shadow-cyan-500/30 transition-all"
+                className="px-5 py-2.5 bg-gradient-to-r from-cyan-500 to-indigo-600 hover:from-cyan-400 hover:to-indigo-500 text-white rounded-xl font-bold text-xs shadow-lg shadow-cyan-500/20 transition-all flex items-center gap-1.5 cursor-pointer"
               >
-                Download / Print Certificate
+                <Printer className="w-3.5 h-3.5" />
+                <span>Print Certificate</span>
               </button>
               <button
                 onClick={() => setShowCertModal(false)}
-                className="px-5 py-2.5 border border-indigo-500/40 text-gray-300 rounded-lg text-xs hover:text-white"
+                className="px-5 py-2.5 border border-slate-700 hover:bg-slate-800 text-slate-300 rounded-xl text-xs font-medium cursor-pointer transition-colors"
               >
                 Close
               </button>
@@ -838,8 +896,8 @@ export default function ReviewPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen bg-gradient-to-br from-slate-950 via-indigo-950 to-slate-950 flex items-center justify-center text-gray-400">
-          Loading Review Workspace...
+        <div className="min-h-screen bg-slate-950 text-slate-100 flex items-center justify-center">
+          <Loader2 className="w-8 h-8 text-cyan-400 animate-spin" />
         </div>
       }
     >
