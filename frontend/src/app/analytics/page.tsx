@@ -12,7 +12,8 @@ import {
   Sparkles,
   PieChart,
   Loader2,
-  Info
+  Info,
+  ChevronDown
 } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import { API_BASE_URL } from "@/lib/api";
@@ -53,15 +54,193 @@ export default function AnalyticsPage() {
       });
   }, []);
 
-  const exportReport = () => {
-    if (!analytics) return;
-    const blob = new Blob([JSON.stringify(analytics, null, 2)], { type: "application/json" });
+  const [exportOpen, setExportOpen] = useState(false);
+
+  const downloadFile = (content: string, filename: string, type: string) => {
+    const blob = new Blob([content], { type });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `brandsphere-governance-audit-${new Date().toISOString().split("T")[0]}.json`;
+    a.download = filename;
     a.click();
     URL.revokeObjectURL(url);
+    setExportOpen(false);
+  };
+
+  const handleExport = (format: "json" | "pdf" | "md" | "word" | "csv") => {
+    if (!analytics) return;
+    const dateStr = new Date().toISOString().split("T")[0];
+
+    if (format === "json") {
+      downloadFile(JSON.stringify(analytics, null, 2), `brandsphere-audit-${dateStr}.json`, "application/json");
+    } else if (format === "md") {
+      const issueLines = Object.entries(analytics.issue_distribution || {})
+        .map(([cat, count]) => `- **${cat.toUpperCase()}:** ${count} violations`)
+        .join("\n");
+      const clarityLines = analytics.guideline_clarity_insights
+        .map((g, i) => `### ${i + 1}. ${g.guideline}\n- **Friction Count:** ${g.frequency} violations\n- **AI Recommendation:** ${g.recommendation}\n`)
+        .join("\n");
+      const md = `# BrandSphere AI - Governance & Compliance Audit Report
+**Date:** ${dateStr}  
+**Status:** Certified Audit  
+**Total Ingested Documents:** ${analytics.overview.total_documents}  
+**Approved Rate:** ${analytics.compliance_rate_percent || 0}%  
+
+---
+
+## 1. Executive Metrics Overview
+| Metric | Value |
+| :--- | :--- |
+| Total Ingested Documents | ${analytics.overview.total_documents} |
+| Approved / Certified | ${analytics.overview.approved} |
+| Pending Review | ${analytics.overview.pending_review} |
+| Rejected | ${analytics.overview.rejected} |
+| Total Violations Flagged | ${analytics.overview.total_issues_flagged} |
+| Average Issues Per Document | ${analytics.overview.avg_issues_per_doc} |
+
+---
+
+## 2. Issue Distribution by Category
+${issueLines}
+
+---
+
+## 3. Guideline Clarity Index (GCI) & Recommendations
+${clarityLines}
+
+---
+*Report generated automatically by BrandSphere AI Enterprise Governance Engine.*
+`;
+      downloadFile(md, `brandsphere-audit-${dateStr}.md`, "text/markdown");
+    } else if (format === "csv") {
+      let csv = "Category,Metric,Value\n";
+      csv += `Overview,Total Documents,${analytics.overview.total_documents}\n`;
+      csv += `Overview,Approved,${analytics.overview.approved}\n`;
+      csv += `Overview,Pending Review,${analytics.overview.pending_review}\n`;
+      csv += `Overview,Rejected,${analytics.overview.rejected}\n`;
+      csv += `Overview,Total Issues Flagged,${analytics.overview.total_issues_flagged}\n`;
+      csv += `Overview,Compliance Rate %,${analytics.compliance_rate_percent || 0}\n`;
+      Object.entries(analytics.issue_distribution || {}).forEach(([cat, val]) => {
+        csv += `Issue Distribution,${cat},${val}\n`;
+      });
+      analytics.guideline_clarity_insights.forEach(g => {
+        csv += `Guideline Clarity,${g.guideline.replace(/,/g, ' ')},${g.frequency} violations - "${g.recommendation.replace(/"/g, '""')}"\n`;
+      });
+      downloadFile(csv, `brandsphere-audit-${dateStr}.csv`, "text/csv");
+    } else if (format === "word") {
+      const issueRows = Object.entries(analytics.issue_distribution || {})
+        .map(([k, v]) => `<tr><td>${k.toUpperCase()}</td><td>${v}</td></tr>`)
+        .join("");
+      const clarityRows = analytics.guideline_clarity_insights
+        .map(g => `<p><strong>${g.guideline}</strong> (${g.frequency} violations)<br/><em>Recommendation:</em> ${g.recommendation}</p>`)
+        .join("");
+      const docContent = `<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>BrandSphere Audit Report</title>
+<style>
+body { font-family: Calibri, Arial, sans-serif; margin: 40px; color: #1f1823; }
+h1 { color: #3b3240; border-bottom: 2px solid #f6a3ca; padding-bottom: 8px; }
+h2 { color: #4F46E5; margin-top: 24px; }
+table { border-collapse: collapse; width: 100%; margin-top: 12px; }
+th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+th { background-color: #f1f2fa; }
+.badge { background: #f6a3ca; padding: 4px 8px; border-radius: 4px; font-weight: bold; }
+</style>
+</head>
+<body>
+<h1>BrandSphere AI - Executive Governance Audit Report</h1>
+<p><strong>Generated Date:</strong> ${dateStr} | <strong>Compliance Rate:</strong> <span class="badge">${analytics.compliance_rate_percent || 0}% Certified</span></p>
+
+<h2>1. Executive Summary</h2>
+<table>
+<tr><th>Metric</th><th>Count</th></tr>
+<tr><td>Total Documents</td><td>${analytics.overview.total_documents}</td></tr>
+<tr><td>Approved Releases</td><td>${analytics.overview.approved}</td></tr>
+<tr><td>Pending Review</td><td>${analytics.overview.pending_review}</td></tr>
+<tr><td>Rejected</td><td>${analytics.overview.rejected}</td></tr>
+<tr><td>Total Governance Issues</td><td>${analytics.overview.total_issues_flagged}</td></tr>
+<tr><td>Avg Issues Per Doc</td><td>${analytics.overview.avg_issues_per_doc}</td></tr>
+</table>
+
+<h2>2. Violation Categories</h2>
+<table>
+<tr><th>Category</th><th>Count</th></tr>
+${issueRows}
+</table>
+
+<h2>3. Guideline Clarity Index (GCI) Recommendations</h2>
+${clarityRows}
+</body>
+</html>`;
+      downloadFile(docContent, `brandsphere-audit-${dateStr}.doc`, "application/msword");
+    } else if (format === "pdf") {
+      const issuePdfRows = Object.entries(analytics.issue_distribution || {})
+        .map(([k, v]) => `<tr><td>${k.toUpperCase()}</td><td>${v}</td><td>${Math.round((v / (analytics.overview.total_issues_flagged || 1)) * 100)}%</td></tr>`)
+        .join("");
+      const clarityPdfBoxes = analytics.guideline_clarity_insights
+        .map(g => `<div class="recommendation-box"><strong>${g.guideline}</strong> (${g.frequency} violations)<br/><span style="color:#334155;">${g.recommendation}</span></div>`)
+        .join("");
+
+      const printWindow = window.open("", "_blank");
+      if (printWindow) {
+        printWindow.document.write(`<!DOCTYPE html>
+<html>
+<head>
+<title>BrandSphere AI Governance Audit - ${dateStr}</title>
+<style>
+@page { size: A4; margin: 20mm; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; color: #1f1823; margin: 0; padding: 20px; }
+.header { border-bottom: 2px solid #1f1823; padding-bottom: 12px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
+.title { font-size: 24px; font-weight: 800; }
+.badge { background: #e0f2fe; color: #0369a1; padding: 4px 10px; border-radius: 9999px; font-weight: bold; font-size: 12px; }
+.kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 24px; }
+.kpi-box { border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px; background: #f8fafc; }
+.kpi-val { font-size: 22px; font-weight: bold; margin-top: 4px; }
+table { width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 13px; }
+th, td { border: 1px solid #cbd5e1; padding: 8px 12px; text-align: left; }
+th { background: #f1f5f9; font-weight: bold; }
+.recommendation-box { background: #fdf2f8; border-left: 4px solid #ec4899; padding: 10px 14px; margin-bottom: 10px; border-radius: 4px; font-size: 13px; }
+@media print { button { display: none; } }
+</style>
+</head>
+<body>
+<div class="header">
+<div>
+  <div class="title">BrandSphere AI — Enterprise Audit Report</div>
+  <div style="color: #64748b; font-size: 12px; margin-top: 4px;">Pre-Publication Brand Governance & Telemetry • Date: ${dateStr}</div>
+</div>
+<div class="badge">Compliance Rate: ${analytics.compliance_rate_percent || 0}%</div>
+</div>
+
+<div class="kpi-grid">
+<div class="kpi-box"><small style="color:#64748b;">Total Documents</small><div class="kpi-val">${analytics.overview.total_documents}</div></div>
+<div class="kpi-box"><small style="color:#64748b;">Approved Releases</small><div class="kpi-val" style="color:#16a34a;">${analytics.overview.approved}</div></div>
+<div class="kpi-box"><small style="color:#64748b;">Pending Review</small><div class="kpi-val" style="color:#d97706;">${analytics.overview.pending_review}</div></div>
+<div class="kpi-box"><small style="color:#64748b;">Total Violations Flagged</small><div class="kpi-val" style="color:#dc2626;">${analytics.overview.total_issues_flagged}</div></div>
+</div>
+
+<h3 style="font-size: 16px; border-bottom: 1px solid #cbd5e1; padding-bottom: 6px;">1. Issue Distribution by Category</h3>
+<table>
+<thead><tr><th>Violation Type</th><th>Count</th><th>Percentage</th></tr></thead>
+<tbody>
+${issuePdfRows}
+</tbody>
+</table>
+
+<h3 style="font-size: 16px; border-bottom: 1px solid #cbd5e1; padding-bottom: 6px;">2. Guideline Clarity Index (GCI) Recommendations</h3>
+${clarityPdfBoxes}
+
+<script>
+window.onload = function() { window.print(); }
+</script>
+</body>
+</html>`);
+        printWindow.document.close();
+      }
+      setExportOpen(false);
+    }
   };
 
   return (
@@ -85,14 +264,65 @@ export default function AnalyticsPage() {
             </p>
           </div>
 
-          <button
-            type="button"
-            onClick={exportReport}
-            className="clay-pill-secondary px-5 py-2.5 text-xs flex items-center gap-2 self-start cursor-pointer"
-          >
-            <Download className="w-4 h-4 text-[#1f1823]" />
-            <span>Export Audit Report (JSON)</span>
-          </button>
+          <div className="relative self-start">
+            <button
+              type="button"
+              onClick={() => setExportOpen(!exportOpen)}
+              className="clay-pill-secondary px-5 py-2.5 text-xs flex items-center gap-2 cursor-pointer shadow-sm font-bold"
+            >
+              <Download className="w-4 h-4 text-[#1f1823]" />
+              <span>Export Audit Report</span>
+              <ChevronDown className={`w-3.5 h-3.5 transition-transform ${exportOpen ? 'rotate-180' : ''}`} />
+            </button>
+
+            {exportOpen && (
+              <div className="absolute right-0 mt-2 w-56 rounded-2xl bg-[#fffdf7] border-2 border-[#1f1823] shadow-xl z-50 p-2 space-y-1">
+                <div className="px-3 py-1.5 text-[10px] font-extrabold uppercase tracking-wider text-[#3b3240] border-b border-[#1f1823]/10 mb-1">
+                  Select Export Format
+                </div>
+                <button
+                  type="button"
+                  onClick={() => handleExport("pdf")}
+                  className="w-full text-left px-3 py-2 rounded-xl text-xs font-bold text-[#1f1823] hover:bg-[#bde8f5] flex items-center justify-between cursor-pointer transition-colors"
+                >
+                  <span className="flex items-center gap-2">📄 PDF Report</span>
+                  <span className="text-[10px] text-[#3b3240] bg-[#fff] px-1.5 py-0.5 rounded border border-[#1f1823]/20">Print / PDF</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleExport("word")}
+                  className="w-full text-left px-3 py-2 rounded-xl text-xs font-bold text-[#1f1823] hover:bg-[#f6a3ca] flex items-center justify-between cursor-pointer transition-colors"
+                >
+                  <span className="flex items-center gap-2">📘 Word Document</span>
+                  <span className="text-[10px] text-[#3b3240] bg-[#fff] px-1.5 py-0.5 rounded border border-[#1f1823]/20">.doc</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleExport("md")}
+                  className="w-full text-left px-3 py-2 rounded-xl text-xs font-bold text-[#1f1823] hover:bg-[#fbd38d] flex items-center justify-between cursor-pointer transition-colors"
+                >
+                  <span className="flex items-center gap-2">📝 Markdown</span>
+                  <span className="text-[10px] text-[#3b3240] bg-[#fff] px-1.5 py-0.5 rounded border border-[#1f1823]/20">.md</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleExport("csv")}
+                  className="w-full text-left px-3 py-2 rounded-xl text-xs font-bold text-[#1f1823] hover:bg-[#bbf7d0] flex items-center justify-between cursor-pointer transition-colors"
+                >
+                  <span className="flex items-center gap-2">📊 Spreadsheet CSV</span>
+                  <span className="text-[10px] text-[#3b3240] bg-[#fff] px-1.5 py-0.5 rounded border border-[#1f1823]/20">.csv</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleExport("json")}
+                  className="w-full text-left px-3 py-2 rounded-xl text-xs font-bold text-[#1f1823] hover:bg-[#e2e8f0] flex items-center justify-between cursor-pointer transition-colors"
+                >
+                  <span className="flex items-center gap-2">⚙️ Raw Telemetry</span>
+                  <span className="text-[10px] text-[#3b3240] bg-[#fff] px-1.5 py-0.5 rounded border border-[#1f1823]/20">.json</span>
+                </button>
+              </div>
+            )}
+          </div>
         </div>
 
         {loading ? (
