@@ -131,9 +131,6 @@ npm run build
 │   │   └── lib/
 │   │       └── api.ts           # API base URL configuration (port 8001)
 │   └── package.json
-└── docs/
-    ├── Problem_statement.md     # Official Inkloom AI hackathon prompt & rubric
-    └── brand_governance_presentation_brief.md # Presentation brief & planned features
 ```
 
 ---
