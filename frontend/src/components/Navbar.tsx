@@ -19,12 +19,12 @@ export default function Navbar() {
   const pathname = usePathname();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  // Auto-close mobile drawer when route changes
+  
   useEffect(() => {
     setIsMenuOpen(false);
   }, [pathname]);
 
-  // Lock body scroll when mobile menu is open
+  
   useEffect(() => {
     if (isMenuOpen) {
       document.body.style.overflow = "hidden";
@@ -47,7 +47,7 @@ export default function Navbar() {
   return (
     <header className="sticky top-0 z-50 px-4 sm:px-6 py-3.5 bg-[#f1f2fa]/90 backdrop-blur-md">
       <div className="max-w-7xl mx-auto px-5 sm:px-6 py-3 flex items-center justify-between clay-cushion !rounded-[28px] !bg-[#fffdf7]">
-        {/* Brand Logo */}
+        {}
         <Link href="/" className="flex items-center gap-3 group shrink-0">
           <div className="relative flex items-center justify-center w-10 h-10 rounded-2xl bg-[#f6a3ca] shadow-[3px_5px_12px_rgba(246,163,202,0.4),inset_2px_2px_4px_rgba(255,255,255,0.8),inset_-2px_-2px_4px_rgba(189,74,128,0.2)] group-hover:scale-105 transition-transform border border-[#f78ec0]">
             <Shield className="w-5 h-5 text-[#1f1823]" />
@@ -62,7 +62,7 @@ export default function Navbar() {
           </div>
         </Link>
 
-        {/* Desktop Navigation Tabs (Visible on full widescreen desktop, hidden on shrinked-laptop & mobile) */}
+        {}
         <nav className="hidden xl:flex items-center gap-1.5 p-1.5 rounded-full bg-[#e6e8f4] shadow-[inset_2px_2px_5px_rgba(56,49,57,0.08),inset_-2px_-2px_4px_rgba(255,255,255,0.95)]">
           {navLinks.map((item) => {
             const isActive = pathname === item.href || (item.href !== "/" && pathname?.startsWith(item.href));
@@ -84,15 +84,15 @@ export default function Navbar() {
           })}
         </nav>
 
-        {/* Right Section: System Status, CTA & Responsive Hamburger */}
+        {}
         <div className="flex items-center gap-2.5 sm:gap-3">
-          {/* Policy Engine Status Badge (Visible on full desktop) */}
+          {}
           <div className="hidden xl:flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#c0efdc] text-xs font-black text-[#0e3b27] shadow-[2px_3px_8px_rgba(192,239,220,0.45),inset_2px_2px_3px_rgba(255,255,255,0.9),inset_-2px_-2px_3px_rgba(71,153,120,0.18)] border border-[#9ee2c5]">
             <span className="w-2.5 h-2.5 rounded-full bg-[#0e3b27] animate-pulse" />
             <span>Policy Engine Active</span>
           </div>
 
-          {/* Quick Scan CTA */}
+          {}
           <Link
             href="/upload"
             className="hidden sm:inline-flex clay-pill-primary px-5 py-2.5 text-xs items-center gap-2 text-[#1f1823] font-black"
@@ -101,7 +101,7 @@ export default function Navbar() {
             <span>Scan Copy</span>
           </Link>
 
-          {/* Hamburger Menu Toggle Button: Visible on shrinked-laptop and mobile, HIDDEN on widescreen desktop */}
+          {}
           <button
             type="button"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -118,7 +118,7 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* Slide-Down Navigation Menu */}
+      {}
       {isMenuOpen && (
         <div className="max-w-7xl mx-auto mt-2 px-2">
           <div className="clay-cushion !rounded-[32px] !bg-[#fffdf7] p-6 shadow-2xl transition-all space-y-4 border border-[#e2dfd5]">
@@ -132,7 +132,7 @@ export default function Navbar() {
               </div>
             </div>
 
-            {/* Navigation Links Grid */}
+            {}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
               {navLinks.map((item) => {
                 const isActive = pathname === item.href || (item.href !== "/" && pathname?.startsWith(item.href));
@@ -157,7 +157,7 @@ export default function Navbar() {
               })}
             </div>
 
-            {/* Mobile Actions Footer */}
+            {}
             <div className="pt-3 border-t border-[#e6e8f4] flex flex-col sm:flex-row items-center gap-3">
               <Link
                 href="/upload"

@@ -117,7 +117,7 @@ export default function Dashboard() {
       <Navbar />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 py-8 md:py-12 space-y-8">
-        {/* Header Title & Controls */}
+        {}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-2">
           <div>
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#ded0f9] text-[#2d1b54] text-xs font-black shadow-inner mb-2 border border-[#caaef2]">
@@ -150,7 +150,7 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Top 4 KPI Pastel Cushions */}
+        {}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
           <div className="clay-cushion-blue p-5 flex flex-col justify-between space-y-2 border-2 border-[#a8d7fa] min-w-0 overflow-hidden">
             <span className="text-[11px] font-black uppercase tracking-wider text-[#103a5c] truncate">
@@ -193,9 +193,9 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Filter and Search Bar Cushion */}
+        {}
         <div className="clay-cushion !bg-[#fffdf7] !rounded-[28px] p-4 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4 border border-[#e2dfd5]">
-          {/* Status Tabs */}
+          {}
           <div className="flex flex-wrap items-center gap-1.5 p-1.5 rounded-full bg-[#e6e8f4] shadow-inner text-xs font-bold">
             {["all", "pending_review", "approved", "needs_revision", "rejected"].map((st) => (
               <button
@@ -212,7 +212,7 @@ export default function Dashboard() {
             ))}
           </div>
 
-          {/* Search Box */}
+          {}
           <div className="relative w-full md:w-80">
             <Search className="w-4 h-4 text-[#3b3240] absolute left-3.5 top-3 pointer-events-none" />
             <input
@@ -225,7 +225,7 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Submissions List */}
+        {}
         {loading ? (
           <div className="clay-tray p-16 text-center text-[#3b3240] flex flex-col items-center justify-center gap-3">
             <div className="w-8 h-8 rounded-full border-3 border-[#f6a3ca] border-t-transparent animate-spin" />
@@ -298,7 +298,7 @@ export default function Dashboard() {
                     </p>
                   </div>
 
-                  {/* Actions */}
+                  {}
                   <div className="flex items-center gap-2 self-start shrink-0">
                     <button
                       onClick={(e) => handleDeleteDocument(doc.id, e)}
@@ -317,7 +317,7 @@ export default function Dashboard() {
                   </div>
                 </div>
 
-                {/* Bottom Metadata & Scores Bar */}
+                {}
                 <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-[#e2dfd5] text-xs">
                   <div className="flex items-center gap-2">
                     <span className="font-black text-[#1f1823]">
@@ -344,7 +344,7 @@ export default function Dashboard() {
                     )}
                   </div>
 
-                  {/* Quality & Accessibility Scores */}
+                  {}
                   <div className="flex items-center gap-3 text-[11px] font-semibold text-[#3b3240]">
                     {doc.readability_score !== undefined && (
                       <span className="clay-well px-2.5 py-1 rounded-full font-bold text-[#1f1823]">

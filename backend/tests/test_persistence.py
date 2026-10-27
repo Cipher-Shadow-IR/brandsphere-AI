@@ -10,10 +10,7 @@ from backend.app.models import DocumentModel, IssueModel, ReviewModel
 
 
 def test_persistence_across_restarts():
-    """
-    Verifies that documents, issues, and reviews written in one session/process lifecycle
-    persist on disk and are accurately retrieved after the engine/session is completely disposed.
-    """
+    
     temp_db_fd, temp_db_path = tempfile.mkstemp(suffix="_persist.db")
     os.close(temp_db_fd)
     db_url = f"sqlite:///{temp_db_path}"
@@ -23,7 +20,7 @@ def test_persistence_across_restarts():
     review_id = str(uuid.uuid4())
 
     try:
-        # Phase 1: Engine 1 simulates the initial server run
+        
         engine1 = create_engine(db_url, connect_args={"check_same_thread": False})
         Session1 = sessionmaker(bind=engine1)
         Base.metadata.create_all(bind=engine1)
@@ -67,10 +64,10 @@ def test_persistence_across_restarts():
         session1.commit()
         session1.close()
 
-        # Completely dispose engine1 (simulates application process termination)
+        
         engine1.dispose()
 
-        # Phase 2: Engine 2 simulates a fresh application restart pointing to the same DB
+        
         engine2 = create_engine(db_url, connect_args={"check_same_thread": False})
         Session2 = sessionmaker(bind=engine2)
 
@@ -82,7 +79,7 @@ def test_persistence_across_restarts():
         assert loaded_doc.status == "approved"
         assert loaded_doc.author == "Governance Lead"
 
-        # Verify child relations survived restart
+        
         assert len(loaded_doc.issues) == 1
         assert loaded_doc.issues[0].id == issue_id
         assert loaded_doc.issues[0].type == "claim"

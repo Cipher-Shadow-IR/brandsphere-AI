@@ -2,9 +2,16 @@ import os
 import re
 import uuid
 import hashlib
+import base64
 from contextlib import asynccontextmanager
 from typing import List, Dict, Any, Optional
 from datetime import datetime, timezone
+
+try:
+    from dotenv import load_dotenv
+    load_dotenv(override=True)
+except ImportError:
+    pass
 
 from fastapi import FastAPI, Depends, HTTPException, status, UploadFile, File, Form
 from fastapi.middleware.cors import CORSMiddleware
@@ -57,16 +64,19 @@ from .governance_engine import (
     analyze_image_bytes,
     compute_readability
 )
+from .rag_engine import rag_engine
+from .cache import cache_service
+from .llm_engine import llm_engine
 
 
 def seed_default_knowledge_base(db: Optional[Session] = None):
-    """Seeds the initial enterprise guidelines, canonical facts, glossary, and assets."""
+    
     close_db = False
     if db is None:
         db = next(get_db())
         close_db = True
     try:
-        # 1. Guidelines
+        
         if db.query(GuidelineModel).count() == 0:
             default_guidelines = [
                 GuidelineModel(
@@ -123,7 +133,7 @@ def seed_default_knowledge_base(db: Optional[Session] = None):
             db.add_all(default_guidelines)
             db.commit()
 
-        # 2. Approved Canonical Facts Library
+        
         if db.query(ApprovedFactModel).count() == 0:
             default_facts = [
                 ApprovedFactModel(
@@ -162,7 +172,7 @@ def seed_default_knowledge_base(db: Optional[Session] = None):
             db.add_all(default_facts)
             db.commit()
 
-        # 3. Terminology Glossary
+        
         if db.query(GlossaryTermModel).count() == 0:
             default_terms = [
                 GlossaryTermModel(
@@ -190,7 +200,7 @@ def seed_default_knowledge_base(db: Optional[Session] = None):
             db.add_all(default_terms)
             db.commit()
 
-        # 4. Brand Tokens & Assets
+        
         if db.query(BrandAssetModel).count() == 0:
             default_assets = [
                 BrandAssetModel(
@@ -231,7 +241,9 @@ def seed_default_knowledge_base(db: Optional[Session] = None):
 
 
 def ensure_sqlite_columns():
-    """Ensure missing columns in SQLite are automatically added on startup."""
+    
+    if engine.dialect.name != "sqlite":
+        return
     try:
         with engine.connect() as conn:
             for table_name, table in Base.metadata.tables.items():
@@ -253,12 +265,51 @@ def ensure_sqlite_columns():
         pass
 
 
+def sync_knowledge_base_to_rag(db: Optional[Session] = None):
+    
+    if not rag_engine or not rag_engine.is_active:
+        return
+    close_db = False
+    if db is None:
+        db = next(get_db())
+        close_db = True
+    try:
+        items = []
+        for g in db.query(GuidelineModel).all():
+            items.append({
+                "id": f"guideline-{g.id}",
+                "text": f"{g.name} ({g.category}): {g.description} Policy rules: {g.rule_pattern}. Remediation: {g.remediation_template}",
+                "title": g.name,
+                "type": "guideline",
+                "category": g.category,
+                "reference": f"{g.name} {g.version}"
+            })
+        for f in db.query(ApprovedFactModel).all():
+            items.append({
+                "id": f"fact-{f.id}",
+                "text": f"Canonical Fact ({f.topic}): {f.claim_statement} Approved metric: {f.approved_metric}. Citation: {f.source_citation}",
+                "title": f.topic,
+                "type": "fact",
+                "category": "claims",
+                "reference": f.source_citation
+            })
+        if items:
+            rag_engine.index_knowledge_items(items)
+    except Exception:
+        pass
+    finally:
+        if close_db:
+            db.close()
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Ensure database schema is created/verified on startup
+    
     Base.metadata.create_all(bind=engine)
-    ensure_sqlite_columns()
+    if engine.dialect.name == "sqlite":
+        ensure_sqlite_columns()
     seed_default_knowledge_base()
+    sync_knowledge_base_to_rag()
     yield
 
 
@@ -269,17 +320,26 @@ app = FastAPI(
     lifespan=lifespan
 )
 
-# Robust CORS Configuration: Avoid wildcard with allow_credentials=True
-configured_origins = os.getenv(
+
+raw_origins = os.getenv(
     "CORS_ORIGINS",
-    "http://localhost:3000,http://127.0.0.1:3000,http://localhost:8000,http://localhost:8001,http://0.0.0.0:3000,http://192.168.1.3:3000"
+    "http://localhost:3000,http://127.0.0.1:3000,http://localhost:8000,http://localhost:8001,https://brandsphere-ai.vercel.app"
 )
-origins = [origin.strip() for origin in configured_origins.split(",") if origin.strip()]
+if raw_origins and raw_origins.strip():
+    origins = [origin.strip() for origin in raw_origins.split(",") if origin.strip()]
+else:
+    origins = [
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+        "http://localhost:8000",
+        "http://localhost:8001",
+        "https://brandsphere-ai.vercel.app",
+    ]
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
-    allow_origin_regex=r"^https?://(localhost|127\.0\.0\.1|0\.0\.0\.0|192\.168\.\d+\.\d+|10\.\d+\.\d+\.\d+)(:\d+)?$",
+    allow_origin_regex=r"^https?://(localhost|127\.0\.0\.1|0\.0\.0\.0|192\.168\.\d+\.\d+|10\.\d+\.\d+\.\d+|.*\.vercel\.app|.*\.onrender\.com)(:\d+)?$",
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
     allow_headers=["*"],
@@ -296,17 +356,31 @@ async def root():
     }
 
 
-# =====================================================================
-# DOCUMENTS & MULTIMODAL INGESTION
-# =====================================================================
+
+
+
 
 @app.post("/api/documents/upload", response_model=DocumentUploadResult, status_code=status.HTTP_201_CREATED)
 async def upload_document(doc: ContentUpload, db: Session = Depends(get_db)):
     if db.query(GuidelineModel).count() == 0:
         seed_default_knowledge_base(db)
+        sync_knowledge_base_to_rag(db)
     doc_id = str(uuid.uuid4())
-    raw_issues = analyze_content(doc.content, db)
-    readability = compute_readability(doc.content)
+
+    
+    cache_key = cache_service.hash_key("scan", doc.content)
+    cached_scan = cache_service.get(cache_key)
+    if cached_scan:
+        raw_issues = []
+        for ci in cached_scan.get("issues", []):
+            iss_copy = dict(ci)
+            iss_copy["id"] = str(uuid.uuid4())
+            raw_issues.append(iss_copy)
+        readability = cached_scan.get("readability", compute_readability(doc.content))
+    else:
+        raw_issues = analyze_content(doc.content, db)
+        readability = compute_readability(doc.content)
+        cache_service.set(cache_key, {"issues": raw_issues, "readability": readability}, ttl=3600)
 
     new_doc = DocumentModel(
         id=doc_id,
@@ -323,7 +397,7 @@ async def upload_document(doc: ContentUpload, db: Session = Depends(get_db)):
     )
     db.add(new_doc)
 
-    # Multimodal image analysis if creative graphic is attached
+    
     if doc.image_url:
         try:
             import base64
@@ -356,7 +430,7 @@ async def upload_document(doc: ContentUpload, db: Session = Depends(get_db)):
         )
         db.add(issue_model)
 
-    # Initial revision snapshot (v1)
+    
     rev = RevisionModel(
         id=str(uuid.uuid4()),
         document_id=doc_id,
@@ -368,7 +442,7 @@ async def upload_document(doc: ContentUpload, db: Session = Depends(get_db)):
     )
     db.add(rev)
 
-    # Audit log
+    
     audit = AuditLogModel(
         id=str(uuid.uuid4()),
         document_id=doc_id,
@@ -408,7 +482,7 @@ async def get_document(doc_id: str, db: Session = Depends(get_db)):
 
 @app.delete("/api/documents/{doc_id}")
 async def delete_document(doc_id: str, db: Session = Depends(get_db)):
-    """Deletes a document and its cascading issues, revisions, comments, and audit logs."""
+    
     doc = db.query(DocumentModel).filter(DocumentModel.id == doc_id).first()
     if not doc:
         raise HTTPException(
@@ -422,13 +496,13 @@ async def delete_document(doc_id: str, db: Session = Depends(get_db)):
 
 @app.post("/api/demo/seed")
 async def seed_demo_documents(db: Session = Depends(get_db)):
-    """Seeds rich demo documents across pending, revision, and approved states."""
+    
     if db.query(GuidelineModel).count() == 0:
         seed_default_knowledge_base(db)
 
     seeded_docs = []
 
-    # Demo 1: High-Risk Launch Copy (Pending Review)
+    
     doc1_id = str(uuid.uuid4())
     doc1_content = "BrandSphere is officially the fastest cloud platform in the world! Our totally amazing new release is #1 rated across all benchmarks. We have completely eliminated the legacy architecture and old version bottlenecks to bring you an unbeatable price with guaranteed 100% zero downtime. This is an awesome revolution in business computing that your team will totally love."
     raw_issues1 = analyze_content(doc1_content, db)
@@ -479,7 +553,7 @@ async def seed_demo_documents(db: Session = Depends(get_db)):
     ))
     seeded_docs.append(doc1)
 
-    # Demo 2: Compliant Enterprise Benchmark (Approved & Certified)
+    
     doc2_id = str(uuid.uuid4())
     doc2_content = "BrandSphere AI delivers up to an 80% reduction in content review turnaround cycles according to the Inkloom Enterprise Study 2026. The platform maintains 99.5% accuracy in detecting unsupported promotional claims, upholding high standards of enterprise credibility. All published collateral retains a cryptographically verifiable audit trail compliant with SOC 2 requirements."
     doc2 = DocumentModel(
@@ -524,7 +598,7 @@ async def seed_demo_documents(db: Session = Depends(get_db)):
     ))
     seeded_docs.append(doc2)
 
-    # Demo 3: Social Omni-Channel Campaign (Needs Revision)
+    
     doc3_id = str(uuid.uuid4())
     doc3_content = "Excited to showcase our Autonomous Brand Governance Agent! With continuous pre-publication checks, teams protect brand voice and visual consistency seamlessly. Experience reliable, explainable AI assistance designed for modern marketing workflows. #BrandSphere #Governance"
     doc3 = DocumentModel(
@@ -576,16 +650,13 @@ async def seed_demo_documents(db: Session = Depends(get_db)):
     }
 
 
-# =====================================================================
-# 1-CLICK REMEDIATION, REVISIONS & AUDIT LOGS
-# =====================================================================
+
+
+
 
 @app.post("/api/documents/{doc_id}/apply-remediation")
 async def apply_remediation(doc_id: str, payload: RemediationRequest, db: Session = Depends(get_db)):
-    """
-    Applies context-preserving remediation to the draft, marking the issue resolved
-    and recording a new version revision snapshot with diff traceability.
-    """
+    
     doc = db.query(DocumentModel).filter(DocumentModel.id == doc_id).first()
     if not doc:
         raise HTTPException(status_code=404, detail="Document not found")
@@ -594,16 +665,28 @@ async def apply_remediation(doc_id: str, payload: RemediationRequest, db: Sessio
     if not issue:
         raise HTTPException(status_code=404, detail="Issue not found")
 
-    # Determine replacement text
-    replacement = payload.custom_replacement or issue.suggestion
+    
+    replacement = payload.custom_replacement
+    if not replacement:
+        if llm_engine.is_gemini_active():
+            replacement = llm_engine.generate_smart_remediation(
+                full_content=doc.content,
+                issue_type=issue.type,
+                issue_description=issue.description,
+                guideline_reference=issue.guideline_reference,
+                target_text=issue.original_text,
+                canonical_context=issue.citation
+            )
+        if not replacement:
+            replacement = issue.suggestion
     original_target = issue.original_text
 
-    # Apply replacement if target matched
+    
     content_before = doc.content
     content_after = content_before
     if original_target and original_target.lower() in content_before.lower():
         pattern = re.compile(re.escape(original_target), re.IGNORECASE)
-        # Use clean suggestion excerpt if replacement is long explanation
+        
         clean_fix = replacement
         if "Example:" in replacement:
             clean_fix = replacement.split("Example:")[1].strip().strip("'\"")
@@ -613,18 +696,18 @@ async def apply_remediation(doc_id: str, payload: RemediationRequest, db: Sessio
                 clean_fix = match.group(1)
         content_after = pattern.sub(clean_fix, content_before, count=1)
     else:
-        # If no direct target, note remediation applied
+        
         content_after = content_before
 
     doc.content = content_after
     doc.version = (doc.version or 1) + 1
     issue.resolved = True
 
-    # Re-evaluate readability
+    
     readability = compute_readability(doc.content)
     doc.readability_score = readability["flesch_reading_ease"]
 
-    # Save Revision snapshot
+    
     rev = RevisionModel(
         id=str(uuid.uuid4()),
         document_id=doc_id,
@@ -636,7 +719,7 @@ async def apply_remediation(doc_id: str, payload: RemediationRequest, db: Sessio
     )
     db.add(rev)
 
-    # Log audit event
+    
     audit = AuditLogModel(
         id=str(uuid.uuid4()),
         document_id=doc_id,
@@ -708,9 +791,9 @@ async def get_audit_trail(doc_id: str, db: Session = Depends(get_db)):
     return {"audit_trail": [l.to_dict() for l in logs]}
 
 
-# =====================================================================
-# THREADED COMMENTS & COLLABORATIVE REVIEW
-# =====================================================================
+
+
+
 
 @app.post("/api/documents/{doc_id}/comments")
 async def add_comment(doc_id: str, payload: CommentCreateRequest, db: Session = Depends(get_db)):
@@ -750,9 +833,9 @@ async def get_comments(doc_id: str, db: Session = Depends(get_db)):
     return {"comments": [c.to_dict() for c in comments]}
 
 
-# =====================================================================
-# REVIEWS & APPROVALS WORKFLOW
-# =====================================================================
+
+
+
 
 @app.post("/api/reviews/submit", response_model=ReviewSubmitResult)
 async def submit_review(review: ReviewRequest, db: Session = Depends(get_db)):
@@ -763,7 +846,7 @@ async def submit_review(review: ReviewRequest, db: Session = Depends(get_db)):
             detail=f"Document '{review.document_id}' not found"
         )
 
-    # Validated status: approved, rejected, or needs_revision
+    
     doc.status = review.status.value
 
     review_entry = ReviewModel(
@@ -777,7 +860,7 @@ async def submit_review(review: ReviewRequest, db: Session = Depends(get_db)):
     )
     db.add(review_entry)
 
-    # Audit log
+    
     audit = AuditLogModel(
         id=str(uuid.uuid4()),
         document_id=review.document_id,
@@ -801,9 +884,9 @@ async def get_reviews(db: Session = Depends(get_db)):
     return {"reviews": [r.to_dict() for r in all_reviews]}
 
 
-# =====================================================================
-# CERTIFIED PUBLICATION & COMPLIANCE CERTIFICATE
-# =====================================================================
+
+
+
 
 @app.get("/api/documents/{doc_id}/certificate", response_model=CertificateResponse)
 async def get_document_certificate(doc_id: str, db: Session = Depends(get_db)):
@@ -811,11 +894,16 @@ async def get_document_certificate(doc_id: str, db: Session = Depends(get_db)):
     if not doc:
         raise HTTPException(status_code=404, detail="Document not found")
 
+    cert_cache_key = f"cert:{doc.id}:{doc.version}"
+    cached_cert = cache_service.get(cert_cache_key)
+    if cached_cert:
+        return cached_cert
+
     latest_review = db.query(ReviewModel).filter(ReviewModel.document_id == doc_id).order_by(ReviewModel.created_at.desc()).first()
     resolved_count = len([i for i in doc.issues if i.resolved]) if doc.issues else 0
     total_issues = len(doc.issues) if doc.issues else 0
 
-    # Cryptographic proof hash
+    
     payload_str = f"{doc.id}:{doc.title}:{doc.content}:{doc.status}:{doc.author}"
     verification_hash = hashlib.sha256(payload_str.encode("utf-8")).hexdigest()
 
@@ -823,7 +911,7 @@ async def get_document_certificate(doc_id: str, db: Session = Depends(get_db)):
     if doc.status == "approved" and compliance_score < 70:
         compliance_score = 95.0
 
-    return {
+    cert_data = {
         "document_id": doc.id,
         "title": doc.title,
         "author": doc.author,
@@ -835,20 +923,22 @@ async def get_document_certificate(doc_id: str, db: Session = Depends(get_db)):
         "resolved_issues_count": resolved_count,
         "verification_hash": f"BS-SHA256-{verification_hash[:24]}",
         "status": doc.status,
-        "qr_data": f"https://brandsphere.inkloom.ai/verify?doc={doc.id}&hash={verification_hash[:16]}"
+        "qr_data": f"{os.getenv('VERIFICATION_BASE_URL')}/verify?doc={doc.id}&hash={verification_hash[:16]}"
     }
+    cache_service.set(cert_cache_key, cert_data, ttl=3600)
+    return cert_data
 
 
-# =====================================================================
-# MULTIMODAL & VISUAL AUDIT ENDPOINTS
-# =====================================================================
+
+
+
 
 @app.post("/api/visual/analyze", response_model=VisualAnalyzeResponse)
 async def analyze_visual(
     payload: Optional[VisualAnalyzeRequest] = None,
     file: Optional[UploadFile] = File(None)
 ):
-    """Audits visual creatives for BrandSphere palette tokens, contrast ratios, and WCAG AA."""
+    
     image_bytes = None
     if file:
         image_bytes = await file.read()
@@ -858,7 +948,7 @@ async def analyze_visual(
         image_bytes = base64.b64decode(base64_data)
 
     if not image_bytes:
-        # Provide sample default assessment if no direct bytes
+        
         return {
             "dominant_colors": ["#020617", "#0F172A", "#4F46E5", "#06B6D4"],
             "palette_match_score": 92.0,
@@ -871,14 +961,14 @@ async def analyze_visual(
     return analyze_image_bytes(image_bytes)
 
 
-# =====================================================================
-# GUIDELINES, FACTS, GLOSSARY & ASSETS MANAGEMENT
-# =====================================================================
+
+
+
 
 @app.get("/api/guidelines", response_model=GuidelinesListResult)
 async def get_guidelines(db: Session = Depends(get_db)):
     guidelines = db.query(GuidelineModel).filter(GuidelineModel.is_active == True).all()
-    # If DB has items, return them; otherwise default list
+    
     if guidelines:
         return {"guidelines": [g.to_dict() for g in guidelines]}
 
@@ -909,6 +999,15 @@ async def create_guideline(payload: GuidelineCreate, db: Session = Depends(get_d
     db.add(guideline)
     db.commit()
     db.refresh(guideline)
+    if rag_engine and rag_engine.is_active:
+        rag_engine.index_knowledge_items([{
+            "id": f"guideline-{guideline.id}",
+            "text": f"{guideline.name} ({guideline.category}): {guideline.description} Rules: {guideline.rule_pattern}. Remediation: {guideline.remediation_template}",
+            "title": guideline.name,
+            "type": "guideline",
+            "category": guideline.category,
+            "reference": f"{guideline.name} {guideline.version}"
+        }])
     return {"guideline": guideline.to_dict()}
 
 
@@ -944,6 +1043,15 @@ async def create_fact(payload: ApprovedFactCreate, db: Session = Depends(get_db)
     db.add(fact)
     db.commit()
     db.refresh(fact)
+    if rag_engine and rag_engine.is_active:
+        rag_engine.index_knowledge_items([{
+            "id": f"fact-{fact.id}",
+            "text": f"Canonical Fact ({fact.topic}): {fact.claim_statement} Approved metric: {fact.approved_metric}. Citation: {fact.source_citation}",
+            "title": fact.topic,
+            "type": "fact",
+            "category": "claims",
+            "reference": fact.source_citation
+        }])
     return {"fact": fact.to_dict()}
 
 
@@ -1013,9 +1121,9 @@ async def create_brand_asset(payload: BrandAssetCreate, db: Session = Depends(ge
     return {"asset": asset.to_dict()}
 
 
-# =====================================================================
-# GOVERNANCE ANALYTICS & INSIGHTS
-# =====================================================================
+
+
+
 
 @app.get("/api/analytics", response_model=AnalyticsResult)
 async def get_analytics(db: Session = Depends(get_db)):
@@ -1026,11 +1134,11 @@ async def get_analytics(db: Session = Depends(get_db)):
 
     total_issues = db.query(IssueModel).count()
 
-    # Query issue distribution
+    
     issue_counts = db.query(IssueModel.type, func.count(IssueModel.id)).group_by(IssueModel.type).all()
     issue_types: Dict[str, int] = {item[0]: item[1] for item in issue_counts}
 
-    # Query severity breakdown
+    
     severity_counts = db.query(IssueModel.severity, func.count(IssueModel.id)).group_by(IssueModel.severity).all()
     severity_breakdown: Dict[str, int] = {item[0]: item[1] for item in severity_counts}
 

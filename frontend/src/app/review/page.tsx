@@ -93,28 +93,28 @@ function ReviewContent() {
   const [availableDocs, setAvailableDocs] = useState<Document[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Persona / Role Switcher: Creator, Reviewer, Legal Admin
+  
   const [activeRole, setActiveRole] = useState<"Creator" | "Reviewer" | "Legal Admin">("Reviewer");
 
-  // View mode: 'document' | 'revisions'
+  
   const [viewTab, setViewTab] = useState<"document" | "revisions">("document");
 
-  // Review decision states
+  
   const [reviewComment, setReviewComment] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [remediatingId, setRemediatingId] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  // Threaded collaboration comments
+  
   const [newCommentText, setNewCommentText] = useState("");
   const [postingComment, setPostingComment] = useState(false);
 
-  // Certificate modal
+  
   const [certificateData, setCertificateData] = useState<any>(null);
   const [showCertModal, setShowCertModal] = useState(false);
   const [copiedHash, setCopiedHash] = useState(false);
 
-  // Direct draft edit mode
+  
   const [isEditing, setIsEditing] = useState(false);
   const [editedContent, setEditedContent] = useState("");
   const [editSummary, setEditSummary] = useState("");
@@ -158,7 +158,7 @@ function ReviewContent() {
     }
   }, [docId]);
 
-  // 1-Click Context-Preserving Remediation
+  
   const handleApplyRemediation = async (issueId: string) => {
     if (!document) return;
     setRemediatingId(issueId);
@@ -183,7 +183,7 @@ function ReviewContent() {
     }
   };
 
-  // Submit manual draft revision
+  
   const handleSaveRevision = async () => {
     if (!document) return;
     try {
@@ -206,7 +206,7 @@ function ReviewContent() {
     }
   };
 
-  // Add threaded comment
+  
   const handleAddComment = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!document || !newCommentText.trim()) return;
@@ -232,7 +232,7 @@ function ReviewContent() {
     }
   };
 
-  // Submit review decision
+  
   const handleReview = async (status: string) => {
     if (!document) return;
     setSubmitting(true);
@@ -265,7 +265,7 @@ function ReviewContent() {
     }
   };
 
-  // Fetch certificate
+  
   const handleViewCertificate = async () => {
     if (!document) return;
     try {
@@ -289,7 +289,7 @@ function ReviewContent() {
     );
   }
 
-  // Queue Selector View (when no docId specified)
+  
   if (!document) {
     return (
       <div className="min-h-screen bg-[#f1f2fa] text-[#1f1823]">
@@ -365,10 +365,10 @@ function ReviewContent() {
     <div className="min-h-screen bg-[#f1f2fa] text-[#1f1823]">
       <Navbar />
 
-      {/* Role Switcher & Telemetry Ribbon Cushion */}
+      {}
       <div className="sticky top-[68px] z-30 px-4 sm:px-6 py-2.5 bg-[#f1f2fa]/95 backdrop-blur-md">
         <div className="max-w-7xl mx-auto clay-cushion !rounded-[24px] !bg-[#fffdf7] px-4 py-2.5 flex flex-col md:flex-row items-center justify-between gap-3 text-xs">
-          {/* Active Persona Pill Selector */}
+          {}
           <div className="flex items-center gap-2.5">
             <span className="font-extrabold text-[#1f1823]">Active Persona:</span>
             <div className="flex bg-[#f1f2fa] rounded-full p-1 gap-1 shadow-inner">
@@ -408,7 +408,7 @@ function ReviewContent() {
             </div>
           </div>
 
-          {/* Telemetry Chips & Certificate Trigger */}
+          {}
           <div className="flex items-center gap-2.5">
             <div className="px-3 py-1 rounded-full bg-[#f1f2fa] font-bold text-[#1f1823] shadow-inner text-[11px]">
               Version: <strong className="text-[#1f1823]">v{document.version || 1}</strong>
@@ -430,9 +430,9 @@ function ReviewContent() {
         </div>
       </div>
 
-      {/* Main Review Studio */}
+      {}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 py-6 md:py-8 space-y-6">
-        {/* Navigation & Tab Toggle */}
+        {}
         <div className="flex flex-wrap items-center justify-between gap-3">
           <Link
             href="/dashboard"
@@ -476,11 +476,11 @@ function ReviewContent() {
         )}
 
         <div className="grid lg:grid-cols-3 gap-6">
-          {/* LEFT 2 COLUMNS: CONTENT VIEWER & COLLABORATION */}
+          {}
           <div className="lg:col-span-2 space-y-6">
             {viewTab === "document" ? (
               <div className="clay-tray p-6 sm:p-8 space-y-5">
-                {/* Document Header & State */}
+                {}
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[#e6e8f4]">
                   <div>
                     <h1 className="text-xl sm:text-2xl font-extrabold text-[#1f1823] mb-1">{document.title}</h1>
@@ -528,7 +528,7 @@ function ReviewContent() {
                   </div>
                 </div>
 
-                {/* Multimodal Asset Preview */}
+                {}
                 {document.image_url && (
                   <div className="clay-well p-4 space-y-2">
                     <span className="text-xs font-bold text-[#1f1823] flex items-center gap-1.5">
@@ -550,7 +550,7 @@ function ReviewContent() {
                   </div>
                 )}
 
-                {/* Main Content: Viewer or Editor */}
+                {}
                 {!isEditing ? (
                   <div className="clay-well-cream p-5 sm:p-6 space-y-3">
                     <div className="flex items-center justify-between text-xs text-[#3b3240]">
@@ -589,7 +589,7 @@ function ReviewContent() {
                 )}
               </div>
             ) : (
-              /* REVISION HISTORY TAB */
+              
               <div className="clay-tray p-6 sm:p-8 space-y-4">
                 <h3 className="text-base font-extrabold text-[#1f1823] flex items-center gap-2">
                   <History className="w-5 h-5 text-[#1f1823]" />
@@ -618,7 +618,7 @@ function ReviewContent() {
               </div>
             )}
 
-            {/* REVIEW DECISION ACTION PANEL */}
+            {}
             <div className="clay-cushion !bg-[#fffdf7] !rounded-[32px] p-6 sm:p-8 space-y-4">
               <div>
                 <h2 className="text-lg font-extrabold text-[#1f1823] flex items-center gap-2">
@@ -669,7 +669,7 @@ function ReviewContent() {
               </div>
             </div>
 
-            {/* THREADED COLLABORATION COMMENTS */}
+            {}
             <div className="clay-cushion !bg-[#fffdf7] !rounded-[32px] p-6 sm:p-8 space-y-4">
               <h3 className="text-base font-extrabold text-[#1f1823] flex items-center gap-2">
                 <MessageSquare className="w-4 h-4 text-[#1f1823]" />
@@ -714,7 +714,7 @@ function ReviewContent() {
             </div>
           </div>
 
-          {/* RIGHT COLUMN: AI FINDINGS & 1-CLICK REMEDIATION */}
+          {}
           <div className="space-y-4">
             <div className="clay-tray p-6 space-y-4 sticky top-[135px]">
               <div className="flex items-center justify-between pb-3 border-b border-[#e6e8f4]">
@@ -778,7 +778,7 @@ function ReviewContent() {
                         </p>
                       </div>
 
-                      {/* 1-Click Fix Button */}
+                      {}
                       {!issue.resolved && (
                         <button
                           type="button"
@@ -814,7 +814,7 @@ function ReviewContent() {
         </div>
       </main>
 
-      {/* OFFICIAL COMPLIANCE CERTIFICATE MODAL */}
+      {}
       {showCertModal && certificateData && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#1f1823]/50 backdrop-blur-sm p-4 animate-fadeIn">
           <div className="clay-tray !bg-[#fffdf7] !rounded-[40px] border-4 border-[#f6a3ca]/50 max-w-xl w-full p-6 sm:p-8 shadow-2xl relative text-center space-y-5">

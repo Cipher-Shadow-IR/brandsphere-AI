@@ -8,7 +8,7 @@ from PIL import Image
 
 from .models import GuidelineModel, ApprovedFactModel, GlossaryTermModel, BrandAssetModel
 
-# Approved brand color palette default definitions
+
 APPROVED_BRAND_PALETTE = [
     {"name": "Obsidian Deep", "hex": "#020617", "rgb": (2, 6, 23)},
     {"name": "Slate 900", "hex": "#0F172A", "rgb": (15, 23, 42)},
@@ -34,7 +34,7 @@ def hex_to_rgb(hex_str: str) -> Tuple[int, int, int]:
 
 
 def relative_luminance(rgb: Tuple[int, int, int]) -> float:
-    """Calculate WCAG 2.1 relative luminance for RGB."""
+    
     normalized = []
     for c in rgb:
         v = c / 255.0
@@ -46,7 +46,7 @@ def relative_luminance(rgb: Tuple[int, int, int]) -> float:
 
 
 def calculate_contrast_ratio(rgb1: Tuple[int, int, int], rgb2: Tuple[int, int, int]) -> float:
-    """Calculate WCAG 2.1 contrast ratio between two colors."""
+    
     l1 = relative_luminance(rgb1)
     l2 = relative_luminance(rgb2)
     lighter = max(l1, l2)
@@ -73,7 +73,7 @@ def count_syllables(word: str) -> int:
 
 
 def compute_readability(text: str) -> Dict[str, Any]:
-    """Computes Flesch Reading Ease & Flesch-Kincaid Grade Level."""
+    
     sentences = [s.strip() for s in re.split(r'[.!?]+', text) if s.strip()]
     words = re.findall(r'\b[A-Za-z]+\b', text)
     num_sentences = max(1, len(sentences))
@@ -83,11 +83,11 @@ def compute_readability(text: str) -> Dict[str, Any]:
     words_per_sentence = num_words / num_sentences
     syllables_per_word = total_syllables / num_words
 
-    # Flesch Reading Ease Formula
+    
     fre = 206.835 - (1.015 * words_per_sentence) - (84.6 * syllables_per_word)
     fre = max(0.0, min(100.0, round(fre, 1)))
 
-    # Flesch-Kincaid Grade Level Formula
+    
     fkgl = (0.39 * words_per_sentence) + (11.8 * syllables_per_word) - 15.59
     fkgl = max(1.0, round(fkgl, 1))
 
@@ -101,18 +101,13 @@ def compute_readability(text: str) -> Dict[str, Any]:
 
 
 def analyze_content(content: str, db: Optional[Session] = None) -> List[Dict[str, Any]]:
-    """
-    Intelligent pre-publication brand governance scanner.
-    Preserves exact backward compatibility with initial baseline heuristics
-    while adding deep RAG-style knowledge base alignment, glossary checks,
-    and readability metrics.
-    """
+    
     issues = []
     content_lower = content.lower()
 
-    # -------------------------------------------------------------
-    # 1. BASELINE RULES (Kept 100% intact for regression testing)
-    # -------------------------------------------------------------
+    
+    
+    
     if any(word in content_lower for word in ["fastest", "#1", "industry-first", "best-in-class"]):
         issues.append({
             "id": str(uuid.uuid4()),
@@ -169,16 +164,16 @@ def analyze_content(content: str, db: Optional[Session] = None) -> List[Dict[str
             "original_text": None
         })
 
-    # -------------------------------------------------------------
-    # 2. EXTENDED DYNAMIC KNOWLEDGE BASE & GLOSSARY CHECKS
-    # -------------------------------------------------------------
+    
+    
+    
     if db is not None:
         try:
-            # Check custom terminology glossary in database
+            
             glossary_terms = db.query(GlossaryTermModel).all()
             for g in glossary_terms:
                 term_clean = g.term.lower().strip()
-                # Skip words already caught by baseline to avoid duplicate issue keys
+                
                 if term_clean in ["legacy", "old version"]:
                     continue
                 if re.search(r'\b' + re.escape(term_clean) + r'\b', content_lower):
@@ -195,7 +190,7 @@ def analyze_content(content: str, db: Optional[Session] = None) -> List[Dict[str
                         "original_text": g.term
                     })
 
-            # Check ungrounded absolute claims against approved facts
+            
             absolute_phrases = ["guaranteed 100%", "zero downtime", "cheapest in the world", "unbeatable price", "flawless security"]
             for phrase in absolute_phrases:
                 if phrase in content_lower:
@@ -212,7 +207,7 @@ def analyze_content(content: str, db: Optional[Session] = None) -> List[Dict[str
                         "original_text": phrase
                     })
 
-            # Check cognitive accessibility: sentences > 35 words
+            
             sentences = [s.strip() for s in re.split(r'[.!?]+', content) if s.strip()]
             for s in sentences:
                 words = s.split()
@@ -229,29 +224,41 @@ def analyze_content(content: str, db: Optional[Session] = None) -> List[Dict[str
                         "resolved": False,
                         "original_text": s[:80] + "..."
                     })
-                    break  # Flag at most one sentence to avoid cluttering
+                    break  
 
         except Exception as e:
-            # Fallback gracefully without breaking main pipeline
+            
             pass
+
+    
+    
+    
+    try:
+        from .rag_engine import rag_engine
+        if rag_engine and rag_engine.is_active:
+            semantic_hits = rag_engine.query_semantic_knowledge(content[:1000], top_k=3)
+            if semantic_hits:
+                top_hit = semantic_hits[0].get("payload", {})
+                for iss in issues:
+                    if iss.get("type") == "claim" and not iss.get("vector_grounding"):
+                        ref = top_hit.get("reference") or top_hit.get("title") or "Enterprise Knowledge Base"
+                        iss["vector_grounding"] = f"{top_hit.get('title', 'Policy')}: {ref}"
+    except Exception:
+        pass
 
     return issues
 
 
 def analyze_image_bytes(image_bytes: bytes) -> Dict[str, Any]:
-    """
-    Multimodal visual auditor using Pillow.
-    Extracts dominant color palette, checks color distance against approved brand palette,
-    and verifies WCAG 2.1 contrast compliance.
-    """
+    
     try:
         image = Image.open(io.BytesIO(image_bytes))
         image = image.convert("RGB")
         image.thumbnail((150, 150))
 
-        # Color quantization to extract top dominant colors
+        
         quantized = image.quantize(colors=6, method=Image.Quantize.FASTOCTREE)
-        palette = quantized.getpalette()[:18]  # top 6 colors * 3 (RGB)
+        palette = quantized.getpalette()[:18]  
         
         dominant_rgbs = []
         for i in range(0, len(palette), 3):
@@ -260,7 +267,7 @@ def analyze_image_bytes(image_bytes: bytes) -> Dict[str, Any]:
 
         dominant_hexes = [rgb_to_hex(*c) for c in dominant_rgbs]
 
-        # Calculate contrast ratio between first two most dominant colors
+        
         if len(dominant_rgbs) >= 2:
             contrast_ratio = calculate_contrast_ratio(dominant_rgbs[0], dominant_rgbs[1])
         else:
@@ -268,15 +275,15 @@ def analyze_image_bytes(image_bytes: bytes) -> Dict[str, Any]:
 
         contrast_pass = contrast_ratio >= 4.5
 
-        # Measure palette alignment with approved brand colors
+        
         on_brand_count = 0
         for rgb in dominant_rgbs:
-            # Check minimum Euclidean distance to any approved brand color
+            
             min_dist = min(
                 ((rgb[0]-b["rgb"][0])**2 + (rgb[1]-b["rgb"][1])**2 + (rgb[2]-b["rgb"][2])**2)**0.5
                 for b in APPROVED_BRAND_PALETTE
             )
-            if min_dist < 90:  # within threshold
+            if min_dist < 90:  
                 on_brand_count += 1
 
         palette_score = round((on_brand_count / max(1, len(dominant_rgbs))) * 100, 1)
@@ -315,6 +322,19 @@ def analyze_image_bytes(image_bytes: bytes) -> Dict[str, Any]:
             recommendations.append("Palette alignment conforms to enterprise visual token guidelines.")
         else:
             recommendations.append("Consider applying BrandSphere brand grading overlay to reinforce visual identity.")
+
+        
+        try:
+            from .llm_engine import llm_engine
+            if llm_engine and llm_engine.is_gemini_active():
+                multimodal_res = llm_engine.audit_image_multimodal(image_bytes)
+                if multimodal_res:
+                    if "multimodal_summary" in multimodal_res:
+                        recommendations.insert(0, f"Gemini 1.5 Flash: {multimodal_res['multimodal_summary']}")
+                    if "ai_recommendations" in multimodal_res and isinstance(multimodal_res["ai_recommendations"], list):
+                        recommendations.extend(multimodal_res["ai_recommendations"])
+        except Exception:
+            pass
 
         return {
             "dominant_colors": dominant_hexes,

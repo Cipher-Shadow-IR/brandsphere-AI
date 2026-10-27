@@ -45,7 +45,7 @@ export default function UploadPage() {
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<any>(null);
 
-  // Quick Demo Presets
+  
   const loadPreset = (type: "high_risk" | "enterprise" | "social") => {
     if (type === "high_risk") {
       setFormData({
@@ -74,7 +74,7 @@ export default function UploadPage() {
     }
   };
 
-  // Document File Upload (.txt / .md)
+  
   const handleDocFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -93,7 +93,7 @@ export default function UploadPage() {
     reader.readAsText(file);
   };
 
-  // Image Upload & Visual Analysis
+  
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -174,7 +174,7 @@ export default function UploadPage() {
       <Navbar />
 
       <main className="max-w-5xl mx-auto px-4 sm:px-6 py-8 md:py-12 space-y-8">
-        {/* Header Ribbon */}
+        {}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-2">
           <div>
             <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#f6a3ca] text-[#1f1823] text-xs font-bold shadow-sm mb-2">
@@ -190,7 +190,7 @@ export default function UploadPage() {
             </p>
           </div>
 
-          {/* Quick Demo Preset Cushions */}
+          {}
           <div className="flex flex-col sm:items-end gap-2 shrink-0">
             <span className="text-xs text-[#3b3240] font-bold">Load Demo Presets:</span>
             <div className="flex flex-wrap items-center gap-2">
@@ -238,7 +238,7 @@ export default function UploadPage() {
         {!result ? (
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="clay-tray p-6 sm:p-10 space-y-6">
-              {/* Row 1: Title & Author */}
+              {}
               <div className="grid md:grid-cols-2 gap-5">
                 <div>
                   <label className="block text-xs font-bold uppercase tracking-wider text-[#1f1823] mb-2">
@@ -268,7 +268,7 @@ export default function UploadPage() {
                 </div>
               </div>
 
-              {/* Row 2: Format & File Import */}
+              {}
               <div className="grid md:grid-cols-2 gap-5">
                 <div>
                   <label className="block text-xs font-bold uppercase tracking-wider text-[#1f1823] mb-2">
@@ -308,7 +308,7 @@ export default function UploadPage() {
                 </div>
               </div>
 
-              {/* Row 3: Content Body */}
+              {}
               <div>
                 <div className="flex items-center justify-between mb-2">
                   <label className="text-xs font-bold uppercase tracking-wider text-[#1f1823]">
@@ -328,7 +328,7 @@ export default function UploadPage() {
                 />
               </div>
 
-              {/* Multimodal Visual Audit Section */}
+              {}
               <div className="pt-4 border-t border-[#e6e8f4]">
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-2">
@@ -449,7 +449,7 @@ export default function UploadPage() {
             </button>
           </form>
         ) : (
-          /* Result Display */
+          
           <div className="space-y-6">
             <div className="clay-cushion-mint p-6 sm:p-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div>
@@ -477,7 +477,7 @@ export default function UploadPage() {
               </div>
             </div>
 
-            {/* Issues Breakdown */}
+            {}
             {result.document.issues && result.document.issues.length > 0 && (
               <div className="space-y-3">
                 <h3 className="text-base font-extrabold text-[#1f1823] flex items-center gap-2">
@@ -533,7 +533,7 @@ export default function UploadPage() {
               </div>
             )}
 
-            {/* CTAs */}
+            {}
             <div className="flex flex-col sm:flex-row items-center gap-4 pt-2">
               <button
                 type="button"

@@ -62,7 +62,7 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* Custom Soft Clay Scrollbar */
+
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
@@ -79,12 +79,9 @@ body {
   background: #b6bad4;
 }
 
-/* =========================================================================
-   CLAYMORPHISM CORE SURFACES & SHADOWS
-   Broad light from upper-left with light upper-left inset & dark lower-right inset
-   ========================================================================= */
 
-/* 1. Large Cream Reading Tray */
+
+
 .clay-tray {
   background-color: var(--dp-color-surface);
   border-radius: var(--dp-radius-tray);
@@ -96,7 +93,7 @@ body {
   border: 1px solid rgba(255, 255, 255, 0.8);
 }
 
-/* 2. Soft Inflated Cushions */
+
 .clay-cushion {
   background-color: var(--dp-color-surface);
   border-radius: var(--dp-radius-surface);
@@ -119,7 +116,7 @@ body {
     inset -3px -3px 8px rgba(56, 49, 57, 0.07);
 }
 
-/* Colored Cushion Roles */
+
 .clay-cushion-pink {
   background-color: var(--dp-color-accent);
   border-radius: var(--dp-radius-surface);
@@ -180,7 +177,7 @@ body {
   color: var(--dp-color-ink);
 }
 
-/* 3. Recessed Wells (Form inputs, dropzones, code blocks) */
+
 .clay-well {
   background-color: #f7f6fd;
   border-radius: 20px;
@@ -199,7 +196,7 @@ body {
   border: 1px solid rgba(56, 49, 57, 0.05);
 }
 
-/* 4. Molded Pill Controls & Buttons */
+
 .clay-pill-primary {
   background-color: var(--dp-color-accent);
   color: var(--dp-color-ink);
@@ -323,7 +320,7 @@ body {
   cursor: pointer;
 }
 
-/* Reduced Motion Safety */
+
 @media (prefers-reduced-motion: reduce) {
   *, ::before, ::after {
     animation-duration: 0.01ms !important;

@@ -20,7 +20,7 @@ class DocumentModel(Base):
     status = Column(String(50), default="pending_review", nullable=False, index=True)
     created_at = Column(String(50), default=utc_now_iso, nullable=False)
 
-    # Enhanced fields (backward compatible with defaults)
+    
     version = Column(Integer, default=1, nullable=False)
     readability_score = Column(Float, default=70.0, nullable=True)
     wcag_score = Column(Float, default=100.0, nullable=True)
@@ -141,7 +141,7 @@ class GuidelineModel(Base):
 
     id = Column(String(36), primary_key=True, index=True)
     name = Column(String(255), nullable=False)
-    category = Column(String(100), nullable=False, index=True)  # claims, tone, terminology, visual, accessibility
+    category = Column(String(100), nullable=False, index=True)  
     version = Column(String(50), default="v1.0", nullable=False)
     description = Column(Text, nullable=False)
     rule_pattern = Column(Text, nullable=True)
@@ -194,7 +194,7 @@ class GlossaryTermModel(Base):
     id = Column(String(36), primary_key=True, index=True)
     term = Column(String(255), nullable=False, index=True)
     replacement = Column(String(255), nullable=False)
-    category = Column(String(50), default="deprecated", nullable=False)  # deprecated, preferred, prohibited
+    category = Column(String(50), default="deprecated", nullable=False)  
     note = Column(Text, nullable=True)
     created_at = Column(String(50), default=utc_now_iso, nullable=False)
 
@@ -214,7 +214,7 @@ class BrandAssetModel(Base):
 
     id = Column(String(36), primary_key=True, index=True)
     asset_name = Column(String(255), nullable=False)
-    asset_type = Column(String(50), nullable=False)  # color, logo, font, spacing
+    asset_type = Column(String(50), nullable=False)  
     value = Column(String(255), nullable=False)
     description = Column(Text, nullable=True)
     created_at = Column(String(50), default=utc_now_iso, nullable=False)

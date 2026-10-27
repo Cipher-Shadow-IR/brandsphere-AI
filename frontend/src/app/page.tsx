@@ -31,11 +31,9 @@ export default function Home() {
       <Navbar />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 pt-6 pb-20 space-y-12">
-        {/* =========================================================================
-            SECTION 1: HERO (Pink Cushion on Left + Interactive Molded Object on Right)
-            ========================================================================= */}
+        {}
         <section className="grid lg:grid-cols-12 gap-6 lg:gap-8 items-stretch pt-4">
-          {/* Large Pink Cushion with Headline and Actions */}
+          {}
           <div className="lg:col-span-7 clay-cushion-pink p-8 sm:p-12 flex flex-col justify-between space-y-6 border border-[#f78ec0]">
             <div className="space-y-4">
               <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#fffdf7] text-[#1f1823] text-xs font-black shadow-[2px_3px_8px_rgba(56,49,57,0.08),inset_1px_1px_2px_rgba(255,255,255,0.9)] border border-[#e2dfd5]">
@@ -56,7 +54,7 @@ export default function Home() {
               </p>
             </div>
 
-            {/* Action Buttons */}
+            {}
             <div className="flex flex-wrap items-center gap-3.5 pt-2">
               <Link
                 href="/upload"
@@ -83,9 +81,9 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Right Side: Interactive Claymorphic Live Simulator (Balanced & Filled Spacing) */}
+          {}
           <div className="lg:col-span-5 clay-cushion !bg-[#fffdf7] p-6 sm:p-7 flex flex-col justify-between gap-4 border border-[#e2dfd5]">
-            {/* Header & Tabs */}
+            {}
             <div className="flex items-center justify-between pb-3 border-b border-[#e6e8f4]">
               <div className="flex items-center gap-2">
                 <span className="w-3 h-3 rounded-full bg-[#f6a3ca] shadow-sm" />
@@ -119,7 +117,7 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Document Draft Well */}
+            {}
             <div className="clay-well-cream p-4 text-xs sm:text-sm leading-relaxed text-[#1f1823] border border-[#e2dfd5] space-y-1.5">
               <div className="flex items-center justify-between">
                 <span className="text-[10px] uppercase font-black tracking-widest text-[#5a5061]">
@@ -156,7 +154,7 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Policy Action / Remediation Card */}
+            {}
             {demoStep === "flagged" ? (
               <div className="clay-cushion-yellow !rounded-2xl p-4 space-y-2.5 border border-[#fae089]">
                 <div className="flex items-center justify-between">
@@ -198,7 +196,7 @@ export default function Home() {
               </div>
             )}
 
-            {/* Before vs After Mini Transformation Preview */}
+            {}
             <div className="clay-well p-3.5 rounded-2xl border border-[#d6d9ea] space-y-2">
               <div className="flex items-center justify-between text-[10px] uppercase font-black tracking-widest text-[#5a5061]">
                 <span>Transformation Audit</span>
@@ -229,7 +227,7 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Live Governance Telemetry Bar */}
+            {}
             <div className="grid grid-cols-4 gap-2 text-center pt-0.5">
               <div className="clay-well p-2 rounded-xl border border-[#d6d9ea]">
                 <span className="block text-[9px] font-bold text-[#5a5061] uppercase tracking-wider">Reading</span>
@@ -259,11 +257,9 @@ export default function Home() {
           </div>
         </section>
 
-        {/* =========================================================================
-            SECTION 2: SUPPORTING PASTEL CUSHIONS BENEATH HERO (Responsive Clamp & Tabular Nums)
-            ========================================================================= */}
+        {}
         <section className="grid grid-cols-1 md:grid-cols-3 gap-5 sm:gap-6">
-          {/* Metric 1 */}
+          {}
           <div className="clay-cushion-mint p-5 sm:p-6 flex items-center gap-4 border border-[#9ee2c5] min-w-0 overflow-hidden">
             <div className="px-3.5 py-3 rounded-2xl bg-[#fffdf7] flex items-center justify-center text-[clamp(1.4rem,2.2vw,2rem)] font-black text-[#0e3b27] shadow-sm border border-[#9ee2c5]/60 text-center shrink-0 min-w-[76px] sm:min-w-[84px] [font-variant-numeric:tabular-nums]">
               80%
@@ -278,7 +274,7 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Metric 2 */}
+          {}
           <div className="clay-cushion-lavender p-5 sm:p-6 flex items-center gap-4 border border-[#caaef2] min-w-0 overflow-hidden">
             <div className="px-3.5 py-3 rounded-2xl bg-[#fffdf7] flex items-center justify-center text-[clamp(1.4rem,2.2vw,2rem)] font-black text-[#2d1b54] shadow-sm border border-[#caaef2]/60 text-center shrink-0 min-w-[88px] sm:min-w-[96px] [font-variant-numeric:tabular-nums]">
               99.5%
@@ -293,7 +289,7 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Metric 3 */}
+          {}
           <div className="clay-cushion-yellow p-5 sm:p-6 flex items-center gap-4 border border-[#fae089] min-w-0 overflow-hidden">
             <div className="px-3.5 py-3 rounded-2xl bg-[#fffdf7] flex items-center justify-center text-[clamp(1.4rem,2.2vw,2rem)] font-black text-[#473503] shadow-sm border border-[#fae089]/60 text-center shrink-0 min-w-[76px] sm:min-w-[84px] [font-variant-numeric:tabular-nums]">
               100%
@@ -309,9 +305,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* =========================================================================
-            SECTION 3: SHARED CREAM TRAY (Unequal Feature Arrangement)
-            ========================================================================= */}
+        {}
         <section className="clay-tray p-8 sm:p-12 space-y-8">
           <div>
             <span className="text-xs uppercase font-extrabold tracking-widest text-[#3b3240]">
@@ -326,7 +320,7 @@ export default function Home() {
           </div>
 
           <div className="grid lg:grid-cols-12 gap-6 items-stretch">
-            {/* Unequal: Large Feature on Left */}
+            {}
             <div className="lg:col-span-6 clay-cushion-blue p-8 flex flex-col justify-between space-y-6">
               <div className="space-y-3">
                 <div className="w-12 h-12 rounded-2xl bg-[#fffdf7] flex items-center justify-center text-[#1f1823] shadow-sm">
@@ -343,7 +337,7 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Smaller Stacked Features on Right */}
+            {}
             <div className="lg:col-span-6 flex flex-col justify-between gap-6">
               <div className="clay-cushion-lavender p-6 flex flex-col justify-between space-y-3">
                 <div className="flex items-center gap-3">
@@ -372,9 +366,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* =========================================================================
-            SECTION 4: LAVENDER DECISION & PERSONA TRAY (Horizontal Shelves)
-            ========================================================================= */}
+        {}
         <section className="clay-cushion-lavender p-8 sm:p-12 space-y-6">
           <div className="text-center max-w-2xl mx-auto mb-6">
             <span className="text-xs font-extrabold uppercase tracking-widest text-[#3b2c5e]">
@@ -386,7 +378,7 @@ export default function Home() {
           </div>
 
           <div className="space-y-4">
-            {/* Shelf 1 */}
+            {}
             <div className="clay-cushion !bg-[#fffdf7] p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div className="space-y-1">
                 <div className="flex items-center gap-2">
@@ -402,7 +394,7 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Shelf 2 */}
+            {}
             <div className="clay-cushion !bg-[#fffdf7] p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div className="space-y-1">
                 <div className="flex items-center gap-2">
@@ -418,7 +410,7 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Shelf 3 */}
+            {}
             <div className="clay-cushion !bg-[#fffdf7] p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div className="space-y-1">
                 <div className="flex items-center gap-2">
@@ -436,9 +428,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* =========================================================================
-            SECTION 5: CLOSING PINK CUSHION
-            ========================================================================= */}
+        {}
         <section className="clay-cushion-pink p-8 sm:p-12 text-center space-y-5">
           <h3 className="text-3xl sm:text-4xl font-extrabold text-[#1f1823]">
             Safeguard Your Brand Today
@@ -458,9 +448,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* =========================================================================
-            SECTION 6: CREAM FOOTER
-            ========================================================================= */}
+        {}
         <footer className="clay-tray !rounded-[36px] p-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[#3b3240]">
           <div>
             <strong className="text-[#1f1823]">Team CIPHER CODERS</strong> — Ishaan Ray &amp; Rishi Prajapati

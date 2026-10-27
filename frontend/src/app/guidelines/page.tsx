@@ -69,7 +69,7 @@ export default function GuidelinesPage() {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
 
-  // New item modal form states
+  
   const [showAddModal, setShowAddModal] = useState(false);
   const [submittingModal, setSubmittingModal] = useState(false);
   const [newGuideline, setNewGuideline] = useState({
@@ -236,7 +236,7 @@ export default function GuidelinesPage() {
       <Navbar />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 py-8 md:py-12 space-y-8">
-        {/* Header Ribbon */}
+        {}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-2">
           <div>
             <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#f6a3ca] text-[#1f1823] text-xs font-bold shadow-sm mb-2">
@@ -262,7 +262,7 @@ export default function GuidelinesPage() {
           </button>
         </div>
 
-        {/* Tab & Search Bar Cushion */}
+        {}
         <div className="clay-cushion !bg-[#fffdf7] !rounded-[28px] p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-center gap-1.5 p-1 bg-[#f1f2fa] rounded-full shadow-inner overflow-x-auto text-xs font-bold">
             <button
@@ -315,7 +315,7 @@ export default function GuidelinesPage() {
             </button>
           </div>
 
-          {/* Quick Search */}
+          {}
           <div className="relative w-full sm:w-64">
             <Search className="w-4 h-4 text-[#3b3240] absolute left-3.5 top-3 pointer-events-none" />
             <input
@@ -335,7 +335,7 @@ export default function GuidelinesPage() {
           </div>
         ) : (
           <div>
-            {/* TAB 1: POLICIES */}
+            {}
             {activeTab === "guidelines" && (
               <div className="grid md:grid-cols-2 gap-6">
                 {filteredGuidelines.map((g) => (
@@ -398,7 +398,7 @@ export default function GuidelinesPage() {
               </div>
             )}
 
-            {/* TAB 2: FACTS */}
+            {}
             {activeTab === "facts" && (
               <div className="space-y-4">
                 <div className="clay-cushion-mint p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-[#214d3b]">
@@ -447,7 +447,7 @@ export default function GuidelinesPage() {
               </div>
             )}
 
-            {/* TAB 3: GLOSSARY */}
+            {}
             {activeTab === "glossary" && (
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {filteredGlossary.map((term) => (
@@ -495,7 +495,7 @@ export default function GuidelinesPage() {
               </div>
             )}
 
-            {/* TAB 4: ASSETS & DESIGN TOKENS */}
+            {}
             {activeTab === "assets" && (
               <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                 {filteredAssets.map((asset) => (
@@ -532,7 +532,7 @@ export default function GuidelinesPage() {
         )}
       </main>
 
-      {/* CREATE ENTRY MODAL */}
+      {}
       {showAddModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#1f1823]/50 backdrop-blur-sm p-4 animate-fadeIn">
           <div className="clay-tray !bg-[#fffdf7] !rounded-[36px] max-w-lg w-full p-6 sm:p-8 shadow-2xl relative space-y-5">

@@ -69,7 +69,7 @@ export default function AnalyticsPage() {
       <Navbar />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 py-8 md:py-12 space-y-8">
-        {/* Header Ribbon */}
+        {}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 pb-2">
           <div>
             <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#f6a3ca] text-[#1f1823] text-xs font-bold shadow-sm mb-2">
@@ -102,9 +102,9 @@ export default function AnalyticsPage() {
           </div>
         ) : analytics ? (
           <div className="space-y-6">
-            {/* Overview KPI Cushions */}
+            {}
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-              {/* Total Documents */}
+              {}
               <div className="clay-cushion-blue p-5 flex flex-col justify-between space-y-2">
                 <div className="flex items-center justify-between">
                   <div className="w-10 h-10 rounded-2xl bg-[#fffdf7] flex items-center justify-center text-[#1f1823] shadow-sm">
@@ -118,7 +118,7 @@ export default function AnalyticsPage() {
                 </div>
               </div>
 
-              {/* Certified Approved */}
+              {}
               <div className="clay-cushion-mint p-5 flex flex-col justify-between space-y-2">
                 <div className="flex items-center justify-between">
                   <div className="w-10 h-10 rounded-2xl bg-[#fffdf7] flex items-center justify-center text-[#214d3b] shadow-sm">
@@ -134,7 +134,7 @@ export default function AnalyticsPage() {
                 </div>
               </div>
 
-              {/* Pending Review */}
+              {}
               <div className="clay-cushion-yellow p-5 flex flex-col justify-between space-y-2">
                 <div className="flex items-center justify-between">
                   <div className="w-10 h-10 rounded-2xl bg-[#fffdf7] flex items-center justify-center text-[#59470c] shadow-sm">
@@ -148,7 +148,7 @@ export default function AnalyticsPage() {
                 </div>
               </div>
 
-              {/* Violations Flagged */}
+              {}
               <div className="clay-cushion-pink p-5 flex flex-col justify-between space-y-2">
                 <div className="flex items-center justify-between">
                   <div className="w-10 h-10 rounded-2xl bg-[#fffdf7] flex items-center justify-center text-[#63192e] shadow-sm">
@@ -165,7 +165,7 @@ export default function AnalyticsPage() {
               </div>
             </div>
 
-            {/* Severity Breakdown Cushion */}
+            {}
             {analytics.severity_breakdown && Object.keys(analytics.severity_breakdown).length > 0 && (
               <div className="clay-cushion !bg-[#fffdf7] !rounded-[32px] p-6 space-y-3">
                 <h3 className="text-xs font-extrabold uppercase tracking-wider text-[#3b3240]">
@@ -191,9 +191,9 @@ export default function AnalyticsPage() {
               </div>
             )}
 
-            {/* Distribution and Guideline Clarity Index Grid */}
+            {}
             <div className="grid lg:grid-cols-2 gap-6">
-              {/* Issue Distribution by Category */}
+              {}
               <div className="clay-tray p-6 sm:p-8 space-y-4">
                 <div className="flex items-center justify-between pb-3 border-b border-[#e6e8f4]">
                   <h2 className="text-base font-extrabold text-[#1f1823] flex items-center gap-2">
@@ -233,7 +233,7 @@ export default function AnalyticsPage() {
                 </div>
               </div>
 
-              {/* Guideline Clarity Index */}
+              {}
               <div className="clay-tray p-6 sm:p-8 space-y-4">
                 <div className="flex items-center justify-between pb-3 border-b border-[#e6e8f4]">
                   <h2 className="text-base font-extrabold text-[#1f1823] flex items-center gap-2">
@@ -268,7 +268,7 @@ export default function AnalyticsPage() {
               </div>
             </div>
 
-            {/* Impact Horizon Callout */}
+            {}
             <div className="clay-cushion-pink p-8 sm:p-10 text-center space-y-4">
               <div>
                 <h3 className="text-xl sm:text-2xl font-extrabold text-[#1f1823]">

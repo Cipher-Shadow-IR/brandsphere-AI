@@ -11,7 +11,7 @@ from backend.app.main import app
 
 @pytest.fixture(scope="function")
 def test_db_session():
-    # Use a temporary SQLite database file for isolation
+    
     temp_db_fd, temp_db_path = tempfile.mkstemp(suffix=".db")
     os.close(temp_db_fd)
     

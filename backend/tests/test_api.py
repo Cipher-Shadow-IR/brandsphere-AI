@@ -31,14 +31,14 @@ def test_upload_document_success(client):
     assert doc["status"] == "pending_review"
     assert len(doc["issues"]) == data["issues_count"]
 
-    # Verify claim issue was detected ("fastest")
+    
     issue_types = [i["type"] for i in doc["issues"]]
     assert "claim" in issue_types
     assert "tone" in issue_types
 
 
 def test_upload_document_validation_errors(client):
-    # Empty title should fail with 422
+    
     response = client.post("/api/documents/upload", json={
         "title": "",
         "content": "Valid content",
@@ -46,7 +46,7 @@ def test_upload_document_validation_errors(client):
     })
     assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
 
-    # Missing content should fail with 422
+    
     response = client.post("/api/documents/upload", json={
         "title": "Title Only",
         "author": "Alice"
@@ -55,7 +55,7 @@ def test_upload_document_validation_errors(client):
 
 
 def test_get_documents_list(client):
-    # Upload two documents
+    
     client.post("/api/documents/upload", json={
         "title": "Doc 1",
         "content": "Content 1",
@@ -92,7 +92,7 @@ def test_get_document_by_id_success(client):
 def test_get_document_nonexistent_returns_404(client):
     random_id = str(uuid.uuid4())
     response = client.get(f"/api/documents/{random_id}")
-    # Verify that it returns real 404, not 200 with tuple body!
+    
     assert response.status_code == status.HTTP_404_NOT_FOUND
     assert response.json()["detail"] == "Document not found"
 
@@ -106,7 +106,7 @@ def test_review_status_transitions(client):
     doc_id = upload_res.json()["document"]["id"]
     assert upload_res.json()["document"]["status"] == "pending_review"
 
-    # Transition 1: Request Revision
+    
     rev_res = client.post("/api/reviews/submit", json={
         "document_id": doc_id,
         "reviewer_id": "rev-01",
@@ -119,7 +119,7 @@ def test_review_status_transitions(client):
     doc_after_revision = client.get(f"/api/documents/{doc_id}").json()["document"]
     assert doc_after_revision["status"] == "needs_revision"
 
-    # Transition 2: Approve
+    
     appr_res = client.post("/api/reviews/submit", json={
         "document_id": doc_id,
         "reviewer_id": "rev-02",
@@ -163,7 +163,7 @@ def test_submit_review_invalid_status_returns_422(client):
 
 
 def test_analytics_metrics(client):
-    # Upload 2 docs: 1 with superlative claim ("#1"), 1 simple
+    
     doc1 = client.post("/api/documents/upload", json={
         "title": "Doc 1",
         "content": "We are #1 in the market.",
@@ -176,7 +176,7 @@ def test_analytics_metrics(client):
         "author": "B"
     }).json()["document"]
 
-    # Approve doc 1
+    
     client.post("/api/reviews/submit", json={
         "document_id": doc1["id"],
         "reviewer_id": "rev-1",

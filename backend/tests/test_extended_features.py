@@ -4,13 +4,13 @@ from fastapi import status
 
 
 def test_guideline_crud_and_seeding(client):
-    # Test guidelines seeded
+    
     res = client.get("/api/guidelines")
     assert res.status_code == status.HTTP_200_OK
     guidelines = res.json()["guidelines"]
     assert len(guidelines) >= 5
 
-    # Create new guideline
+    
     new_guideline = {
         "name": "Social Media Hashtag Policy",
         "category": "claims",
@@ -24,12 +24,12 @@ def test_guideline_crud_and_seeding(client):
     assert create_res.status_code == status.HTTP_200_OK
     created_id = create_res.json()["guideline"]["id"]
 
-    # Verify present
+    
     res2 = client.get("/api/guidelines")
     ids = [g["id"] for g in res2.json()["guidelines"]]
     assert created_id in ids
 
-    # Delete guideline
+    
     del_res = client.delete(f"/api/guidelines/{created_id}")
     assert del_res.status_code == status.HTTP_200_OK
     assert del_res.json()["success"] is True
@@ -41,7 +41,7 @@ def test_approved_facts_library(client):
     facts = res.json()["facts"]
     assert len(facts) >= 1
 
-    # Add a custom verified fact
+    
     new_fact = {
         "topic": "SOC2 Certification",
         "claim_statement": "BrandSphere maintains Type II SOC2 Compliance certification.",
@@ -52,19 +52,19 @@ def test_approved_facts_library(client):
     assert post_res.status_code == status.HTTP_200_OK
     fact_id = post_res.json()["fact"]["id"]
 
-    # Delete
+    
     del_res = client.delete(f"/api/facts/{fact_id}")
     assert del_res.status_code == status.HTTP_200_OK
 
 
 def test_glossary_terms_and_enforcement(client):
-    # Check glossary seeded
+    
     res = client.get("/api/glossary")
     assert res.status_code == status.HTTP_200_OK
     terms = res.json()["glossary"]
     assert len(terms) >= 1
 
-    # Add a prohibited term
+    
     new_term = {
         "term": "buggy code",
         "replacement": "unstable release",
@@ -74,7 +74,7 @@ def test_glossary_terms_and_enforcement(client):
     add_res = client.post("/api/glossary", json=new_term)
     assert add_res.status_code == status.HTTP_200_OK
 
-    # Upload document with the term
+    
     doc_res = client.post("/api/documents/upload", json={
         "title": "Release Notes",
         "content": "This draft contains buggy code that needs fixing.",
@@ -86,7 +86,7 @@ def test_glossary_terms_and_enforcement(client):
 
 
 def test_remediation_and_revision_flow(client):
-    # Upload document with claim
+    
     doc_res = client.post("/api/documents/upload", json={
         "title": "Marketing Pitch",
         "content": "We built the fastest platform on earth.",
@@ -97,7 +97,7 @@ def test_remediation_and_revision_flow(client):
     issues = doc["issues"]
     claim_issue = next(i for i in issues if i["type"] == "claim")
 
-    # Apply 1-click remediation
+    
     rem_res = client.post(f"/api/documents/{doc_id}/apply-remediation", json={
         "issue_id": claim_issue["id"],
         "author_name": "Senior Editor",
@@ -108,12 +108,12 @@ def test_remediation_and_revision_flow(client):
     assert rem_data["success"] is True
     assert rem_data["new_version"] == 2
 
-    # Check revisions
+    
     rev_res = client.get(f"/api/documents/{doc_id}/revisions")
     assert rev_res.status_code == status.HTTP_200_OK
     assert len(rev_res.json()["revisions"]) >= 2
 
-    # Check audit trail
+    
     audit_res = client.get(f"/api/documents/{doc_id}/audit-trail")
     assert audit_res.status_code == status.HTTP_200_OK
     actions = [a["action"] for a in audit_res.json()["audit_trail"]]
@@ -128,7 +128,7 @@ def test_collaborative_threaded_comments(client):
     })
     doc_id = doc_res.json()["document"]["id"]
 
-    # Reviewer adds comment
+    
     com_res = client.post(f"/api/documents/{doc_id}/comments", json={
         "author": "Bob (Reviewer)",
         "role": "Reviewer",
@@ -136,7 +136,7 @@ def test_collaborative_threaded_comments(client):
     })
     assert com_res.status_code == status.HTTP_200_OK
 
-    # Fetch comments
+    
     list_res = client.get(f"/api/documents/{doc_id}/comments")
     assert list_res.status_code == status.HTTP_200_OK
     comments = list_res.json()["comments"]
@@ -152,7 +152,7 @@ def test_certified_publication_export(client):
     })
     doc_id = doc_res.json()["document"]["id"]
 
-    # Approve
+    
     client.post("/api/reviews/submit", json={
         "document_id": doc_id,
         "reviewer_id": "chief-officer",
@@ -160,7 +160,7 @@ def test_certified_publication_export(client):
         "comments": "Signed off."
     })
 
-    # Request Certificate
+    
     cert_res = client.get(f"/api/documents/{doc_id}/certificate")
     assert cert_res.status_code == status.HTTP_200_OK
     cert = cert_res.json()
@@ -178,7 +178,7 @@ def test_delete_document_and_cascading_cleanup(client):
     })
     doc_id = upload_res.json()["document"]["id"]
 
-    # Add a comment and review
+    
     client.post(f"/api/documents/{doc_id}/comments", json={
         "author": "Tester",
         "role": "Reviewer",
@@ -190,12 +190,12 @@ def test_delete_document_and_cascading_cleanup(client):
         "status": "needs_revision"
     })
 
-    # Delete the document
+    
     del_res = client.delete(f"/api/documents/{doc_id}")
     assert del_res.status_code == status.HTTP_200_OK
     assert del_res.json()["deleted_id"] == doc_id
 
-    # Confirm it is 404 now
+    
     get_res = client.get(f"/api/documents/{doc_id}")
     assert get_res.status_code == status.HTTP_404_NOT_FOUND
 
@@ -208,7 +208,7 @@ def test_seed_demo_documents_endpoint(client):
     assert data["seeded_count"] == 3
     assert len(data["documents"]) == 3
 
-    # Check docs are retrieved via GET /api/documents
+    
     list_res = client.get("/api/documents")
     assert list_res.status_code == status.HTTP_200_OK
     titles = [d["title"] for d in list_res.json()["documents"]]
