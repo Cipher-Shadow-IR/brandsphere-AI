@@ -230,10 +230,34 @@ def seed_default_knowledge_base(db: Optional[Session] = None):
             db.close()
 
 
+def ensure_sqlite_columns():
+    """Ensure missing columns in SQLite are automatically added on startup."""
+    try:
+        with engine.connect() as conn:
+            for table_name, table in Base.metadata.tables.items():
+                try:
+                    res = conn.exec_driver_sql(f"PRAGMA table_info({table_name})")
+                    existing_cols = [r[1] for r in res.fetchall()]
+                    for col in table.columns:
+                        if col.name not in existing_cols:
+                            col_type = "TEXT"
+                            type_str = str(col.type).upper()
+                            if "INT" in type_str:
+                                col_type = "INTEGER"
+                            elif "FLOAT" in type_str or "NUMERIC" in type_str:
+                                col_type = "FLOAT"
+                            conn.exec_driver_sql(f"ALTER TABLE {table_name} ADD COLUMN {col.name} {col_type}")
+                except Exception:
+                    pass
+    except Exception:
+        pass
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Ensure database schema is created/verified on startup
     Base.metadata.create_all(bind=engine)
+    ensure_sqlite_columns()
     seed_default_knowledge_base()
     yield
 
@@ -248,13 +272,14 @@ app = FastAPI(
 # Robust CORS Configuration: Avoid wildcard with allow_credentials=True
 configured_origins = os.getenv(
     "CORS_ORIGINS",
-    "http://localhost:3000,http://127.0.0.1:3000,http://localhost:8000,http://localhost:8001"
+    "http://localhost:3000,http://127.0.0.1:3000,http://localhost:8000,http://localhost:8001,http://0.0.0.0:3000,http://192.168.1.3:3000"
 )
 origins = [origin.strip() for origin in configured_origins.split(",") if origin.strip()]
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
+    allow_origin_regex=r"^https?://(localhost|127\.0\.0\.1|0\.0\.0\.0|192\.168\.\d+\.\d+|10\.\d+\.\d+\.\d+)(:\d+)?$",
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
     allow_headers=["*"],

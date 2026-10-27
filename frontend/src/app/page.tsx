@@ -15,13 +15,11 @@ import {
   CheckCircle2,
   Lock,
   AlertTriangle,
-  RefreshCw,
-  ExternalLink,
-  ChevronRight,
-  Eye,
   Zap,
-  SlidersHorizontal,
-  Check
+  Check,
+  ChevronRight,
+  PenTool,
+  Scale
 } from "lucide-react";
 import Navbar from "@/components/Navbar";
 
@@ -29,318 +27,456 @@ export default function Home() {
   const [demoStep, setDemoStep] = useState<"flagged" | "remediated">("flagged");
 
   return (
-    <div className="min-h-screen bg-ambient-mesh text-gray-200">
+    <div className="min-h-screen bg-[#f1f2fa] text-[#1f1823]">
       <Navbar />
 
-      {/* Hero Section */}
-      <main className="max-w-7xl mx-auto px-6 pt-16 pb-24">
-        {/* Top Transparency Tag */}
-        <div className="flex justify-center mb-6">
-          <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full border border-cyan-500/30 bg-cyan-500/10 text-cyan-300 text-xs font-medium shadow-[0_0_20px_rgba(6,182,212,0.15)] backdrop-blur-sm">
-            <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
-            <span className="font-semibold text-white">Responsible Brand Governance:</span>
-            <span>Local RAG Grounding • Human Sovereignty • Zero Data Retention</span>
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 pt-6 pb-20 space-y-12">
+        {/* =========================================================================
+            SECTION 1: HERO (Pink Cushion on Left + Interactive Molded Object on Right)
+            ========================================================================= */}
+        <section className="grid lg:grid-cols-12 gap-6 lg:gap-8 items-stretch pt-4">
+          {/* Large Pink Cushion with Headline and Actions */}
+          <div className="lg:col-span-7 clay-cushion-pink p-8 sm:p-12 flex flex-col justify-between space-y-6 border border-[#f78ec0]">
+            <div className="space-y-4">
+              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#fffdf7] text-[#1f1823] text-xs font-black shadow-[2px_3px_8px_rgba(56,49,57,0.08),inset_1px_1px_2px_rgba(255,255,255,0.9)] border border-[#e2dfd5]">
+                <span className="w-2.5 h-2.5 rounded-full bg-[#bd216b] animate-pulse" />
+                <span className="uppercase tracking-wider text-[11px]">Enterprise Governance Engine • Active</span>
+              </div>
+
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-[#1f1823] leading-[1.08]">
+                Intelligent Pre-Publication
+                <br />
+                <span className="text-[#801344]">
+                  Brand Governance
+                </span>
+              </h1>
+
+              <p className="text-base sm:text-lg text-[#1f1823] max-w-xl font-bold leading-relaxed">
+                Safeguard enterprise credibility in the age of autonomous content velocity. Detect ungrounded superlatives, off-brand tone drift, and visual WCAG failures before release with explainable citations and 1-click remediation.
+              </p>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex flex-wrap items-center gap-3.5 pt-2">
+              <Link
+                href="/upload"
+                className="clay-pill-secondary !bg-[#fffdf7] !text-[#1f1823] px-7 py-3.5 text-sm font-black flex items-center gap-2 shadow-lg border border-[#e2dfd5]"
+              >
+                <Sparkles className="w-4 h-4 text-[#1f1823]" />
+                <span>Launch Brand Scanner</span>
+                <ArrowRight className="w-4 h-4 ml-1" />
+              </Link>
+              <Link
+                href="/dashboard"
+                className="clay-pill-secondary !bg-[#f1f2fa] !text-[#1f1823] px-6 py-3.5 text-sm font-black flex items-center gap-2 border border-[#d6d9ea]"
+              >
+                <FileText className="w-4 h-4 text-[#1f1823]" />
+                <span>Operations Dashboard</span>
+              </Link>
+              <Link
+                href="/guidelines"
+                className="clay-pill-secondary !bg-[#ded0f9] !text-[#2d1b54] px-5 py-3.5 text-sm font-black flex items-center gap-2 border border-[#caaef2]"
+              >
+                <BookOpen className="w-4 h-4 text-[#2d1b54]" />
+                <span>Rule Book</span>
+              </Link>
+            </div>
           </div>
-        </div>
 
-        {/* Main Title & Subtitle */}
-        <div className="text-center max-w-4xl mx-auto mb-12">
-          <h1 className="text-5xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-white mb-6 leading-[1.1]">
-            Intelligent Pre-Publication
-            <br />
-            <span className="bg-gradient-to-r from-cyan-400 via-indigo-300 to-indigo-500 bg-clip-text text-transparent">
-              Brand Governance
+          {/* Right Side: Interactive Claymorphic Live Simulator (Balanced & Filled Spacing) */}
+          <div className="lg:col-span-5 clay-cushion !bg-[#fffdf7] p-6 sm:p-7 flex flex-col justify-between gap-4 border border-[#e2dfd5]">
+            {/* Header & Tabs */}
+            <div className="flex items-center justify-between pb-3 border-b border-[#e6e8f4]">
+              <div className="flex items-center gap-2">
+                <span className="w-3 h-3 rounded-full bg-[#f6a3ca] shadow-sm" />
+                <span className="text-xs font-black text-[#1f1823] uppercase tracking-wider">
+                  Live Remediation Simulator
+                </span>
+              </div>
+              <div className="flex items-center gap-1.5 p-1 rounded-full bg-[#e6e8f4] shadow-inner text-xs font-bold border border-[#d6d9ea]">
+                <button
+                  type="button"
+                  onClick={() => setDemoStep("flagged")}
+                  className={`px-3 py-1 rounded-full transition-all cursor-pointer ${
+                    demoStep === "flagged"
+                      ? "bg-[#ffd6e0] text-[#570f25] shadow-sm font-black border border-[#f78ec0]"
+                      : "text-[#3b3240] hover:text-[#1f1823] font-bold"
+                  }`}
+                >
+                  Flagged
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setDemoStep("remediated")}
+                  className={`px-3 py-1 rounded-full transition-all cursor-pointer ${
+                    demoStep === "remediated"
+                      ? "bg-[#c0efdc] text-[#0e3b27] shadow-sm font-black border border-[#9ee2c5]"
+                      : "text-[#3b3240] hover:text-[#1f1823] font-bold"
+                  }`}
+                >
+                  Certified
+                </button>
+              </div>
+            </div>
+
+            {/* Document Draft Well */}
+            <div className="clay-well-cream p-4 text-xs sm:text-sm leading-relaxed text-[#1f1823] border border-[#e2dfd5] space-y-1.5">
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] uppercase font-black tracking-widest text-[#5a5061]">
+                  Live Marketing Collateral Preview
+                </span>
+                <span className="text-[10px] font-bold text-[#5a5061]">v1.0 • Pre-flight</span>
+              </div>
+              <div className="pt-0.5">
+                {demoStep === "flagged" ? (
+                  <>
+                    <span>&quot;BrandSphere is officially the </span>
+                    <span className="px-1.5 py-0.5 rounded-md bg-[#ffd6e0] text-[#570f25] font-black border border-[#f78ec0] inline-block">
+                      #1 fastest cloud platform in the world!
+                    </span>
+                    <span> We have completely eliminated the </span>
+                    <span className="px-1.5 py-0.5 rounded-md bg-[#f9e7a8] text-[#473503] font-black border border-[#fae089] inline-block">
+                      legacy architecture
+                    </span>
+                    <span> to bring you guaranteed 100% zero downtime.&quot;</span>
+                  </>
+                ) : (
+                  <>
+                    <span>&quot;BrandSphere AI delivers up to an </span>
+                    <span className="px-1.5 py-0.5 rounded-md bg-[#c0efdc] text-[#0e3b27] font-black border border-[#9ee2c5] inline-block">
+                      80% reduction in review turnaround
+                    </span>
+                    <span> verified by the Inkloom 2026 Enterprise Study. Supported by certified </span>
+                    <span className="px-1.5 py-0.5 rounded-md bg-[#c0efdc] text-[#0e3b27] font-black border border-[#9ee2c5] inline-block">
+                      Governance Framework
+                    </span>
+                    <span> standards.&quot;</span>
+                  </>
+                )}
+              </div>
+            </div>
+
+            {/* Policy Action / Remediation Card */}
+            {demoStep === "flagged" ? (
+              <div className="clay-cushion-yellow !rounded-2xl p-4 space-y-2.5 border border-[#fae089]">
+                <div className="flex items-center justify-between">
+                  <span className="px-2.5 py-0.5 rounded-full bg-[#ffd6e0] text-[#570f25] text-[10px] font-black uppercase border border-[#f78ec0]">
+                    Critical Claim Flag
+                  </span>
+                  <span className="text-[11px] font-black text-[#473503]">Claims Policy §3.2</span>
+                </div>
+                <p className="text-xs text-[#1f1823] font-bold leading-snug">
+                  Superlative assertion detected without canonical fact benchmark citation.
+                </p>
+                <button
+                  type="button"
+                  onClick={() => setDemoStep("remediated")}
+                  className="clay-pill-mint w-full py-2.5 px-3 text-xs flex items-center justify-center gap-2 font-black border border-[#9ee2c5] shadow-sm cursor-pointer hover:brightness-105 active:scale-[0.99] transition-all"
+                >
+                  <Zap className="w-3.5 h-3.5 text-[#0e3b27]" />
+                  <span>1-Click Context Remediation</span>
+                </button>
+              </div>
+            ) : (
+              <div className="clay-cushion-mint !rounded-2xl p-4 flex items-center justify-between border border-[#9ee2c5]">
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-full bg-[#fffdf7] flex items-center justify-center shadow-sm border border-[#9ee2c5] shrink-0">
+                    <CheckCircle2 className="w-5 h-5 text-[#0e3b27]" />
+                  </div>
+                  <div>
+                    <span className="text-xs font-black text-[#0e3b27] block">Certified Compliant</span>
+                    <span className="text-[10px] text-[#134e34] font-mono font-bold">SHA-256: 8F42B18E9A...</span>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setDemoStep("flagged")}
+                  className="text-xs font-black text-[#0e3b27] underline cursor-pointer hover:text-[#1f1823] px-2 py-1"
+                >
+                  Reset Demo
+                </button>
+              </div>
+            )}
+
+            {/* Before vs After Mini Transformation Preview */}
+            <div className="clay-well p-3.5 rounded-2xl border border-[#d6d9ea] space-y-2">
+              <div className="flex items-center justify-between text-[10px] uppercase font-black tracking-widest text-[#5a5061]">
+                <span>Transformation Audit</span>
+                <span className={demoStep === "flagged" ? "text-[#570f25]" : "text-[#0e3b27]"}>
+                  {demoStep === "flagged" ? "Pending Approval" : "100% Policy Aligned"}
+                </span>
+              </div>
+              <div className="text-[11px] leading-relaxed font-mono">
+                {demoStep === "flagged" ? (
+                  <div className="flex items-center gap-2">
+                    <span className="px-1.5 py-0.5 rounded bg-[#ffd6e0] text-[#570f25] font-black line-through">
+                      #1 fastest cloud platform
+                    </span>
+                    <ArrowRight className="w-3.5 h-3.5 text-[#5a5061] shrink-0" />
+                    <span className="text-[#5a5061] italic font-sans text-xs">Awaiting ground truth citation</span>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-2">
+                    <span className="px-1.5 py-0.5 rounded bg-[#ffd6e0] text-[#570f25] font-black line-through">
+                      #1 fastest platform
+                    </span>
+                    <ArrowRight className="w-3.5 h-3.5 text-[#0e3b27] shrink-0" />
+                    <span className="px-1.5 py-0.5 rounded bg-[#c0efdc] text-[#0e3b27] font-black">
+                      80% turnaround (Inkloom Study)
+                    </span>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Live Governance Telemetry Bar */}
+            <div className="grid grid-cols-4 gap-2 text-center pt-0.5">
+              <div className="clay-well p-2 rounded-xl border border-[#d6d9ea]">
+                <span className="block text-[9px] font-bold text-[#5a5061] uppercase tracking-wider">Reading</span>
+                <strong className="text-xs font-black text-[#1f1823] [font-variant-numeric:tabular-nums]">
+                  {demoStep === "flagged" ? "74/100" : "82/100"}
+                </strong>
+              </div>
+              <div className="clay-well p-2 rounded-xl border border-[#d6d9ea]">
+                <span className="block text-[9px] font-bold text-[#5a5061] uppercase tracking-wider">Tone Drift</span>
+                <strong className={`text-xs font-black ${demoStep === "flagged" ? "text-[#570f25]" : "text-[#0e3b27]"}`}>
+                  {demoStep === "flagged" ? "Alert" : "0.0%"}
+                </strong>
+              </div>
+              <div className="clay-well p-2 rounded-xl border border-[#d6d9ea]">
+                <span className="block text-[9px] font-bold text-[#5a5061] uppercase tracking-wider">Contrast</span>
+                <strong className="text-xs font-black text-[#0e3b27] [font-variant-numeric:tabular-nums]">
+                  10.4:1
+                </strong>
+              </div>
+              <div className="clay-well p-2 rounded-xl border border-[#d6d9ea]">
+                <span className="block text-[9px] font-bold text-[#5a5061] uppercase tracking-wider">Status</span>
+                <strong className={`text-xs font-black ${demoStep === "flagged" ? "text-[#570f25]" : "text-[#0e3b27]"}`}>
+                  {demoStep === "flagged" ? "Blocked" : "Certified"}
+                </strong>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* =========================================================================
+            SECTION 2: SUPPORTING PASTEL CUSHIONS BENEATH HERO (Responsive Clamp & Tabular Nums)
+            ========================================================================= */}
+        <section className="grid grid-cols-1 md:grid-cols-3 gap-5 sm:gap-6">
+          {/* Metric 1 */}
+          <div className="clay-cushion-mint p-5 sm:p-6 flex items-center gap-4 border border-[#9ee2c5] min-w-0 overflow-hidden">
+            <div className="px-3.5 py-3 rounded-2xl bg-[#fffdf7] flex items-center justify-center text-[clamp(1.4rem,2.2vw,2rem)] font-black text-[#0e3b27] shadow-sm border border-[#9ee2c5]/60 text-center shrink-0 min-w-[76px] sm:min-w-[84px] [font-variant-numeric:tabular-nums]">
+              80%
+            </div>
+            <div className="min-w-0 flex-1">
+              <h4 className="font-black text-sm text-[#0e3b27] tracking-tight truncate sm:whitespace-normal">
+                Turnaround Reduction
+              </h4>
+              <p className="text-xs text-[#134e34] font-bold mt-0.5 leading-snug break-words">
+                Accelerated from 5 days to minutes
+              </p>
+            </div>
+          </div>
+
+          {/* Metric 2 */}
+          <div className="clay-cushion-lavender p-5 sm:p-6 flex items-center gap-4 border border-[#caaef2] min-w-0 overflow-hidden">
+            <div className="px-3.5 py-3 rounded-2xl bg-[#fffdf7] flex items-center justify-center text-[clamp(1.4rem,2.2vw,2rem)] font-black text-[#2d1b54] shadow-sm border border-[#caaef2]/60 text-center shrink-0 min-w-[88px] sm:min-w-[96px] [font-variant-numeric:tabular-nums]">
+              99.5%
+            </div>
+            <div className="min-w-0 flex-1">
+              <h4 className="font-black text-sm text-[#2d1b54] tracking-tight truncate sm:whitespace-normal">
+                Claim Accuracy
+              </h4>
+              <p className="text-xs text-[#41277a] font-bold mt-0.5 leading-snug break-words">
+                Grounded against verified fact sheets
+              </p>
+            </div>
+          </div>
+
+          {/* Metric 3 */}
+          <div className="clay-cushion-yellow p-5 sm:p-6 flex items-center gap-4 border border-[#fae089] min-w-0 overflow-hidden">
+            <div className="px-3.5 py-3 rounded-2xl bg-[#fffdf7] flex items-center justify-center text-[clamp(1.4rem,2.2vw,2rem)] font-black text-[#473503] shadow-sm border border-[#fae089]/60 text-center shrink-0 min-w-[76px] sm:min-w-[84px] [font-variant-numeric:tabular-nums]">
+              100%
+            </div>
+            <div className="min-w-0 flex-1">
+              <h4 className="font-black text-sm text-[#473503] tracking-tight truncate sm:whitespace-normal">
+                Cryptographic Audit
+              </h4>
+              <p className="text-xs text-[#5e4708] font-bold mt-0.5 leading-snug break-words">
+                Tamper-evident verification hash
+              </p>
+            </div>
+          </div>
+        </section>
+
+        {/* =========================================================================
+            SECTION 3: SHARED CREAM TRAY (Unequal Feature Arrangement)
+            ========================================================================= */}
+        <section className="clay-tray p-8 sm:p-12 space-y-8">
+          <div>
+            <span className="text-xs uppercase font-extrabold tracking-widest text-[#3b3240]">
+              Continuous Governance
             </span>
-          </h1>
-          <p className="text-lg sm:text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed font-normal">
-            Safeguarding Enterprise Credibility in the Era of Autonomous Content Velocity.
-            Eliminate ungrounded promotional superlatives, off-brand tone drift, and accessibility violations *before* release with explainable citations and 1-click remediation.
-          </p>
+            <h2 className="text-3xl font-extrabold text-[#1f1823] tracking-tight mt-1">
+              Core Governance Pillars
+            </h2>
+            <p className="text-sm text-[#3b3240] max-w-2xl mt-1">
+              Engineered to detect every vector of brand entropy before publication.
+            </p>
+          </div>
 
-          <div className="flex flex-wrap items-center justify-center gap-4 mt-8">
+          <div className="grid lg:grid-cols-12 gap-6 items-stretch">
+            {/* Unequal: Large Feature on Left */}
+            <div className="lg:col-span-6 clay-cushion-blue p-8 flex flex-col justify-between space-y-6">
+              <div className="space-y-3">
+                <div className="w-12 h-12 rounded-2xl bg-[#fffdf7] flex items-center justify-center text-[#1f1823] shadow-sm">
+                  <FileText className="w-6 h-6 text-[#1f1823]" />
+                </div>
+                <h3 className="text-2xl font-extrabold text-[#1f1823]">Claim Guard &amp; Fact Engine</h3>
+                <p className="text-sm text-[#1f1823] leading-relaxed">
+                  Automatically flags ungrounded promotional superlatives (&quot;fastest in the world&quot;, &quot;#1 rated&quot;) and cross-references assertions against the enterprise fact library to demand verifiable citations.
+                </p>
+              </div>
+
+              <div className="clay-well p-4 text-xs font-mono text-[#1f1823]">
+                Exact citation matching with approved metric tolerance.
+              </div>
+            </div>
+
+            {/* Smaller Stacked Features on Right */}
+            <div className="lg:col-span-6 flex flex-col justify-between gap-6">
+              <div className="clay-cushion-lavender p-6 flex flex-col justify-between space-y-3">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-[#fffdf7] flex items-center justify-center shadow-sm">
+                    <Palette className="w-5 h-5 text-[#1f1823]" />
+                  </div>
+                  <h4 className="text-lg font-bold text-[#1f1823]">Multimodal Visual Auditor</h4>
+                </div>
+                <p className="text-xs text-[#1f1823] leading-relaxed">
+                  Extracts dominant image palettes using computer vision, measures Euclidean distance from brand tokens, and checks WCAG 2.1 AA text-over-image contrast ratios (minimum 4.5:1).
+                </p>
+              </div>
+
+              <div className="clay-cushion-mint p-6 flex flex-col justify-between space-y-3">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-[#fffdf7] flex items-center justify-center shadow-sm">
+                    <Users className="w-5 h-5 text-[#1f1823]" />
+                  </div>
+                  <h4 className="text-lg font-bold text-[#1f1823]">Collaborative Review Studio</h4>
+                </div>
+                <p className="text-xs text-[#1f1823] leading-relaxed">
+                  Role-based review workflows for Creators, Reviewers, and Legal Admins with 1-click context-preserving remediation and threaded discussion notes.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* =========================================================================
+            SECTION 4: LAVENDER DECISION & PERSONA TRAY (Horizontal Shelves)
+            ========================================================================= */}
+        <section className="clay-cushion-lavender p-8 sm:p-12 space-y-6">
+          <div className="text-center max-w-2xl mx-auto mb-6">
+            <span className="text-xs font-extrabold uppercase tracking-widest text-[#3b2c5e]">
+              Human-In-The-Loop Sovereignty
+            </span>
+            <h2 className="text-3xl font-extrabold text-[#1f1823] mt-1">
+              Engineered for Every Stakeholder
+            </h2>
+          </div>
+
+          <div className="space-y-4">
+            {/* Shelf 1 */}
+            <div className="clay-cushion !bg-[#fffdf7] p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div className="space-y-1">
+                <div className="flex items-center gap-2">
+                  <span className="text-base font-extrabold text-[#1f1823]"><PenTool className="w-4 h-4 inline mr-1.5 text-[#1f1823]" />Content Creators &amp; Authors</span>
+                  <span className="px-2.5 py-0.5 rounded-full bg-[#ded0f9] text-[#3b2c5e] text-[10px] font-bold">Instant Feedback</span>
+                </div>
+                <p className="text-xs text-[#3b3240] leading-relaxed">
+                  Immediate pre-flight validation with context-preserving fixes instead of cryptic rejections.
+                </p>
+              </div>
+              <div className="flex items-center gap-1.5 text-xs font-bold text-[#214d3b] shrink-0">
+                <Check className="w-4 h-4 text-[#214d3b]" /> 1-Click fixes preserve voice
+              </div>
+            </div>
+
+            {/* Shelf 2 */}
+            <div className="clay-cushion !bg-[#fffdf7] p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div className="space-y-1">
+                <div className="flex items-center gap-2">
+                  <span className="text-base font-extrabold text-[#1f1823]"><Shield className="w-4 h-4 inline mr-1.5 text-[#1f1823]" />Brand &amp; Compliance Leads</span>
+                  <span className="px-2.5 py-0.5 rounded-full bg-[#c0efdc] text-[#214d3b] text-[10px] font-bold">Policy Control</span>
+                </div>
+                <p className="text-xs text-[#3b3240] leading-relaxed">
+                  Maintain policies, terminology glossaries, and truth libraries with full audit logs.
+                </p>
+              </div>
+              <div className="flex items-center gap-1.5 text-xs font-bold text-[#214d3b] shrink-0">
+                <Check className="w-4 h-4 text-[#214d3b]" /> Immutable version snapshots
+              </div>
+            </div>
+
+            {/* Shelf 3 */}
+            <div className="clay-cushion !bg-[#fffdf7] p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div className="space-y-1">
+                <div className="flex items-center gap-2">
+                  <span className="text-base font-extrabold text-[#1f1823]"><Scale className="w-4 h-4 inline mr-1.5 text-[#1f1823]" />Legal &amp; Executive Leadership</span>
+                  <span className="px-2.5 py-0.5 rounded-full bg-[#f6a3ca] text-[#63192e] text-[10px] font-bold">Risk Shield</span>
+                </div>
+                <p className="text-xs text-[#3b3240] leading-relaxed">
+                  Protect enterprise reputation with cryptographic SHA-256 compliance certification.
+                </p>
+              </div>
+              <div className="flex items-center gap-1.5 text-xs font-bold text-[#214d3b] shrink-0">
+                <Check className="w-4 h-4 text-[#214d3b]" /> Verified audit certificate
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* =========================================================================
+            SECTION 5: CLOSING PINK CUSHION
+            ========================================================================= */}
+        <section className="clay-cushion-pink p-8 sm:p-12 text-center space-y-5">
+          <h3 className="text-3xl sm:text-4xl font-extrabold text-[#1f1823]">
+            Safeguard Your Brand Today
+          </h3>
+          <p className="text-sm sm:text-base text-[#1f1823] max-w-xl mx-auto font-medium leading-relaxed">
+            Eliminate brand entropy, accelerate review turnaround cycles, and build public trust with intelligent pre-publication governance.
+          </p>
+          <div className="pt-2">
             <Link
               href="/upload"
-              className="px-8 py-4 bg-gradient-to-r from-cyan-500 via-indigo-500 to-indigo-600 hover:brightness-110 text-white rounded-xl font-bold shadow-xl shadow-cyan-500/20 hover:shadow-cyan-500/35 hover:-translate-y-0.5 active:translate-y-0 transition-all flex items-center gap-2.5 text-base"
+              className="clay-pill-secondary !bg-[#fffdf7] !text-[#1f1823] px-8 py-4 text-sm font-bold inline-flex items-center gap-2 shadow-xl"
             >
-              <Sparkles className="w-5 h-5 text-cyan-200" />
-              Launch Brand Scanner
-              <ArrowRight className="w-5 h-5" />
-            </Link>
-            <Link
-              href="/guidelines"
-              className="px-7 py-4 glass-panel glass-panel-hover text-white rounded-xl font-semibold text-base flex items-center gap-2.5"
-            >
-              <BookOpen className="w-5 h-5 text-cyan-400" />
-              Explore Knowledge Base
-            </Link>
-            <Link
-              href="/dashboard"
-              className="px-6 py-4 border border-indigo-500/30 hover:border-indigo-400 text-gray-300 hover:text-white rounded-xl text-sm font-semibold transition-all flex items-center gap-2"
-            >
-              Open Dashboard
+              <Sparkles className="w-4 h-4 text-[#1f1823]" />
+              <span>Start Pre-Publication Scan</span>
+              <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
-        </div>
+        </section>
 
-        {/* Interactive Live Governance Simulator (Showcasing 1-Click Remediation) */}
-        <div className="mt-14 max-w-4xl mx-auto glass-panel rounded-2xl p-6 sm:p-8 border border-indigo-500/30 shadow-2xl relative overflow-hidden">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-indigo-500/20 mb-6">
-            <div className="flex items-center gap-3">
-              <div className="w-3 h-3 rounded-full bg-red-400 animate-ping opacity-75" />
-              <span className="text-xs font-mono uppercase tracking-wider text-cyan-300 font-bold">
-                Live Interactive Simulation: Real-Time Governance Scan
-              </span>
-            </div>
-            <div className="flex items-center gap-2 text-xs bg-slate-900/90 p-1 rounded-lg border border-indigo-500/30">
-              <button
-                onClick={() => setDemoStep("flagged")}
-                className={`px-3 py-1 rounded-md transition-all font-medium ${
-                  demoStep === "flagged"
-                    ? "bg-red-500/20 text-red-300 border border-red-500/40"
-                    : "text-gray-400 hover:text-white"
-                }`}
-              >
-                1. Flagged Draft
-              </button>
-              <button
-                onClick={() => setDemoStep("remediated")}
-                className={`px-3 py-1 rounded-md transition-all font-medium ${
-                  demoStep === "remediated"
-                    ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/40"
-                    : "text-gray-400 hover:text-white"
-                }`}
-              >
-                2. Remediated &amp; Certified
-              </button>
-            </div>
-          </div>
-
-          {demoStep === "flagged" ? (
-            <div className="space-y-4">
-              <div className="p-4 rounded-xl bg-slate-950/80 border border-red-500/30 text-sm leading-relaxed text-gray-200">
-                <span>&quot;BrandSphere is officially the </span>
-                <mark className="bg-red-500/20 text-red-300 font-semibold px-1.5 py-0.5 rounded border border-red-500/40">
-                  #1 fastest cloud platform in the world!
-                </mark>
-                <span> We have completely eliminated the </span>
-                <mark className="bg-yellow-500/20 text-yellow-300 font-semibold px-1.5 py-0.5 rounded border border-yellow-500/40">
-                  legacy architecture
-                </mark>
-                <span> to bring you an unbeatable price with guaranteed 100% zero downtime.&quot;</span>
-              </div>
-
-              {/* Explanatory AI Citation Card */}
-              <div className="p-4 rounded-xl bg-slate-900/90 border border-indigo-500/30 flex flex-col sm:flex-row items-start justify-between gap-4">
-                <div className="space-y-1">
-                  <div className="flex items-center gap-2">
-                    <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-red-500/20 text-red-300 border border-red-500/30">
-                      CRITICAL VIOLATION
-                    </span>
-                    <span className="text-xs text-cyan-300 font-mono font-semibold">
-                      Brand Claims Policy §3.2 (Promotional Superlative)
-                    </span>
-                  </div>
-                  <p className="text-xs text-gray-300">
-                    Ungrounded superlative claim detected without canonical fact sheet citation.
-                  </p>
-                  <p className="text-[11px] text-gray-500 italic">
-                    Source: Approved Fact Sheet #4.2 — Comparative claims require verified third-party benchmarks.
-                  </p>
-                </div>
-                <button
-                  onClick={() => setDemoStep("remediated")}
-                  className="px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-500 hover:brightness-110 text-slate-950 font-bold rounded-lg text-xs shadow-lg shadow-emerald-500/20 flex items-center gap-1.5 self-end sm:self-center shrink-0 transition-all active:scale-95"
-                >
-                  <Zap className="w-3.5 h-3.5" />
-                  1-Click Context Fix
-                </button>
-              </div>
-            </div>
-          ) : (
-            <div className="space-y-4">
-              <div className="p-4 rounded-xl bg-slate-950/80 border border-emerald-500/30 text-sm leading-relaxed text-gray-200">
-                <span>&quot;BrandSphere AI delivers up to an </span>
-                <mark className="bg-emerald-500/20 text-emerald-300 font-semibold px-1.5 py-0.5 rounded border border-emerald-500/40">
-                  80% reduction in content review cycles according to the Inkloom 2026 Enterprise Study
-                </mark>
-                <span>. Modernized infrastructure ensures high resilience, backed by verifiable </span>
-                <mark className="bg-emerald-500/20 text-emerald-300 font-semibold px-1.5 py-0.5 rounded border border-emerald-500/40">
-                  Next-Gen Enterprise Hub
-                </mark>
-                <span> standards.&quot;</span>
-              </div>
-
-              {/* Certified Hash Badge */}
-              <div className="p-4 rounded-xl bg-emerald-950/20 border border-emerald-500/30 flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <CheckCircle2 className="w-5 h-5 text-emerald-400" />
-                  <div>
-                    <span className="text-xs font-bold text-white block">Certified Compliant Release</span>
-                    <span className="text-[11px] text-gray-400 font-mono">Verification: BS-SHA256-8F42B18E9A...</span>
-                  </div>
-                </div>
-                <button
-                  onClick={() => setDemoStep("flagged")}
-                  className="text-xs text-gray-400 hover:text-cyan-300 underline"
-                >
-                  Reset demo
-                </button>
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* 4 Feature Pillars Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mt-20">
-          <div className="glass-panel glass-panel-hover p-6 rounded-2xl">
-            <div className="w-12 h-12 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400 mb-4 shadow-[0_0_15px_rgba(6,182,212,0.15)]">
-              <FileText className="w-6 h-6" />
-            </div>
-            <h3 className="text-lg font-bold text-white mb-2">Claim Guard &amp; Fact Engine</h3>
-            <p className="text-gray-400 text-xs leading-relaxed">
-              Detects promotional superlatives (&quot;#1&quot;, &quot;fastest&quot;, absolute guarantees) and verifies statements against canonical enterprise fact sheets.
-            </p>
-          </div>
-
-          <div className="glass-panel glass-panel-hover p-6 rounded-2xl">
-            <div className="w-12 h-12 rounded-xl bg-indigo-500/10 border border-indigo-500/30 flex items-center justify-center text-indigo-400 mb-4 shadow-[0_0_15px_rgba(79,70,229,0.15)]">
-              <Palette className="w-6 h-6" />
-            </div>
-            <h3 className="text-lg font-bold text-white mb-2">Multimodal Visual Auditor</h3>
-            <p className="text-gray-400 text-xs leading-relaxed">
-              Extracts image color palettes via computer vision, verifies Euclidean distance against brand tokens, and calculates WCAG 2.1 contrast compliance.
-            </p>
-          </div>
-
-          <div className="glass-panel glass-panel-hover p-6 rounded-2xl">
-            <div className="w-12 h-12 rounded-xl bg-purple-500/10 border border-purple-500/30 flex items-center justify-center text-purple-400 mb-4 shadow-[0_0_15px_rgba(168,85,247,0.15)]">
-              <Users className="w-6 h-6" />
-            </div>
-            <h3 className="text-lg font-bold text-white mb-2">Collaborative Review Studio</h3>
-            <p className="text-gray-400 text-xs leading-relaxed">
-              Multi-tier approval workflows (Creator, Reviewer, Legal Admin) with 1-click remediation, version snapshots, and threaded discussion comments.
-            </p>
-          </div>
-
-          <div className="glass-panel glass-panel-hover p-6 rounded-2xl">
-            <div className="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 mb-4 shadow-[0_0_15px_rgba(16,185,129,0.15)]">
-              <BarChart3 className="w-6 h-6" />
-            </div>
-            <h3 className="text-lg font-bold text-white mb-2">Guideline Clarity Index</h3>
-            <p className="text-gray-400 text-xs leading-relaxed">
-              Continuous compliance telemetry calculating the Guideline Clarity Index, highlighting recurring confusion, and guiding policy updates.
-            </p>
-          </div>
-        </div>
-
-        {/* Persona Quadrant Matrix */}
-        <div className="mt-20">
-          <div className="text-center mb-10">
-            <span className="text-xs font-mono uppercase tracking-widest text-cyan-400 font-bold">
-              Multi-Stakeholder Sovereignty
-            </span>
-            <h2 className="text-3xl font-extrabold text-white mt-1">Designed for Every Brand Stakeholder</h2>
-          </div>
-
-          <div className="grid md:grid-cols-2 gap-6">
-            <div className="glass-panel p-6 rounded-2xl border-l-4 border-l-cyan-400">
-              <div className="flex items-center justify-between mb-3">
-                <span className="text-base font-bold text-white">✍️ Content Creators &amp; Authors</span>
-                <span className="text-[11px] font-mono text-cyan-300 bg-cyan-500/10 px-2 py-0.5 rounded">Rapid Feedback</span>
-              </div>
-              <p className="text-gray-400 text-xs leading-relaxed mb-3">
-                Immediate pre-flight validation with context-preserving recommendations rather than cryptic rejections. Authors retain original voice while avoiding costly brand infractions.
-              </p>
-              <div className="flex items-center gap-1.5 text-xs text-cyan-400 font-medium">
-                <Check className="w-4 h-4" /> 1-Click fixes preserve creative momentum
-              </div>
-            </div>
-
-            <div className="glass-panel p-6 rounded-2xl border-l-4 border-l-indigo-400">
-              <div className="flex items-center justify-between mb-3">
-                <span className="text-base font-bold text-white">🛡️ Brand &amp; Compliance Managers</span>
-                <span className="text-[11px] font-mono text-indigo-300 bg-indigo-500/10 px-2 py-0.5 rounded">Deterministic Policy</span>
-              </div>
-              <p className="text-gray-400 text-xs leading-relaxed mb-3">
-                Total control over brand guidelines, terminology glossaries, and truth libraries. Automated scans flag discrepancies before publishing without manual line-by-line strain.
-              </p>
-              <div className="flex items-center gap-1.5 text-xs text-indigo-400 font-medium">
-                <Check className="w-4 h-4" /> Full version snapshots and audit traceability
-              </div>
-            </div>
-
-            <div className="glass-panel p-6 rounded-2xl border-l-4 border-l-purple-400">
-              <div className="flex items-center justify-between mb-3">
-                <span className="text-base font-bold text-white">🤝 PR &amp; External Marketing Agencies</span>
-                <span className="text-[11px] font-mono text-purple-300 bg-purple-500/10 px-2 py-0.5 rounded">Boundary Clarity</span>
-              </div>
-              <p className="text-gray-400 text-xs leading-relaxed mb-3">
-                Agencies pre-validate campaign assets against approved tokens and fact sheets prior to client submission, cutting review turnaround from 5 days to minutes.
-              </p>
-              <div className="flex items-center gap-1.5 text-xs text-purple-400 font-medium">
-                <Check className="w-4 h-4" /> Color palette distance and WCAG AA verification
-              </div>
-            </div>
-
-            <div className="glass-panel p-6 rounded-2xl border-l-4 border-l-emerald-400">
-              <div className="flex items-center justify-between mb-3">
-                <span className="text-base font-bold text-white">⚖️ Legal &amp; Executive Leadership</span>
-                <span className="text-[11px] font-mono text-emerald-300 bg-emerald-500/10 px-2 py-0.5 rounded">Risk Mitigation</span>
-              </div>
-              <p className="text-gray-400 text-xs leading-relaxed mb-3">
-                Enterprise protection against false advertising claims and regulatory penalties. Approved publications receive a cryptographic SHA-256 certificate for complete audit defensibility.
-              </p>
-              <div className="flex items-center gap-1.5 text-xs text-emerald-400 font-medium">
-                <Check className="w-4 h-4" /> Tamper-evident cryptographic verification seal
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Quantified Impact Banner */}
-        <div className="mt-20 glass-panel rounded-2xl p-8 border border-indigo-500/30">
-          <div className="grid md:grid-cols-3 gap-8 text-center divide-y md:divide-y-0 md:divide-x divide-indigo-500/20">
-            <div className="pt-4 md:pt-0">
-              <div className="text-5xl font-extrabold bg-gradient-to-r from-cyan-400 to-cyan-200 bg-clip-text text-transparent mb-1 font-mono">
-                80%
-              </div>
-              <div className="text-white font-bold text-sm">Turnaround Cycle Reduction</div>
-              <div className="text-gray-400 text-xs mt-1">Review workflows accelerated from 3-5 days to minutes</div>
-            </div>
-            <div className="pt-4 md:pt-0">
-              <div className="text-5xl font-extrabold bg-gradient-to-r from-indigo-400 to-indigo-200 bg-clip-text text-transparent mb-1 font-mono">
-                99.5%
-              </div>
-              <div className="text-white font-bold text-sm">Claim Accuracy Verification</div>
-              <div className="text-gray-400 text-xs mt-1">Grounded against enterprise fact sheets and approved metrics</div>
-            </div>
-            <div className="pt-4 md:pt-0">
-              <div className="text-5xl font-extrabold bg-gradient-to-r from-emerald-400 to-emerald-200 bg-clip-text text-transparent mb-1 font-mono">
-                100%
-              </div>
-              <div className="text-white font-bold text-sm">Cryptographic Audit Trail</div>
-              <div className="text-gray-400 text-xs mt-1">Tamper-evident verification hash attached to every approved release</div>
-            </div>
-          </div>
-        </div>
-      </main>
-
-      {/* Footer */}
-      <footer className="border-t border-indigo-500/20 py-10 bg-slate-950/80">
-        <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-gray-500">
+        {/* =========================================================================
+            SECTION 6: CREAM FOOTER
+            ========================================================================= */}
+        <footer className="clay-tray !rounded-[36px] p-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[#3b3240]">
           <div>
-            <span className="font-bold text-gray-300">Team CIPHER CODERS</span> — Ishaan Ray &amp; Rishi Prajapati
-            <span className="block text-gray-400 mt-0.5">Inkloom AI Hackathon • Intelligent Pre-Publication Brand Governance</span>
+            <strong className="text-[#1f1823]">Team CIPHER CODERS</strong> — Ishaan Ray &amp; Rishi Prajapati
+            <span className="block text-[11px] text-[#3b3240] mt-0.5">
+              Inkloom AI Hackathon • Intelligent Pre-Publication Brand Governance
+            </span>
           </div>
-          <div className="flex items-center gap-4 text-gray-400">
-            <Link href="/dashboard" className="hover:text-white transition-colors">Dashboard</Link>
-            <Link href="/upload" className="hover:text-white transition-colors">Scanner</Link>
-            <Link href="/review" className="hover:text-white transition-colors">Review Studio</Link>
-            <Link href="/guidelines" className="hover:text-white transition-colors">Knowledge Base</Link>
-            <Link href="/analytics" className="hover:text-white transition-colors">Analytics</Link>
+          <div className="flex flex-wrap items-center gap-4 font-bold text-[#1f1823]">
+            <Link href="/dashboard" className="hover:text-[#f6a3ca] transition-colors">Dashboard</Link>
+            <Link href="/upload" className="hover:text-[#f6a3ca] transition-colors">Scanner</Link>
+            <Link href="/review" className="hover:text-[#f6a3ca] transition-colors">Review Studio</Link>
+            <Link href="/guidelines" className="hover:text-[#f6a3ca] transition-colors">Guidelines</Link>
+            <Link href="/analytics" className="hover:text-[#f6a3ca] transition-colors">Analytics</Link>
           </div>
-        </div>
-      </footer>
+        </footer>
+      </main>
     </div>
   );
 }

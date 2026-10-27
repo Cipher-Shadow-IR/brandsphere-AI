@@ -20,7 +20,8 @@ import {
   CheckCircle2,
   AlertTriangle,
   Info,
-  RefreshCw
+  RefreshCw,
+  Lightbulb
 } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import { API_BASE_URL } from "@/lib/api";
@@ -102,7 +103,6 @@ export default function UploadPage() {
       const base64 = event.target?.result as string;
       setSelectedImage(base64);
 
-      // Perform visual brand audit
       setAnalyzingVisual(true);
       try {
         const res = await fetch(`${API_BASE_URL}/api/visual/analyze`, {
@@ -170,109 +170,99 @@ export default function UploadPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 relative selection:bg-cyan-500/20 selection:text-cyan-200 overflow-x-hidden">
-      <div className="fixed inset-0 bg-ambient-mesh pointer-events-none" />
-
-      {/* Reusable Premium Navbar */}
+    <div className="min-h-screen bg-[#f1f2fa] text-[#1f1823]">
       <Navbar />
 
-      {/* Main Container */}
-      <main className="relative max-w-5xl mx-auto px-4 sm:px-6 py-8 md:py-12">
+      <main className="max-w-5xl mx-auto px-4 sm:px-6 py-8 md:py-12 space-y-8">
         {/* Header Ribbon */}
-        <div className="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-6 pb-6 border-b border-slate-800/60">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-2">
           <div>
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-xs font-medium mb-3">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#f6a3ca] text-[#1f1823] text-xs font-bold shadow-sm mb-2">
               <Sparkles className="w-3.5 h-3.5" />
-              Automated Policy Enforcement
+              <span>Automated Policy Enforcement</span>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight flex items-center gap-3">
-              <Upload className="w-7 h-7 text-cyan-400" />
+            <h1 className="text-3xl sm:text-4xl font-extrabold text-[#1f1823] tracking-tight flex items-center gap-3">
+              <Upload className="w-8 h-8 text-[#1f1823]" />
               Pre-Publication Brand Scanner
             </h1>
-            <p className="text-slate-400 text-sm mt-1 max-w-2xl">
-              Submit drafts, press releases, and marketing creatives for multi-dimensional brand governance, readability calibration, and visual palette auditing.
+            <p className="text-[#3b3240] text-sm mt-1 max-w-2xl">
+              Submit copy, documents, and marketing collateral for multi-dimensional brand governance analysis.
             </p>
           </div>
 
-          {/* Quick Demo Preset Pills */}
+          {/* Quick Demo Preset Cushions */}
           <div className="flex flex-col sm:items-end gap-2 shrink-0">
-            <span className="text-xs text-slate-400 font-medium flex items-center gap-1.5">
-              <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
-              Load Demo Presets:
-            </span>
+            <span className="text-xs text-[#3b3240] font-bold">Load Demo Presets:</span>
             <div className="flex flex-wrap items-center gap-2">
               <button
                 type="button"
                 onClick={() => loadPreset("high_risk")}
-                className="px-3 py-1.5 text-xs font-semibold rounded-lg bg-rose-500/10 text-rose-300 border border-rose-500/30 hover:bg-rose-500/20 hover:border-rose-500/50 transition-all flex items-center gap-1.5 active:scale-95 shadow-sm"
+                className="px-3.5 py-1.5 text-xs font-bold rounded-full bg-[#ffd6e0] text-[#63192e] shadow-[2px_3px_6px_rgba(255,214,224,0.6),inset_1px_1px_2px_rgba(255,255,255,0.9)] hover:scale-102 active:scale-98 transition-all flex items-center gap-1.5 cursor-pointer"
               >
-                <AlertTriangle className="w-3.5 h-3.5 text-rose-400" />
-                High-Risk Draft
+                <AlertTriangle className="w-3.5 h-3.5" />
+                <span>High-Risk Draft</span>
               </button>
               <button
                 type="button"
                 onClick={() => loadPreset("enterprise")}
-                className="px-3 py-1.5 text-xs font-semibold rounded-lg bg-emerald-500/10 text-emerald-300 border border-emerald-500/30 hover:bg-emerald-500/20 hover:border-emerald-500/50 transition-all flex items-center gap-1.5 active:scale-95 shadow-sm"
+                className="px-3.5 py-1.5 text-xs font-bold rounded-full bg-[#c0efdc] text-[#214d3b] shadow-[2px_3px_6px_rgba(192,239,220,0.6),inset_1px_1px_2px_rgba(255,255,255,0.9)] hover:scale-102 active:scale-98 transition-all flex items-center gap-1.5 cursor-pointer"
               >
-                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
-                Compliant Draft
+                <CheckCircle2 className="w-3.5 h-3.5" />
+                <span>Compliant Draft</span>
               </button>
               <button
                 type="button"
                 onClick={() => loadPreset("social")}
-                className="px-3 py-1.5 text-xs font-semibold rounded-lg bg-indigo-500/10 text-indigo-300 border border-indigo-500/30 hover:bg-indigo-500/20 hover:border-indigo-500/50 transition-all flex items-center gap-1.5 active:scale-95 shadow-sm"
+                className="px-3.5 py-1.5 text-xs font-bold rounded-full bg-[#ded0f9] text-[#3b2c5e] shadow-[2px_3px_6px_rgba(222,208,249,0.6),inset_1px_1px_2px_rgba(255,255,255,0.9)] hover:scale-102 active:scale-98 transition-all flex items-center gap-1.5 cursor-pointer"
               >
-                <Sparkles className="w-3.5 h-3.5 text-indigo-400" />
-                Social Post
+                <Sparkles className="w-3.5 h-3.5" />
+                <span>Social Post</span>
               </button>
             </div>
           </div>
         </div>
 
         {error && (
-          <div className="mb-8 p-4 rounded-xl border border-rose-500/40 bg-rose-500/10 flex items-start gap-3.5 text-rose-200 backdrop-blur-md animate-fadeIn">
-            <AlertCircle className="w-5 h-5 text-rose-400 shrink-0 mt-0.5" />
-            <div className="flex-1">
-              <p className="font-semibold text-rose-300">Submission Error</p>
-              <p className="text-sm mt-0.5 text-rose-200/90">{error}</p>
+          <div className="p-4 rounded-2xl bg-[#ffd6e0] text-[#63192e] shadow-md flex items-start justify-between gap-3 font-medium text-sm">
+            <div className="flex items-start gap-2.5">
+              <AlertCircle className="w-5 h-5 shrink-0 mt-0.5 text-[#63192e]" />
+              <div>
+                <strong className="block">Submission Error</strong>
+                <span>{error}</span>
+              </div>
             </div>
-            <button
-              onClick={() => setError(null)}
-              className="text-rose-400 hover:text-rose-200 text-sm font-semibold p-1"
-            >
-              ✕
-            </button>
+            <button onClick={() => setError(null)} className="p-1 rounded-full hover:bg-[#fffdf7]/50 text-[#63192e] transition-colors"><X className="w-4 h-4" /></button>
           </div>
         )}
 
         {!result ? (
           <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="glass-panel p-6 sm:p-8 rounded-2xl border border-slate-800/80 bg-slate-900/60 backdrop-blur-xl shadow-2xl space-y-6">
-              {/* Row 1: Document Title & Author */}
+            <div className="clay-tray p-6 sm:p-10 space-y-6">
+              {/* Row 1: Title & Author */}
               <div className="grid md:grid-cols-2 gap-5">
                 <div>
-                  <label className="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-2">
-                    Document Title <span className="text-cyan-400">*</span>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-[#1f1823] mb-2">
+                    Document Title *
                   </label>
                   <input
                     type="text"
                     required
                     value={formData.title}
                     onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                    className="w-full px-4 py-3 bg-slate-950/80 border border-slate-800 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500/60 focus:ring-2 focus:ring-cyan-500/20 transition-all text-sm"
+                    className="clay-well w-full px-4 py-3 text-sm text-[#1f1823] placeholder-[#3b3240] focus:outline-none focus:ring-2 focus:ring-[#f6a3ca]"
                     placeholder="e.g., Q4 Enterprise Release Announcement"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-2">
-                    Author or Team <span className="text-cyan-400">*</span>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-[#1f1823] mb-2">
+                    Author or Team *
                   </label>
                   <input
                     type="text"
                     required
                     value={formData.author}
                     onChange={(e) => setFormData({ ...formData, author: e.target.value })}
-                    className="w-full px-4 py-3 bg-slate-950/80 border border-slate-800 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500/60 focus:ring-2 focus:ring-cyan-500/20 transition-all text-sm"
+                    className="clay-well w-full px-4 py-3 text-sm text-[#1f1823] placeholder-[#3b3240] focus:outline-none focus:ring-2 focus:ring-[#f6a3ca]"
                     placeholder="e.g., Sarah Chen (Product Marketing)"
                   />
                 </div>
@@ -281,13 +271,13 @@ export default function UploadPage() {
               {/* Row 2: Format & File Import */}
               <div className="grid md:grid-cols-2 gap-5">
                 <div>
-                  <label className="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-2">
+                  <label className="block text-xs font-bold uppercase tracking-wider text-[#1f1823] mb-2">
                     Content Format Type
                   </label>
                   <select
                     value={formData.content_type}
                     onChange={(e) => setFormData({ ...formData, content_type: e.target.value })}
-                    className="w-full px-4 py-3 bg-slate-950/80 border border-slate-800 rounded-xl text-white focus:outline-none focus:border-cyan-500/60 focus:ring-2 focus:ring-cyan-500/20 transition-all text-sm"
+                    className="clay-well w-full px-4 py-3 text-sm text-[#1f1823] focus:outline-none focus:ring-2 focus:ring-[#f6a3ca] cursor-pointer"
                   >
                     <option value="text">Marketing Copy / Web Announcement</option>
                     <option value="document">Enterprise Whitepaper / PR Document</option>
@@ -295,8 +285,8 @@ export default function UploadPage() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-2">
-                    Import Text Document (Optional)
+                  <label className="block text-xs font-bold uppercase tracking-wider text-[#1f1823] mb-2">
+                    Import Text File (Optional)
                   </label>
                   <div className="flex items-center gap-2">
                     <input
@@ -309,23 +299,23 @@ export default function UploadPage() {
                     <button
                       type="button"
                       onClick={() => fileInputRef.current?.click()}
-                      className="w-full px-4 py-3 bg-slate-950/50 border border-dashed border-slate-700 hover:border-cyan-500/60 rounded-xl text-sm text-slate-300 hover:text-white flex items-center justify-center gap-2.5 transition-all group hover:bg-slate-900/60"
+                      className="clay-cushion-hover clay-pill-secondary w-full py-3 text-xs flex items-center justify-center gap-2 cursor-pointer"
                     >
-                      <FileUp className="w-4 h-4 text-cyan-400 group-hover:scale-110 transition-transform" />
+                      <FileUp className="w-4 h-4 text-[#1f1823]" />
                       <span>Browse .txt or .md file from local drive</span>
                     </button>
                   </div>
                 </div>
               </div>
 
-              {/* Row 3: Draft Body Content */}
+              {/* Row 3: Content Body */}
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <label className="text-xs font-semibold uppercase tracking-wider text-slate-300">
-                    Draft Content Body <span className="text-cyan-400">*</span>
+                  <label className="text-xs font-bold uppercase tracking-wider text-[#1f1823]">
+                    Draft Content Body *
                   </label>
-                  <span className="text-xs font-mono text-slate-500">
-                    {formData.content.length} characters • ~{Math.ceil(formData.content.split(/\s+/).filter(Boolean).length)} words
+                  <span className="text-xs text-[#3b3240] font-mono">
+                    {formData.content.length} characters
                   </span>
                 </div>
                 <textarea
@@ -333,25 +323,24 @@ export default function UploadPage() {
                   value={formData.content}
                   onChange={(e) => setFormData({ ...formData, content: e.target.value })}
                   rows={8}
-                  className="w-full px-4 py-3.5 bg-slate-950/80 border border-slate-800 rounded-xl text-slate-100 placeholder-slate-500 focus:outline-none focus:border-cyan-500/60 focus:ring-2 focus:ring-cyan-500/20 resize-none font-sans text-sm leading-relaxed transition-all"
+                  className="clay-well w-full p-4 text-sm text-[#1f1823] placeholder-[#3b3240] focus:outline-none focus:ring-2 focus:ring-[#f6a3ca] resize-none leading-relaxed"
                   placeholder="Paste marketing copy, press release, or executive collateral here for governance analysis..."
                 />
               </div>
 
-              {/* Multimodal Visual Audit Upload Section */}
-              <div className="pt-5 border-t border-slate-800/80">
-                <div className="flex items-center justify-between mb-3.5">
+              {/* Multimodal Visual Audit Section */}
+              <div className="pt-4 border-t border-[#e6e8f4]">
+                <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-2">
-                    <div className="w-6 h-6 rounded-md bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center">
-                      <ImageIcon className="w-3.5 h-3.5 text-cyan-400" />
+                    <div className="w-7 h-7 rounded-full bg-[#ded0f9] flex items-center justify-center text-[#3b2c5e] shadow-sm">
+                      <ImageIcon className="w-4 h-4" />
                     </div>
-                    <span className="text-sm font-semibold text-white">Visual Brand Asset & Banner Check (Multimodal)</span>
+                    <span className="text-sm font-extrabold text-[#1f1823]">Visual Brand Asset &amp; Banner Check (Multimodal)</span>
                   </div>
-                  <span className="text-xs px-2 py-0.5 rounded-full bg-slate-800 text-slate-400 font-medium">Optional Asset</span>
+                  <span className="px-2.5 py-0.5 rounded-full bg-[#f1f2fa] text-[#3b3240] text-[10px] font-bold">Optional</span>
                 </div>
 
                 <div className="grid md:grid-cols-3 gap-4 items-stretch">
-                  {/* File selector card */}
                   <div className="md:col-span-1">
                     <input
                       type="file"
@@ -361,16 +350,16 @@ export default function UploadPage() {
                       className="hidden"
                     />
                     {selectedImage ? (
-                      <div className="relative h-36 w-full rounded-xl border border-slate-700 bg-slate-950 p-2 flex flex-col items-center justify-center group overflow-hidden">
+                      <div className="clay-well relative h-36 w-full p-2 flex flex-col items-center justify-center group overflow-hidden">
                         <img
                           src={selectedImage}
                           alt="Creative preview"
-                          className="max-h-full max-w-full rounded object-contain"
+                          className="max-h-full max-w-full rounded-xl object-contain"
                         />
                         <button
                           type="button"
                           onClick={handleClearImage}
-                          className="absolute top-2 right-2 p-1 rounded-full bg-slate-900/90 text-slate-300 hover:text-white hover:bg-rose-500/80 transition-all shadow"
+                          className="absolute top-2 right-2 p-1.5 rounded-full bg-[#ffd6e0] text-[#63192e] shadow-sm hover:scale-105 cursor-pointer"
                           title="Remove image"
                         >
                           <X className="w-4 h-4" />
@@ -380,77 +369,58 @@ export default function UploadPage() {
                       <button
                         type="button"
                         onClick={() => imageInputRef.current?.click()}
-                        className="w-full h-36 bg-slate-950/50 border border-dashed border-slate-700 hover:border-cyan-500/60 rounded-xl flex flex-col items-center justify-center text-slate-400 hover:text-white transition-all p-3 group hover:bg-slate-900/40"
+                        className="clay-well w-full h-36 flex flex-col items-center justify-center text-[#3b3240] hover:text-[#1f1823] p-3 cursor-pointer transition-all"
                       >
-                        <div className="w-10 h-10 rounded-full bg-slate-900 border border-slate-800 flex items-center justify-center mb-2 group-hover:border-cyan-500/40 group-hover:scale-105 transition-all">
-                          <Palette className="w-5 h-5 text-cyan-400" />
+                        <div className="w-10 h-10 rounded-full bg-[#fffdf7] shadow-sm flex items-center justify-center mb-2">
+                          <Palette className="w-5 h-5 text-[#1f1823]" />
                         </div>
-                        <span className="text-xs font-semibold text-slate-200">Upload Image Banner</span>
-                        <span className="text-[11px] text-slate-500 mt-0.5">PNG, JPG, WebP, SVG</span>
+                        <span className="text-xs font-bold text-[#1f1823]">Upload Creative Banner</span>
+                        <span className="text-[10px] text-[#3b3240] mt-0.5">PNG, JPG, WebP, SVG</span>
                       </button>
                     )}
                   </div>
 
-                  {/* Vision analysis output */}
                   <div className="md:col-span-2">
                     {analyzingVisual ? (
-                      <div className="h-36 flex flex-col items-center justify-center gap-2.5 rounded-xl border border-cyan-500/20 bg-cyan-500/5 text-cyan-400 text-xs font-medium">
-                        <Loader2 className="w-6 h-6 animate-spin text-cyan-400" />
-                        <span>Quantizing color palette & verifying WCAG AA contrast...</span>
+                      <div className="clay-well h-36 flex items-center justify-center gap-2 text-xs font-bold text-[#1f1823]">
+                        <Loader2 className="w-5 h-5 animate-spin text-[#f6a3ca]" />
+                        <span>Scanning visual palette &amp; WCAG AA contrast...</span>
                       </div>
                     ) : visualResult ? (
-                      <div className="h-36 p-3.5 bg-slate-950/80 rounded-xl border border-slate-800 flex flex-col justify-between text-xs">
+                      <div className="clay-cushion-mint !rounded-2xl h-36 p-4 flex flex-col justify-between text-xs">
                         <div className="flex items-center justify-between">
-                          <span className="text-slate-300 font-semibold flex items-center gap-1.5">
-                            <Palette className="w-3.5 h-3.5 text-cyan-400" />
-                            Extracted Dominant Palette:
-                          </span>
+                          <span className="font-extrabold text-[#214d3b]">Extracted Dominant Palette:</span>
                           <span
-                            className={`px-2.5 py-0.5 rounded-full font-semibold text-[11px] border ${
+                            className={`px-3 py-1 rounded-full font-bold text-[11px] shadow-sm ${
                               visualResult.contrast_compliant_aa
-                                ? "bg-emerald-500/10 text-emerald-300 border-emerald-500/30"
-                                : "bg-rose-500/10 text-rose-300 border-rose-500/30"
+                                ? "bg-[#fffdf7] text-[#214d3b]"
+                                : "bg-[#ffd6e0] text-[#63192e]"
                             }`}
                           >
                             WCAG AA: {visualResult.contrast_compliant_aa ? "PASS" : "FAIL"} ({visualResult.contrast_ratio}:1)
                           </span>
                         </div>
-                        <div className="flex items-center gap-2.5 py-1">
+                        <div className="flex items-center gap-2 py-1">
                           {visualResult.dominant_colors.map((hex: string, i: number) => (
                             <div key={i} className="flex flex-col items-center gap-1">
                               <div
-                                className="w-7 h-7 rounded-md border border-white/20 shadow-md ring-1 ring-black/40"
+                                className="w-7 h-7 rounded-full shadow-[2px_3px_6px_rgba(56,49,57,0.15),inset_1px_1px_2px_rgba(255,255,255,0.7)]"
                                 style={{ backgroundColor: hex }}
                                 title={hex}
                               />
-                              <span className="font-mono text-[10px] text-slate-400">{hex}</span>
+                              <span className="font-mono text-[10px] text-[#214d3b] font-bold">{hex}</span>
                             </div>
                           ))}
                         </div>
-                        {visualResult.recommendations && visualResult.recommendations.length > 0 ? (
-                          <p className="text-slate-300 text-[11px] truncate flex items-center gap-1.5 text-amber-300/90 bg-amber-500/10 px-2 py-1 rounded border border-amber-500/20">
-                            <Info className="w-3.5 h-3.5 shrink-0 text-amber-400" />
-                            <span>{visualResult.recommendations[0]}</span>
-                          </p>
-                        ) : (
-                          <p className="text-slate-500 text-[11px]">Visual palette meets baseline brand tolerances.</p>
-                        )}
+                        <p className="text-[#214d3b] text-[11px] truncate">
+                          <Lightbulb className="w-3.5 h-3.5 inline mr-1 text-[#214d3b] shrink-0" /> {visualResult.recommendations?.[0] || "Palette conforms to baseline brand guidelines."}
+                        </p>
                       </div>
                     ) : (
-                      <div className="h-36 p-4 bg-slate-950/40 rounded-xl border border-slate-800/80 flex flex-col justify-center text-xs text-slate-400">
-                        <p className="font-semibold text-slate-300 mb-1.5 flex items-center gap-1.5">
-                          <Shield className="w-3.5 h-3.5 text-cyan-400" />
-                          Automated Multi-Modal Vision Checks:
-                        </p>
-                        <p className="text-slate-400 text-[11px] leading-relaxed">
-                          • Color distance delta from brand token palette (#4F46E5, #06B6D4, #10B981)
-                        </p>
-                        <p className="text-slate-400 text-[11px] leading-relaxed">
-                          • WCAG 2.1 AA text-over-image luminance contrast ratio (min 4.5:1)
-                        </p>
-                        <p className="text-slate-400 text-[11px] leading-relaxed">
-                          • Visual findings automatically appended to review workspace
-                        </p>
+                      <div className="clay-well h-36 p-4 flex flex-col justify-center text-xs text-[#3b3240]">
+                        <p className="font-bold text-[#1f1823] mb-1">Automated Multi-Modal Vision Checks:</p>
+                        <p>• Color palette distance against approved brand tokens</p>
+                        <p>• WCAG 2.1 AA text-over-image luminance contrast ratio (min 4.5:1)</p>
                       </div>
                     )}
                   </div>
@@ -462,16 +432,16 @@ export default function UploadPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-4 px-6 rounded-xl font-bold text-white bg-gradient-to-r from-cyan-500 via-indigo-600 to-indigo-500 hover:from-cyan-400 hover:via-indigo-500 hover:to-indigo-400 shadow-lg shadow-indigo-500/20 hover:shadow-cyan-500/25 transition-all duration-200 flex items-center justify-center gap-2.5 text-base disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer active:scale-[0.99]"
+              className="clay-pill-primary w-full py-4 text-base flex items-center justify-center gap-2 shadow-xl"
             >
               {loading ? (
                 <>
                   <Loader2 className="w-5 h-5 animate-spin" />
-                  <span>Executing Brand Governance Scanner & Multimodal Engine...</span>
+                  <span>Executing Brand Governance Scanner...</span>
                 </>
               ) : (
                 <>
-                  <Shield className="w-5 h-5 text-cyan-200" />
+                  <Shield className="w-5 h-5" />
                   <span>Scan Content Against Brand Guidelines</span>
                   <ArrowRight className="w-4 h-4 ml-1" />
                 </>
@@ -479,105 +449,81 @@ export default function UploadPage() {
             </button>
           </form>
         ) : (
-          /* Analysis Result Display */
-          <div className="space-y-6 animate-fadeIn">
-            <div className="glass-panel p-6 sm:p-8 rounded-2xl border border-emerald-500/30 bg-emerald-950/20 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-xl">
+          /* Result Display */
+          <div className="space-y-6">
+            <div className="clay-cushion-mint p-6 sm:p-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div>
                 <div className="flex items-center gap-3 mb-1">
-                  <div className="w-8 h-8 rounded-full bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center">
-                    <CheckCircle className="w-5 h-5 text-emerald-400" />
+                  <div className="w-9 h-9 rounded-full bg-[#fffdf7] flex items-center justify-center shadow-sm">
+                    <CheckCircle className="w-5 h-5 text-[#214d3b]" />
                   </div>
-                  <h2 className="text-xl font-bold text-white">Pre-Publication Analysis Complete</h2>
+                  <h2 className="text-xl font-extrabold text-[#214d3b]">Pre-Publication Analysis Complete</h2>
                 </div>
-                <p className="text-slate-300 text-sm pl-11">
-                  {result.issues_count} governance issue{result.issues_count !== 1 ? "s" : ""} detected and cataloged with citations.
+                <p className="text-xs text-[#214d3b]/80 pl-12">
+                  {result.issues_count} governance issue{result.issues_count !== 1 ? "s" : ""} cataloged for review and remediation.
                 </p>
               </div>
-              <div className="flex items-center gap-4 sm:border-l sm:border-emerald-500/20 sm:pl-6">
-                <div>
-                  <span className="text-xs text-slate-400 uppercase tracking-wider block font-semibold">Reading Ease</span>
-                  <span className="text-2xl font-black text-cyan-400">{result.document.readability_score || 72}<span className="text-xs font-normal text-slate-400">/100</span></span>
+              <div className="flex items-center gap-4 sm:pl-6">
+                <div className="clay-well px-4 py-2 rounded-2xl bg-[#fffdf7] text-center">
+                  <span className="text-[10px] text-[#3b3240] uppercase font-bold block">Reading Ease</span>
+                  <span className="text-xl font-black text-[#214d3b]">{result.document.readability_score || 72}/100</span>
                 </div>
                 {result.document.wcag_score && (
-                  <div>
-                    <span className="text-xs text-slate-400 uppercase tracking-wider block font-semibold">Visual WCAG</span>
-                    <span className="text-2xl font-black text-emerald-400">{result.document.wcag_score}<span className="text-xs font-normal text-slate-400">:1</span></span>
+                  <div className="clay-well px-4 py-2 rounded-2xl bg-[#fffdf7] text-center">
+                    <span className="text-[10px] text-[#3b3240] uppercase font-bold block">Visual WCAG</span>
+                    <span className="text-xl font-black text-[#214d3b]">{result.document.wcag_score}:1</span>
                   </div>
                 )}
-              </div>
-            </div>
-
-            {/* Document Details Card */}
-            <div className="glass-panel p-6 rounded-2xl border border-slate-800 bg-slate-900/60 space-y-4">
-              <h3 className="text-sm font-semibold uppercase tracking-wider text-slate-300">Document Summary</h3>
-              <div className="grid md:grid-cols-3 gap-4 text-sm">
-                <div>
-                  <span className="text-xs text-slate-500 block mb-0.5">Document Title</span>
-                  <span className="text-white font-medium">{result.document.title}</span>
-                </div>
-                <div>
-                  <span className="text-xs text-slate-500 block mb-0.5">Author / Origin</span>
-                  <span className="text-slate-200">{result.document.author}</span>
-                </div>
-                <div>
-                  <span className="text-xs text-slate-500 block mb-0.5">Governance Status</span>
-                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-500/10 text-amber-300 border border-amber-500/30 uppercase tracking-wide">
-                    {result.document.status.replace("_", " ")}
-                  </span>
-                </div>
               </div>
             </div>
 
             {/* Issues Breakdown */}
             {result.document.issues && result.document.issues.length > 0 && (
               <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-base font-bold text-white flex items-center gap-2">
-                    <AlertTriangle className="w-4 h-4 text-amber-400" />
-                    Flagged Governance Findings ({result.document.issues.length})
-                  </h3>
-                  <span className="text-xs text-slate-400">Interactive 1-Click Fixes available in Review Studio</span>
-                </div>
+                <h3 className="text-base font-extrabold text-[#1f1823] flex items-center gap-2">
+                  <AlertTriangle className="w-5 h-5 text-[#f6a3ca]" />
+                  <span>Flagged Findings ({result.document.issues.length})</span>
+                </h3>
 
                 <div className="space-y-3">
                   {result.document.issues.map((issue: any) => (
                     <div
                       key={issue.id}
-                      className="glass-panel p-5 rounded-xl border border-slate-800 bg-slate-900/50 hover:border-slate-700 transition-all space-y-2.5"
+                      className="clay-cushion !bg-[#fffdf7] !rounded-[24px] p-5 space-y-2.5"
                     >
-                      <div className="flex flex-wrap items-center justify-between gap-2">
+                      <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
                           <span
-                            className={`px-2 py-0.5 rounded-full text-xs font-bold border ${
+                            className={`px-3 py-0.5 rounded-full text-[10px] font-extrabold uppercase ${
                               issue.severity === "Critical"
-                                ? "bg-rose-500/15 text-rose-300 border-rose-500/30"
+                                ? "bg-[#ffd6e0] text-[#63192e]"
                                 : issue.severity === "Moderate"
-                                ? "bg-amber-500/15 text-amber-300 border-amber-500/30"
-                                : "bg-cyan-500/15 text-cyan-300 border-cyan-500/30"
+                                ? "bg-[#f9e7a8] text-[#59470c]"
+                                : "bg-[#c5e5fb] text-[#1c4b69]"
                             }`}
                           >
                             {issue.severity}
                           </span>
-                          <span className="px-2 py-0.5 bg-slate-800 text-slate-300 border border-slate-700 rounded-full text-xs uppercase font-medium">
+                          <span className="px-2.5 py-0.5 rounded-full bg-[#f1f2fa] text-[#3b3240] text-[10px] font-bold uppercase">
                             {issue.type}
                           </span>
                         </div>
-                        <span className="text-xs font-mono text-slate-500">{issue.location}</span>
+                        <span className="text-xs font-mono text-[#3b3240]">{issue.location}</span>
                       </div>
 
-                      <p className="text-sm font-semibold text-slate-100">{issue.description}</p>
+                      <p className="text-sm font-extrabold text-[#1f1823]">{issue.description}</p>
 
-                      <div className="space-y-1.5 text-xs bg-slate-950/60 p-3 rounded-lg border border-slate-850">
-                        <p className="text-slate-400">
-                          <span className="text-cyan-400 font-semibold">Guideline Reference: </span>
+                      <div className="clay-well p-3 space-y-1.5 text-xs text-[#3b3240]">
+                        <p>
+                          <strong className="text-[#1f1823]">Policy Reference: </strong>
                           {issue.guideline_reference}
                         </p>
-                        <p className="text-emerald-300 font-medium">
-                          <span className="text-emerald-400 font-semibold">Remediation Suggestion: </span>
+                        <p className="text-[#214d3b]">
+                          <strong>Remediation Suggestion: </strong>
                           {issue.suggestion}
                         </p>
-                        <p className="text-slate-400 italic">
-                          <span className="text-indigo-400 not-italic font-semibold">Approved Truth Source: </span>
+                        <p className="italic">
+                          <strong className="not-italic text-[#1f1823]">Truth Source: </strong>
                           {issue.citation}
                         </p>
                       </div>
@@ -587,25 +533,27 @@ export default function UploadPage() {
               </div>
             )}
 
-            {/* Next Action Buttons */}
+            {/* CTAs */}
             <div className="flex flex-col sm:flex-row items-center gap-4 pt-2">
               <button
+                type="button"
                 onClick={() => router.push(`/review?id=${result.document.id}`)}
-                className="w-full sm:flex-1 py-3.5 px-6 bg-gradient-to-r from-cyan-500 to-indigo-600 hover:from-cyan-400 hover:to-indigo-500 text-white rounded-xl font-bold shadow-lg shadow-cyan-500/20 hover:shadow-cyan-500/30 transition-all flex items-center justify-center gap-2 cursor-pointer"
+                className="clay-pill-primary w-full sm:flex-1 py-3.5 text-sm flex items-center justify-center gap-2"
               >
                 <Eye className="w-4 h-4" />
                 <span>Open in Collaborative Review Studio</span>
               </button>
               <button
+                type="button"
                 onClick={() => {
                   setResult(null);
                   setSelectedImage(null);
                   setVisualResult(null);
                   setFormData({ title: "", content: "", content_type: "text", author: "" });
                 }}
-                className="w-full sm:w-auto px-6 py-3.5 border border-slate-700 bg-slate-900/60 hover:bg-slate-800 text-slate-200 rounded-xl font-medium transition-all flex items-center justify-center gap-2 cursor-pointer"
+                className="clay-pill-secondary w-full sm:w-auto px-6 py-3.5 text-xs flex items-center justify-center gap-2"
               >
-                <RefreshCw className="w-4 h-4 text-slate-400" />
+                <RefreshCw className="w-4 h-4" />
                 <span>Upload Another Document</span>
               </button>
             </div>

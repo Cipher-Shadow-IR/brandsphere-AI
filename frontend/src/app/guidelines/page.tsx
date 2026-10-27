@@ -15,10 +15,7 @@ import {
   Layers,
   Sparkles,
   Search,
-  Filter,
   Check,
-  Tag,
-  ArrowRight,
   Info,
   Loader2,
   X
@@ -208,7 +205,6 @@ export default function GuidelinesPage() {
     fetchData();
   };
 
-  // Filtered lists based on search
   const filteredGuidelines = guidelines.filter(
     (g) =>
       g.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -236,171 +232,163 @@ export default function GuidelinesPage() {
   );
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 relative selection:bg-cyan-500/20 selection:text-cyan-200 overflow-x-hidden">
-      <div className="fixed inset-0 bg-ambient-mesh pointer-events-none" />
-
-      {/* Reusable Navbar */}
+    <div className="min-h-screen bg-[#f1f2fa] text-[#1f1823]">
       <Navbar />
 
-      {/* Main Container */}
-      <main className="relative max-w-7xl mx-auto px-4 sm:px-6 py-8 md:py-12">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 py-8 md:py-12 space-y-8">
         {/* Header Ribbon */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-6 border-b border-slate-800/80 mb-8">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-2">
           <div>
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-xs font-semibold mb-3">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#f6a3ca] text-[#1f1823] text-xs font-bold shadow-sm mb-2">
               <BookOpen className="w-3.5 h-3.5" />
-              Canonical Governance Truth Sources
+              <span>Canonical Governance Truth Sources</span>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight flex items-center gap-3">
-              <Shield className="w-7 h-7 text-cyan-400" />
-              Brand Knowledge Base & Policy Engine
+            <h1 className="text-3xl sm:text-4xl font-extrabold text-[#1f1823] tracking-tight flex items-center gap-3">
+              <Shield className="w-8 h-8 text-[#1f1823]" />
+              Brand Knowledge Base &amp; Policy Engine
             </h1>
-            <p className="text-slate-400 text-sm mt-1 max-w-2xl">
-              Centralized repository for corporate governance policies, certified factual claims, terminology glossary, and brand design tokens.
+            <p className="text-[#3b3240] text-sm mt-1 max-w-2xl">
+              Centralized repository for corporate governance policies, certified facts, and brand design tokens.
             </p>
           </div>
 
-          <div className="flex flex-wrap items-center gap-3">
-            <button
-              onClick={() => setShowAddModal(true)}
-              className="px-5 py-2.5 bg-gradient-to-r from-cyan-500 to-indigo-600 hover:from-cyan-400 hover:to-indigo-500 text-white rounded-xl font-bold text-xs shadow-lg shadow-cyan-500/20 transition-all flex items-center gap-2 cursor-pointer active:scale-95"
-            >
-              <Plus className="w-4 h-4" />
-              <span>Add New Entry</span>
-            </button>
-          </div>
+          <button
+            type="button"
+            onClick={() => setShowAddModal(true)}
+            className="clay-pill-primary px-6 py-3 text-xs flex items-center gap-2 self-start cursor-pointer"
+          >
+            <Plus className="w-4 h-4" />
+            <span>Add New Entry</span>
+          </button>
         </div>
 
-        {/* Tab & Search Bar */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-          <div className="flex items-center gap-1.5 p-1 bg-slate-900 border border-slate-800 rounded-xl overflow-x-auto text-xs font-semibold">
+        {/* Tab & Search Bar Cushion */}
+        <div className="clay-cushion !bg-[#fffdf7] !rounded-[28px] p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="flex items-center gap-1.5 p-1 bg-[#f1f2fa] rounded-full shadow-inner overflow-x-auto text-xs font-bold">
             <button
+              type="button"
               onClick={() => setActiveTab("guidelines")}
-              className={`px-3.5 py-2 rounded-lg flex items-center gap-2 transition-all cursor-pointer whitespace-nowrap ${
+              className={`px-4 py-2 rounded-full flex items-center gap-2 transition-all cursor-pointer whitespace-nowrap ${
                 activeTab === "guidelines"
-                  ? "bg-indigo-600 text-white shadow-sm"
-                  : "text-slate-400 hover:text-white"
+                  ? "bg-[#ded0f9] text-[#1f1823] shadow-sm font-extrabold"
+                  : "text-[#3b3240] hover:text-[#1f1823]"
               }`}
             >
-              <Shield className="w-3.5 h-3.5 text-cyan-400" />
+              <Shield className="w-3.5 h-3.5" />
               <span>Policies ({guidelines.length})</span>
             </button>
             <button
+              type="button"
               onClick={() => setActiveTab("facts")}
-              className={`px-3.5 py-2 rounded-lg flex items-center gap-2 transition-all cursor-pointer whitespace-nowrap ${
+              className={`px-4 py-2 rounded-full flex items-center gap-2 transition-all cursor-pointer whitespace-nowrap ${
                 activeTab === "facts"
-                  ? "bg-indigo-600 text-white shadow-sm"
-                  : "text-slate-400 hover:text-white"
+                  ? "bg-[#c0efdc] text-[#214d3b] shadow-sm font-extrabold"
+                  : "text-[#3b3240] hover:text-[#1f1823]"
               }`}
             >
-              <FileCheck className="w-3.5 h-3.5 text-emerald-400" />
+              <FileCheck className="w-3.5 h-3.5" />
               <span>Facts Library ({facts.length})</span>
             </button>
             <button
+              type="button"
               onClick={() => setActiveTab("glossary")}
-              className={`px-3.5 py-2 rounded-lg flex items-center gap-2 transition-all cursor-pointer whitespace-nowrap ${
+              className={`px-4 py-2 rounded-full flex items-center gap-2 transition-all cursor-pointer whitespace-nowrap ${
                 activeTab === "glossary"
-                  ? "bg-indigo-600 text-white shadow-sm"
-                  : "text-slate-400 hover:text-white"
+                  ? "bg-[#f6a3ca] text-[#1f1823] shadow-sm font-extrabold"
+                  : "text-[#3b3240] hover:text-[#1f1823]"
               }`}
             >
-              <Layers className="w-3.5 h-3.5 text-purple-400" />
+              <Layers className="w-3.5 h-3.5" />
               <span>Glossary ({glossary.length})</span>
             </button>
             <button
+              type="button"
               onClick={() => setActiveTab("assets")}
-              className={`px-3.5 py-2 rounded-lg flex items-center gap-2 transition-all cursor-pointer whitespace-nowrap ${
+              className={`px-4 py-2 rounded-full flex items-center gap-2 transition-all cursor-pointer whitespace-nowrap ${
                 activeTab === "assets"
-                  ? "bg-indigo-600 text-white shadow-sm"
-                  : "text-slate-400 hover:text-white"
+                  ? "bg-[#f9e7a8] text-[#59470c] shadow-sm font-extrabold"
+                  : "text-[#3b3240] hover:text-[#1f1823]"
               }`}
             >
-              <Palette className="w-3.5 h-3.5 text-amber-400" />
-              <span>Design Tokens ({assets.length})</span>
+              <Palette className="w-3.5 h-3.5" />
+              <span>Tokens ({assets.length})</span>
             </button>
           </div>
 
           {/* Quick Search */}
           <div className="relative w-full sm:w-64">
-            <Search className="w-4 h-4 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+            <Search className="w-4 h-4 text-[#3b3240] absolute left-3.5 top-3 pointer-events-none" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search knowledge base..."
-              className="w-full pl-9 pr-3 py-2 bg-slate-900 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500/60"
+              className="clay-well w-full pl-10 pr-4 py-2.5 text-xs text-[#1f1823] placeholder-[#3b3240] focus:outline-none"
             />
-            {searchQuery && (
-              <button
-                onClick={() => setSearchQuery("")}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white text-xs"
-              >
-                ✕
-              </button>
-            )}
           </div>
         </div>
 
         {loading ? (
-          <div className="py-24 text-center text-slate-400 flex flex-col items-center justify-center gap-3">
-            <Loader2 className="w-8 h-8 text-cyan-400 animate-spin" />
-            <span className="text-sm">Loading knowledge base records...</span>
+          <div className="clay-tray p-20 text-center text-[#3b3240] flex flex-col items-center justify-center gap-3">
+            <div className="w-8 h-8 rounded-full border-3 border-[#f6a3ca] border-t-transparent animate-spin" />
+            <span className="text-sm font-bold">Loading knowledge base records...</span>
           </div>
         ) : (
           <div>
-            {/* TAB 1: GUIDELINES */}
+            {/* TAB 1: POLICIES */}
             {activeTab === "guidelines" && (
-              <div className="grid md:grid-cols-2 gap-5">
+              <div className="grid md:grid-cols-2 gap-6">
                 {filteredGuidelines.map((g) => (
                   <div
                     key={g.id}
-                    className="glass-panel p-6 rounded-2xl border border-slate-800/80 bg-slate-900/60 hover:border-slate-700 transition-all flex flex-col justify-between space-y-4 group"
+                    className="clay-cushion !bg-[#fffdf7] clay-cushion-hover !rounded-[28px] p-6 flex flex-col justify-between space-y-4"
                   >
                     <div>
                       <div className="flex items-start justify-between gap-3 mb-2">
                         <div>
                           <div className="flex items-center gap-2 mb-1.5">
-                            <h3 className="text-base sm:text-lg font-bold text-white group-hover:text-cyan-300 transition-colors">
+                            <h3 className="text-base sm:text-lg font-extrabold text-[#1f1823]">
                               {g.name}
                             </h3>
-                            <span className="px-2 py-0.5 bg-cyan-500/10 text-cyan-300 border border-cyan-500/25 rounded-md text-[10px] font-mono font-semibold">
+                            <span className="px-2 py-0.5 rounded-full bg-[#f1f2fa] text-[#1f1823] text-[10px] font-mono font-bold shadow-inner">
                               {g.version}
                             </span>
                           </div>
-                          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-indigo-500/15 text-indigo-300 uppercase tracking-wider border border-indigo-500/20">
+                          <span className="px-3 py-0.5 rounded-full text-[10px] font-extrabold bg-[#ded0f9] text-[#3b2c5e] uppercase">
                             {g.category}
                           </span>
                         </div>
                         {g.id !== "1" && g.id !== "2" && g.id !== "3" && g.id !== "4" && g.id !== "5" && (
                           <button
+                            type="button"
                             onClick={() => handleDeleteGuideline(g.id)}
-                            className="text-slate-600 hover:text-rose-400 transition-colors p-1.5 rounded-lg hover:bg-slate-800 cursor-pointer"
+                            className="p-1.5 rounded-full bg-[#ffd6e0] text-[#63192e] hover:brightness-95 cursor-pointer"
                             title="Delete guideline"
                           >
-                            <Trash2 className="w-4 h-4" />
+                            <Trash2 className="w-3.5 h-3.5" />
                           </button>
                         )}
                       </div>
-                      <p className="text-slate-300 text-xs leading-relaxed mb-3">{g.description}</p>
+                      <p className="text-[#3b3240] text-xs leading-relaxed mb-3">{g.description}</p>
 
                       {g.rule_pattern && (
-                        <div className="p-2.5 rounded-xl bg-slate-950/80 border border-slate-850 text-xs mb-2">
-                          <span className="text-slate-500 font-mono text-[11px] block mb-0.5">Flag Trigger Pattern:</span>
-                          <span className="text-cyan-300 font-mono text-[11px]">{g.rule_pattern}</span>
+                        <div className="clay-well p-2.5 text-xs mb-2">
+                          <span className="text-[#3b3240] text-[10px] uppercase font-bold block mb-0.5">Flag Trigger Pattern:</span>
+                          <span className="text-[#1f1823] font-mono text-xs font-bold">{g.rule_pattern}</span>
                         </div>
                       )}
                     </div>
 
-                    <div className="space-y-1.5 pt-3 border-t border-slate-800/80 text-xs">
+                    <div className="space-y-1.5 pt-3 border-t border-[#e6e8f4] text-xs">
                       {g.rationale && (
-                        <p className="text-slate-400">
-                          <span className="text-indigo-400 font-semibold">Governance Rationale: </span>
+                        <p className="text-[#3b3240]">
+                          <strong className="text-[#1f1823]">Rationale: </strong>
                           {g.rationale}
                         </p>
                       )}
                       {g.remediation_template && (
-                        <p className="text-emerald-300">
-                          <span className="text-emerald-400 font-semibold">Remediation Template: </span>
+                        <p className="text-[#214d3b]">
+                          <strong>Remediation Template: </strong>
                           {g.remediation_template}
                         </p>
                       )}
@@ -413,13 +401,13 @@ export default function GuidelinesPage() {
             {/* TAB 2: FACTS */}
             {activeTab === "facts" && (
               <div className="space-y-4">
-                <div className="glass-panel p-4 rounded-xl border border-indigo-500/20 bg-indigo-950/20 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-slate-300">
+                <div className="clay-cushion-mint p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-[#214d3b]">
                   <span className="flex items-center gap-2">
-                    <Info className="w-4 h-4 text-cyan-400 shrink-0" />
-                    Canonical facts ground claims in BrandSphere AI and demand certified metric citations before release.
+                    <Info className="w-4 h-4 text-[#214d3b] shrink-0" />
+                    <span>Canonical facts ground assertions in BrandSphere AI and demand certified metric citations before release.</span>
                   </span>
-                  <span className="px-3 py-1 bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 rounded-full font-semibold self-start sm:self-auto shrink-0">
-                    SOC 2 Audited Truth Base
+                  <span className="px-3 py-1 bg-[#fffdf7] rounded-full font-bold self-start sm:self-auto shrink-0 shadow-sm">
+                    SOC 2 Audited
                   </span>
                 </div>
 
@@ -427,27 +415,28 @@ export default function GuidelinesPage() {
                   {filteredFacts.map((fact) => (
                     <div
                       key={fact.id}
-                      className="glass-panel p-5 rounded-xl border border-slate-800/80 bg-slate-900/60 hover:border-slate-700 flex flex-col md:flex-row md:items-center justify-between gap-4 transition-all"
+                      className="clay-cushion !bg-[#fffdf7] clay-cushion-hover !rounded-[24px] p-5 flex flex-col md:flex-row md:items-center justify-between gap-4"
                     >
                       <div className="space-y-1.5 flex-1">
                         <div className="flex items-center gap-2">
-                          <span className="px-2.5 py-0.5 bg-cyan-500/10 text-cyan-300 border border-cyan-500/25 rounded-md text-xs font-semibold">
+                          <span className="px-3 py-0.5 rounded-full bg-[#c0efdc] text-[#214d3b] text-xs font-bold">
                             {fact.topic}
                           </span>
-                          <span className="text-xs text-emerald-400 font-medium">
-                            ● Approved Metric: <strong className="text-white">{fact.approved_metric}</strong>
+                          <span className="text-xs text-[#214d3b] font-bold">
+                            ● Approved Metric: <strong className="text-[#1f1823]">{fact.approved_metric}</strong>
                           </span>
                         </div>
-                        <p className="text-white text-sm font-semibold">{fact.claim_statement}</p>
-                        <p className="text-xs text-slate-400 flex items-center gap-1.5">
-                          <ExternalLink className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
+                        <p className="text-[#1f1823] text-sm font-extrabold">{fact.claim_statement}</p>
+                        <p className="text-xs text-[#3b3240] flex items-center gap-1.5">
+                          <ExternalLink className="w-3.5 h-3.5 text-[#1f1823]" />
                           <span>Approved Citation: </span>
-                          <span className="text-indigo-300 font-mono text-[11px]">{fact.source_citation}</span>
+                          <span className="font-mono text-[11px] text-[#1f1823] font-bold">{fact.source_citation}</span>
                         </p>
                       </div>
                       <button
+                        type="button"
                         onClick={() => handleDeleteFact(fact.id)}
-                        className="text-slate-600 hover:text-rose-400 transition-colors p-2 rounded-lg hover:bg-slate-800 self-start md:self-center cursor-pointer"
+                        className="p-2 rounded-full bg-[#ffd6e0] text-[#63192e] self-start md:self-center cursor-pointer"
                         title="Delete fact"
                       >
                         <Trash2 className="w-4 h-4" />
@@ -464,41 +453,42 @@ export default function GuidelinesPage() {
                 {filteredGlossary.map((term) => (
                   <div
                     key={term.id}
-                    className="glass-panel p-5 rounded-xl border border-slate-800/80 bg-slate-900/60 hover:border-slate-700 flex flex-col justify-between space-y-3 transition-all"
+                    className="clay-cushion !bg-[#fffdf7] !rounded-[24px] p-5 flex flex-col justify-between space-y-3"
                   >
                     <div>
                       <div className="flex items-center justify-between mb-3">
                         <span
-                          className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider border ${
+                          className={`px-3 py-0.5 rounded-full text-[10px] font-extrabold uppercase ${
                             term.category === "prohibited"
-                              ? "bg-rose-500/15 text-rose-300 border-rose-500/30"
-                              : "bg-amber-500/15 text-amber-300 border-amber-500/30"
+                              ? "bg-[#ffd6e0] text-[#63192e]"
+                              : "bg-[#f9e7a8] text-[#59470c]"
                           }`}
                         >
                           {term.category}
                         </span>
                         <button
+                          type="button"
                           onClick={() => handleDeleteTerm(term.id)}
-                          className="text-slate-600 hover:text-rose-400 transition-colors p-1 cursor-pointer"
+                          className="text-[#3b3240] hover:text-[#63192e] cursor-pointer"
                           title="Delete term"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
                         </button>
                       </div>
                       <div className="mb-2">
-                        <div className="text-[11px] text-slate-500 mb-0.5">Deprecated Phrase:</div>
-                        <div className="text-rose-300 line-through font-mono text-xs">{term.term}</div>
+                        <div className="text-[11px] text-[#3b3240] font-bold mb-0.5">Deprecated Phrase:</div>
+                        <div className="text-[#63192e] line-through font-mono text-xs font-bold">{term.term}</div>
                       </div>
                       <div className="mb-2">
-                        <div className="text-[11px] text-slate-500 mb-0.5">Approved Replacement:</div>
-                        <div className="text-emerald-300 font-semibold text-xs flex items-center gap-1.5">
-                          <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                        <div className="text-[11px] text-[#3b3240] font-bold mb-0.5">Approved Replacement:</div>
+                        <div className="text-[#214d3b] font-extrabold text-xs flex items-center gap-1.5">
+                          <Check className="w-3.5 h-3.5 text-[#214d3b]" />
                           <span>{term.replacement}</span>
                         </div>
                       </div>
                     </div>
                     {term.note && (
-                      <p className="text-[11px] text-slate-400 italic pt-2 border-t border-slate-800">{term.note}</p>
+                      <p className="text-[11px] text-[#3b3240] italic pt-2 border-t border-[#e6e8f4]">{term.note}</p>
                     )}
                   </div>
                 ))}
@@ -511,17 +501,17 @@ export default function GuidelinesPage() {
                 {filteredAssets.map((asset) => (
                   <div
                     key={asset.id}
-                    className="glass-panel p-5 rounded-xl border border-slate-800/80 bg-slate-900/60 space-y-3"
+                    className="clay-cushion !bg-[#fffdf7] !rounded-[24px] p-5 space-y-3"
                   >
                     <div className="flex items-center justify-between">
-                      <span className="text-[10px] font-bold px-2 py-0.5 bg-slate-800 text-slate-300 rounded uppercase tracking-wider border border-slate-700">
+                      <span className="text-[10px] font-extrabold px-2.5 py-0.5 bg-[#f1f2fa] text-[#1f1823] rounded-full uppercase">
                         {asset.asset_type}
                       </span>
                     </div>
 
                     {asset.asset_type === "color" && (
                       <div
-                        className="w-full h-16 rounded-xl border border-white/10 shadow-lg flex items-center justify-center font-mono text-xs font-bold text-white shadow-inner"
+                        className="w-full h-16 rounded-2xl shadow-[inset_2px_2px_4px_rgba(0,0,0,0.15),2px_4px_8px_rgba(56,49,57,0.1)] flex items-center justify-center font-mono text-xs font-bold text-white"
                         style={{ backgroundColor: asset.value }}
                       >
                         {asset.value}
@@ -529,11 +519,11 @@ export default function GuidelinesPage() {
                     )}
 
                     <div>
-                      <h4 className="font-bold text-white text-sm mb-0.5">{asset.asset_name}</h4>
-                      <p className="text-xs font-mono text-cyan-300">{asset.value}</p>
+                      <h4 className="font-extrabold text-[#1f1823] text-sm mb-0.5">{asset.asset_name}</h4>
+                      <p className="text-xs font-mono font-bold text-[#3b3240]">{asset.value}</p>
                     </div>
 
-                    {asset.description && <p className="text-[11px] text-slate-400">{asset.description}</p>}
+                    {asset.description && <p className="text-[11px] text-[#3b3240]">{asset.description}</p>}
                   </div>
                 ))}
               </div>
@@ -544,43 +534,44 @@ export default function GuidelinesPage() {
 
       {/* CREATE ENTRY MODAL */}
       {showAddModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4 animate-fadeIn">
-          <div className="glass-panel bg-slate-900 border border-slate-800 rounded-2xl max-w-lg w-full p-6 sm:p-7 shadow-2xl relative space-y-5">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-800">
-              <h3 className="text-lg font-bold text-white flex items-center gap-2">
-                <Plus className="w-5 h-5 text-cyan-400" />
-                Add to Brand Knowledge Base ({activeTab.toUpperCase()})
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#1f1823]/50 backdrop-blur-sm p-4 animate-fadeIn">
+          <div className="clay-tray !bg-[#fffdf7] !rounded-[36px] max-w-lg w-full p-6 sm:p-8 shadow-2xl relative space-y-5">
+            <div className="flex items-center justify-between pb-3 border-b border-[#e6e8f4]">
+              <h3 className="text-lg font-extrabold text-[#1f1823] flex items-center gap-2">
+                <Plus className="w-5 h-5 text-[#f6a3ca]" />
+                <span>Add to Knowledge Base ({activeTab.toUpperCase()})</span>
               </h3>
               <button
+                type="button"
                 onClick={() => setShowAddModal(false)}
-                className="text-slate-400 hover:text-white text-lg font-bold p-1 cursor-pointer"
+                className="p-1 rounded-full text-[#3b3240] hover:text-[#1f1823] hover:bg-[#fffdf7] transition-colors cursor-pointer"
               >
-                ✕
+                <X className="w-5 h-5 text-[#1f1823]" />
               </button>
             </div>
 
             {activeTab === "guidelines" && (
               <form onSubmit={handleCreateGuideline} className="space-y-4 text-xs">
                 <div>
-                  <label className="block text-slate-300 font-semibold uppercase tracking-wider mb-1.5">
-                    Guideline Title <span className="text-cyan-400">*</span>
+                  <label className="block text-[#1f1823] font-bold uppercase tracking-wider mb-1.5">
+                    Guideline Title *
                   </label>
                   <input
                     type="text"
                     required
                     value={newGuideline.name}
                     onChange={(e) => setNewGuideline({ ...newGuideline, name: e.target.value })}
-                    className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-white text-xs placeholder-slate-500 focus:outline-none focus:border-cyan-500/60"
-                    placeholder="e.g., Executive Social Media Policy"
+                    className="clay-well w-full px-3.5 py-2.5 text-[#1f1823] focus:outline-none"
+                    placeholder="e.g. Executive Social Media Policy"
                   />
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-slate-300 font-semibold uppercase tracking-wider mb-1.5">Category</label>
+                    <label className="block text-[#1f1823] font-bold uppercase tracking-wider mb-1.5">Category</label>
                     <select
                       value={newGuideline.category}
                       onChange={(e) => setNewGuideline({ ...newGuideline, category: e.target.value })}
-                      className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-white text-xs focus:outline-none focus:border-cyan-500/60"
+                      className="clay-well w-full px-3.5 py-2.5 text-[#1f1823] focus:outline-none"
                     >
                       <option value="claims">claims</option>
                       <option value="tone">tone</option>
@@ -590,38 +581,34 @@ export default function GuidelinesPage() {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-slate-300 font-semibold uppercase tracking-wider mb-1.5">Version</label>
+                    <label className="block text-[#1f1823] font-bold uppercase tracking-wider mb-1.5">Version</label>
                     <input
                       type="text"
                       value={newGuideline.version}
                       onChange={(e) => setNewGuideline({ ...newGuideline, version: e.target.value })}
-                      className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-white text-xs placeholder-slate-500 focus:outline-none focus:border-cyan-500/60"
+                      className="clay-well w-full px-3.5 py-2.5 text-[#1f1823] focus:outline-none"
                       placeholder="v1.0"
                     />
                   </div>
                 </div>
                 <div>
-                  <label className="block text-slate-300 font-semibold uppercase tracking-wider mb-1.5">
-                    Description <span className="text-cyan-400">*</span>
-                  </label>
+                  <label className="block text-[#1f1823] font-bold uppercase tracking-wider mb-1.5">Description *</label>
                   <textarea
                     required
                     rows={3}
                     value={newGuideline.description}
                     onChange={(e) => setNewGuideline({ ...newGuideline, description: e.target.value })}
-                    className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-white text-xs placeholder-slate-500 focus:outline-none focus:border-cyan-500/60 resize-none"
-                    placeholder="Explain the policy requirement and scope..."
+                    className="clay-well w-full px-3.5 py-2.5 text-[#1f1823] focus:outline-none resize-none"
+                    placeholder="Explain the policy requirement..."
                   />
                 </div>
                 <div>
-                  <label className="block text-slate-300 font-semibold uppercase tracking-wider mb-1.5">
-                    Trigger Patterns / Keywords
-                  </label>
+                  <label className="block text-[#1f1823] font-bold uppercase tracking-wider mb-1.5">Trigger Pattern</label>
                   <input
                     type="text"
                     value={newGuideline.rule_pattern}
                     onChange={(e) => setNewGuideline({ ...newGuideline, rule_pattern: e.target.value })}
-                    className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-white text-xs placeholder-slate-500 focus:outline-none focus:border-cyan-500/60"
+                    className="clay-well w-full px-3.5 py-2.5 text-[#1f1823] focus:outline-none"
                     placeholder="Comma separated words (e.g. unbeatable, 100% zero downtime)"
                   />
                 </div>
@@ -629,14 +616,14 @@ export default function GuidelinesPage() {
                   <button
                     type="button"
                     onClick={() => setShowAddModal(false)}
-                    className="px-4 py-2 border border-slate-700 hover:bg-slate-800 text-slate-300 rounded-xl text-xs font-medium cursor-pointer"
+                    className="clay-pill-secondary px-5 py-2 text-xs"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
                     disabled={submittingModal}
-                    className="px-5 py-2 bg-gradient-to-r from-cyan-500 to-indigo-600 hover:from-cyan-400 hover:to-indigo-500 text-white rounded-xl text-xs font-bold transition-all cursor-pointer shadow-md shadow-cyan-500/20"
+                    className="clay-pill-primary px-6 py-2 text-xs"
                   >
                     {submittingModal ? "Saving..." : "Save Guideline"}
                   </button>
@@ -647,54 +634,46 @@ export default function GuidelinesPage() {
             {activeTab === "facts" && (
               <form onSubmit={handleCreateFact} className="space-y-4 text-xs">
                 <div>
-                  <label className="block text-slate-300 font-semibold uppercase tracking-wider mb-1.5">
-                    Topic <span className="text-cyan-400">*</span>
-                  </label>
+                  <label className="block text-[#1f1823] font-bold uppercase tracking-wider mb-1.5">Topic *</label>
                   <input
                     type="text"
                     required
                     value={newFact.topic}
                     onChange={(e) => setNewFact({ ...newFact, topic: e.target.value })}
-                    className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-white text-xs placeholder-slate-500 focus:outline-none focus:border-cyan-500/60"
+                    className="clay-well w-full px-3.5 py-2.5 text-[#1f1823] focus:outline-none"
                     placeholder="e.g., Latency Benchmark"
                   />
                 </div>
                 <div>
-                  <label className="block text-slate-300 font-semibold uppercase tracking-wider mb-1.5">
-                    Canonical Statement <span className="text-cyan-400">*</span>
-                  </label>
+                  <label className="block text-[#1f1823] font-bold uppercase tracking-wider mb-1.5">Canonical Statement *</label>
                   <textarea
                     required
                     rows={2}
                     value={newFact.claim_statement}
                     onChange={(e) => setNewFact({ ...newFact, claim_statement: e.target.value })}
-                    className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-white text-xs placeholder-slate-500 focus:outline-none focus:border-cyan-500/60 resize-none"
-                    placeholder="Verifiable factual claim approved by compliance..."
+                    className="clay-well w-full px-3.5 py-2.5 text-[#1f1823] focus:outline-none resize-none"
+                    placeholder="Verifiable factual claim..."
                   />
                 </div>
                 <div>
-                  <label className="block text-slate-300 font-semibold uppercase tracking-wider mb-1.5">
-                    Approved Metric <span className="text-cyan-400">*</span>
-                  </label>
+                  <label className="block text-[#1f1823] font-bold uppercase tracking-wider mb-1.5">Approved Metric *</label>
                   <input
                     type="text"
                     required
                     value={newFact.approved_metric}
                     onChange={(e) => setNewFact({ ...newFact, approved_metric: e.target.value })}
-                    className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-white text-xs placeholder-slate-500 focus:outline-none focus:border-cyan-500/60"
-                    placeholder="e.g., 99.99% uptime guarantee"
+                    className="clay-well w-full px-3.5 py-2.5 text-[#1f1823] focus:outline-none"
+                    placeholder="e.g., 99.99% uptime"
                   />
                 </div>
                 <div>
-                  <label className="block text-slate-300 font-semibold uppercase tracking-wider mb-1.5">
-                    Verified Source Citation <span className="text-cyan-400">*</span>
-                  </label>
+                  <label className="block text-[#1f1823] font-bold uppercase tracking-wider mb-1.5">Citation *</label>
                   <input
                     type="text"
                     required
                     value={newFact.source_citation}
                     onChange={(e) => setNewFact({ ...newFact, source_citation: e.target.value })}
-                    className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-white text-xs placeholder-slate-500 focus:outline-none focus:border-cyan-500/60"
+                    className="clay-well w-full px-3.5 py-2.5 text-[#1f1823] focus:outline-none"
                     placeholder="e.g., SLA Audit Report 2026, Section 2"
                   />
                 </div>
@@ -702,14 +681,14 @@ export default function GuidelinesPage() {
                   <button
                     type="button"
                     onClick={() => setShowAddModal(false)}
-                    className="px-4 py-2 border border-slate-700 hover:bg-slate-800 text-slate-300 rounded-xl text-xs font-medium cursor-pointer"
+                    className="clay-pill-secondary px-5 py-2 text-xs"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
                     disabled={submittingModal}
-                    className="px-5 py-2 bg-gradient-to-r from-cyan-500 to-indigo-600 hover:from-cyan-400 hover:to-indigo-500 text-white rounded-xl text-xs font-bold transition-all cursor-pointer shadow-md shadow-cyan-500/20"
+                    className="clay-pill-primary px-6 py-2 text-xs"
                   >
                     {submittingModal ? "Saving..." : "Save Verified Fact"}
                   </button>
@@ -720,65 +699,39 @@ export default function GuidelinesPage() {
             {activeTab === "glossary" && (
               <form onSubmit={handleCreateTerm} className="space-y-4 text-xs">
                 <div>
-                  <label className="block text-slate-300 font-semibold uppercase tracking-wider mb-1.5">
-                    Deprecated / Flagged Term <span className="text-cyan-400">*</span>
-                  </label>
+                  <label className="block text-[#1f1823] font-bold uppercase tracking-wider mb-1.5">Deprecated Phrase *</label>
                   <input
                     type="text"
                     required
                     value={newTerm.term}
                     onChange={(e) => setNewTerm({ ...newTerm, term: e.target.value })}
-                    className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-white text-xs placeholder-slate-500 focus:outline-none focus:border-cyan-500/60"
+                    className="clay-well w-full px-3.5 py-2.5 text-[#1f1823] focus:outline-none"
                     placeholder="e.g., legacy dashboard"
                   />
                 </div>
                 <div>
-                  <label className="block text-slate-300 font-semibold uppercase tracking-wider mb-1.5">
-                    Approved Replacement <span className="text-cyan-400">*</span>
-                  </label>
+                  <label className="block text-[#1f1823] font-bold uppercase tracking-wider mb-1.5">Approved Replacement *</label>
                   <input
                     type="text"
                     required
                     value={newTerm.replacement}
                     onChange={(e) => setNewTerm({ ...newTerm, replacement: e.target.value })}
-                    className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-white text-xs placeholder-slate-500 focus:outline-none focus:border-cyan-500/60"
+                    className="clay-well w-full px-3.5 py-2.5 text-[#1f1823] focus:outline-none"
                     placeholder="e.g., Enterprise Governance Hub"
-                  />
-                </div>
-                <div>
-                  <label className="block text-slate-300 font-semibold uppercase tracking-wider mb-1.5">Category</label>
-                  <select
-                    value={newTerm.category}
-                    onChange={(e) => setNewTerm({ ...newTerm, category: e.target.value })}
-                    className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-white text-xs focus:outline-none focus:border-cyan-500/60"
-                  >
-                    <option value="deprecated">deprecated</option>
-                    <option value="prohibited">prohibited</option>
-                    <option value="preferred">preferred</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-slate-300 font-semibold uppercase tracking-wider mb-1.5">Usage Note</label>
-                  <input
-                    type="text"
-                    value={newTerm.note}
-                    onChange={(e) => setNewTerm({ ...newTerm, note: e.target.value })}
-                    className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-white text-xs placeholder-slate-500 focus:outline-none focus:border-cyan-500/60"
-                    placeholder="Why this replacement is mandatory"
                   />
                 </div>
                 <div className="flex justify-end gap-3 pt-3">
                   <button
                     type="button"
                     onClick={() => setShowAddModal(false)}
-                    className="px-4 py-2 border border-slate-700 hover:bg-slate-800 text-slate-300 rounded-xl text-xs font-medium cursor-pointer"
+                    className="clay-pill-secondary px-5 py-2 text-xs"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
                     disabled={submittingModal}
-                    className="px-5 py-2 bg-gradient-to-r from-cyan-500 to-indigo-600 hover:from-cyan-400 hover:to-indigo-500 text-white rounded-xl text-xs font-bold transition-all cursor-pointer shadow-md shadow-cyan-500/20"
+                    className="clay-pill-primary px-6 py-2 text-xs"
                   >
                     {submittingModal ? "Saving..." : "Save Term"}
                   </button>
@@ -787,11 +740,12 @@ export default function GuidelinesPage() {
             )}
 
             {activeTab === "assets" && (
-              <div className="text-xs text-slate-400 py-6 text-center space-y-3">
-                <p>Design tokens are defined in the global brand theme configuration. You can manage policy guidelines and verified facts above.</p>
+              <div className="text-xs text-[#3b3240] py-6 text-center space-y-3">
+                <p>Design tokens are configured in the global brand theme. You can manage policies and facts above.</p>
                 <button
+                  type="button"
                   onClick={() => setShowAddModal(false)}
-                  className="px-5 py-2 border border-slate-700 hover:bg-slate-800 text-white rounded-xl text-xs font-medium cursor-pointer"
+                  className="clay-pill-secondary px-6 py-2.5 text-xs"
                 >
                   Close
                 </button>

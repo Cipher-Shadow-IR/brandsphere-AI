@@ -65,11 +65,12 @@ Welcome to the BrandSphere AI codebase! This document is designed to give you an
 
 ### 1. Backend Setup
 ```bash
-# In your terminal:
+# If you are in the backend directory:
 cd backend
 pip install -r requirements.txt
+python -m uvicorn app.main:app --host 127.0.0.1 --port 8001 --reload
 
-# Run the FastAPI server with hot-reload (Port 8001)
+# OR if you are in the project root:
 python -m uvicorn backend.app.main:app --host 127.0.0.1 --port 8001 --reload
 ```
 - API Health Check: [http://127.0.0.1:8001/](http://127.0.0.1:8001/)
