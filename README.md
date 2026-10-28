@@ -109,9 +109,6 @@ brandsphere-AI/
 │   ├── package.json                 # Next.js 16, React 19, Tailwind CSS dependencies
 │   └── tsconfig.json                # Strict TypeScript configuration
 │
-├── execution.md                     # Step-by-step local execution & port verification guide
-├── test-dataset.md                  # Comprehensive test dataset (High-risk, non-compliant, visual test cases)
-├── testing-plan.md                  # End-to-end test execution plan & QA checkpoints
 ├── next-implementation.md           # Teammate onboarding & contribution roadmap
 ├── brand_governance.db              # SQLite relational persistent database
 └── README.md                        # Project documentation (this file)
