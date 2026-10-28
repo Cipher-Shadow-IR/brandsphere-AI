@@ -22,6 +22,7 @@ import {
   Scale
 } from "lucide-react";
 import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 
 export default function Home() {
   const [demoStep, setDemoStep] = useState<"flagged" | "remediated">("flagged");
@@ -449,22 +450,9 @@ export default function Home() {
         </section>
 
         {}
-        <footer className="clay-tray !rounded-[36px] p-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[#3b3240]">
-          <div>
-            <strong className="text-[#1f1823]">Team CIPHER CODERS</strong> — Ishaan Ray &amp; Rishi Prajapati
-            <span className="block text-[11px] text-[#3b3240] mt-0.5">
-              Inkloom AI Hackathon • Intelligent Pre-Publication Brand Governance
-            </span>
-          </div>
-          <div className="flex flex-wrap items-center gap-4 font-bold text-[#1f1823]">
-            <Link href="/dashboard" className="hover:text-[#f6a3ca] transition-colors">Dashboard</Link>
-            <Link href="/upload" className="hover:text-[#f6a3ca] transition-colors">Scanner</Link>
-            <Link href="/review" className="hover:text-[#f6a3ca] transition-colors">Review Studio</Link>
-            <Link href="/guidelines" className="hover:text-[#f6a3ca] transition-colors">Guidelines</Link>
-            <Link href="/analytics" className="hover:text-[#f6a3ca] transition-colors">Analytics</Link>
-          </div>
-        </footer>
+
       </main>
+      <Footer />
     </div>
   );
 }

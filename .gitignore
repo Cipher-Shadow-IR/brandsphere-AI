@@ -4,13 +4,7 @@
 *.local
 
 # Internal Engineering & Planning Documents (Local reference only, non-public)
-docs/internal/
-execution.md
-next-implementation.md
-test-dataset.md
-testing-plan.md
-frontend/AGENTS.md
-frontend/README.md
+docs/
 
 # Python
 __pycache__/

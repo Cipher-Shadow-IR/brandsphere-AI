@@ -3,8 +3,8 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import Image from "next/image";
 import {
-  Shield,
   Sparkles,
   Upload,
   FileText,
@@ -49,8 +49,15 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-5 sm:px-6 py-3 flex items-center justify-between clay-cushion !rounded-[28px] !bg-[#fffdf7]">
         {}
         <Link href="/" className="flex items-center gap-3 group shrink-0">
-          <div className="relative flex items-center justify-center w-10 h-10 rounded-2xl bg-[#f6a3ca] shadow-[3px_5px_12px_rgba(246,163,202,0.4),inset_2px_2px_4px_rgba(255,255,255,0.8),inset_-2px_-2px_4px_rgba(189,74,128,0.2)] group-hover:scale-105 transition-transform border border-[#f78ec0]">
-            <Shield className="w-5 h-5 text-[#1f1823]" />
+          <div className="relative flex items-center justify-center w-10 h-10 rounded-2xl bg-[#fffdf7] shadow-[3px_5px_12px_rgba(0,0,0,0.06),inset_2px_2px_4px_rgba(255,255,255,0.9),inset_-2px_-2px_4px_rgba(0,0,0,0.05)] group-hover:scale-105 transition-transform border border-[#e6e8f4] overflow-hidden p-1">
+            <Image
+              src="/BrandSphere-AI-Logo.png"
+              alt="BrandSphere AI Logo"
+              width={36}
+              height={36}
+              className="w-full h-full object-contain rounded-xl"
+              priority
+            />
           </div>
           <div>
             <span className="text-xl font-black text-[#1f1823] tracking-tight">

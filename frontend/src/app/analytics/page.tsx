@@ -1,3 +1,4 @@
+import BrandLoader from "@/components/BrandLoader";
 "use client";
 
 import { useEffect, useState } from "react";
@@ -326,10 +327,7 @@ window.onload = function() { window.print(); }
         </div>
 
         {loading ? (
-          <div className="clay-tray p-20 text-center text-[#3b3240] flex flex-col items-center justify-center gap-3">
-            <div className="w-8 h-8 rounded-full border-3 border-[#f6a3ca] border-t-transparent animate-spin" />
-            <span className="text-sm font-bold">Aggregating governance telemetry...</span>
-          </div>
+          <BrandLoader label="Aggregating governance telemetry..." size="lg" />
         ) : analytics ? (
           <div className="space-y-6">
             {}

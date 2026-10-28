@@ -1,3 +1,4 @@
+import BrandLoader from "@/components/BrandLoader";
 "use client";
 
 import { useEffect, useState } from "react";
@@ -227,10 +228,7 @@ export default function Dashboard() {
 
         {}
         {loading ? (
-          <div className="clay-tray p-16 text-center text-[#3b3240] flex flex-col items-center justify-center gap-3">
-            <div className="w-8 h-8 rounded-full border-3 border-[#f6a3ca] border-t-transparent animate-spin" />
-            <span className="text-sm font-bold">Loading enterprise submissions...</span>
-          </div>
+          <BrandLoader label="Loading enterprise submissions..." size="lg" />
         ) : filteredDocs.length === 0 ? (
           <div className="clay-tray p-16 text-center space-y-4">
             <div className="w-16 h-16 rounded-full bg-[#ded0f9] flex items-center justify-center mx-auto text-[#1f1823] shadow-inner border border-[#caaef2]">

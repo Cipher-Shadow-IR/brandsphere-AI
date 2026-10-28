@@ -1,3 +1,4 @@
+import BrandLoader from "@/components/BrandLoader";
 "use client";
 
 import { useEffect, useState, Suspense } from "react";
@@ -282,9 +283,8 @@ function ReviewContent() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#f1f2fa] text-[#1f1823] flex flex-col items-center justify-center gap-3">
-        <div className="w-8 h-8 rounded-full border-3 border-[#f6a3ca] border-t-transparent animate-spin" />
-        <span className="text-[#3b3240] text-sm font-bold">Loading governance review studio...</span>
+      <div className="min-h-screen bg-[#f1f2fa] text-[#1f1823] flex flex-col items-center justify-center px-4">
+        <BrandLoader label="Loading Governance Review Studio..." size="lg" />
       </div>
     );
   }

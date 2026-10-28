@@ -1,3 +1,4 @@
+import BrandLoader from "@/components/BrandLoader";
 "use client";
 
 import { useEffect, useState } from "react";
@@ -329,10 +330,7 @@ export default function GuidelinesPage() {
         </div>
 
         {loading ? (
-          <div className="clay-tray p-20 text-center text-[#3b3240] flex flex-col items-center justify-center gap-3">
-            <div className="w-8 h-8 rounded-full border-3 border-[#f6a3ca] border-t-transparent animate-spin" />
-            <span className="text-sm font-bold">Loading knowledge base records...</span>
-          </div>
+          <BrandLoader label="Loading knowledge base records..." size="lg" />
         ) : (
           <div>
             {}
