@@ -294,12 +294,16 @@ Distributed under the **MIT License**. See `LICENSE` for more information.
     <img src="https://img.shields.io/badge/Ishaan%20Ray-Team%20Leader-black?style=for-the-badge&logo=github" alt="Ishaan Ray" />
   </a>
   <a href="https://github.com/Cipher-Shadow-IR">
-    <img src="https://img.shields.io/badge/Rishi%20Prajapati-Core%20Architect-blue?style=for-the-badge&logo=github" alt="Rishi Prajapati" />
+    <img src="https://img.shields.io/badge/Rishi%20Prajapati-Research%20%26%20Validation-blue?style=for-the-badge&logo=github" alt="Rishi Prajapati" />
   </a>
 </p>
 
-- **Ishaan Ray (Team Leader)**: AI Systems Architecture, Pre-Publication Rule Engine, Multimodal Computer Vision, Grounding & Evaluation Pipelines.
-- **Rishi Prajapati**: Full-Stack Architecture, Claymorphism Design System, Collaborative Review Studio, SQLite ORM Persistence & SLA Telemetry.
+### 👥 Team Roles & Ownership Matrix
+
+| Member | Designated Role | Core Domain Responsibilities (per Submission Blueprint) |
+| :--- | :--- | :--- |
+| **Ishaan Ray** | **Team Leader** | • Problem Analysis & Solution Design<br />• End-to-End Product Architecture<br />• RAG Pipeline & Grounded Fact Verification<br />• Prompt Engineering & Hallucination Mitigation<br />• Technical Stack Selection & Feasibility Planning<br />• Product Workflow, Feature Planning & Submission Documentation |
+| **Rishi Prajapati** | **Research & Validation** | • Retrieval, Embedding & Knowledge-Base Integration<br />• Backend Feature Development & API Integration<br />• Debugging, Performance Improvements & MVP Development<br />• ML/RAG Pipeline Implementation Support |
 
 ---
 
