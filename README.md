@@ -80,17 +80,21 @@ Modern enterprises generate unprecedented volumes of public-facing copy across d
 
 ```plaintext
 brandsphere-AI/
+├── .dockerignore
 ├── .env.example
 ├── .gitignore
 ├── .python-version
 ├── README.md
+├── docker-compose.yml
 ├── neon.ts
 ├── package-lock.json
 ├── package.json
 ├── pytest.ini
 ├── 📁 backend/
+│   ├── .dockerignore
 │   ├── .env.example
 │   ├── .python-version
+│   ├── Dockerfile
 │   ├── requirements.txt
 │   ├── 📁 app/
 │   │   ├── __init__.py
@@ -109,7 +113,9 @@ brandsphere-AI/
 │       ├── test_extended_features.py
 │       └── test_persistence.py
 └── 📁 frontend/
+    ├── .dockerignore
     ├── .gitignore
+    ├── Dockerfile
     ├── eslint.config.mjs
     ├── next.config.ts
     ├── package-lock.json
@@ -146,7 +152,32 @@ brandsphere-AI/
 
 ---
 
-# ⚙️ Getting Started & Local Setup
+# 🐳 Instant Launch with Docker Compose (Recommended)
+
+Run the entire enterprise ecosystem (Next.js 16 Frontend + FastAPI Backend + Redis 7 Cache + Qdrant Vector Engine) with a single command:
+
+```bash
+docker compose up --build
+```
+
+- **Frontend Application**: [`http://localhost:3000`](http://localhost:3000)
+- **FastAPI Interactive Docs**: [`http://localhost:8000/docs`](http://localhost:8000/docs)
+- **Qdrant Vector Engine**: [`http://localhost:6333/dashboard`](http://localhost:6333/dashboard)
+- **Redis Cache Layer**: `localhost:6379`
+
+To run in the background (detached mode):
+```bash
+docker compose up -d --build
+```
+
+To stop all services:
+```bash
+docker compose down
+```
+
+---
+
+# ⚙️ Getting Started & Manual Local Setup
 
 ### Prerequisites
 

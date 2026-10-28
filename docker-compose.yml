@@ -1,0 +1,101 @@
+services:
+  # ============================================================================
+  # 1. Fast, Resilient Redis Cache Layer
+  # ============================================================================
+  redis:
+    image: redis:7-alpine
+    container_name: brandsphere-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    restart: unless-stopped
+    networks:
+      - brandsphere-network
+
+  # ============================================================================
+  # 2. Qdrant Vector Search Engine (RAG & Semantic Retrieval)
+  # ============================================================================
+  qdrant:
+    image: qdrant/qdrant:v1.9.0
+    container_name: brandsphere-qdrant
+    ports:
+      - "6333:6333"
+    volumes:
+      - qdrant_data:/qdrant/storage
+    restart: unless-stopped
+    networks:
+      - brandsphere-network
+
+  # ============================================================================
+  # 3. BrandSphere AI FastAPI Backend (Core Multi-Agent Governance Engine)
+  # ============================================================================
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: brandsphere-backend
+    ports:
+      - "8000:8000"
+    environment:
+      - PORT=8000
+      - CORS_ORIGINS=http://localhost:3000,http://127.0.0.1:3000,http://frontend:3000
+      - DATABASE_URL=${DATABASE_URL:-sqlite:///./brand_governance.db}
+      - REDIS_URL=${REDIS_URL:-redis://redis:6379/0}
+      - QDRANT_URL=${QDRANT_URL:-http://qdrant:6333}
+      - GEMINI_API_KEY=${GEMINI_API_KEY:-}
+    depends_on:
+      redis:
+        condition: service_healthy
+      qdrant:
+        condition: service_started
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+    restart: unless-stopped
+    networks:
+      - brandsphere-network
+
+  # ============================================================================
+  # 4. Next.js 16 Executive Frontend (Claymorphism UI & Autonomous Dashboard)
+  # ============================================================================
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-http://localhost:8000}
+    container_name: brandsphere-frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-http://localhost:8000}
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - brandsphere-network
+
+# ==============================================================================
+# Persistent Volumes & Private Network Mesh
+# ==============================================================================
+volumes:
+  redis_data:
+    driver: local
+  qdrant_data:
+    driver: local
+
+networks:
+  brandsphere-network:
+    driver: bridge
