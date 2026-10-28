@@ -1,32 +1,54 @@
+# Environment & Local Secrets
+.env*
+!.env.example
+*.local
+
+# Internal Engineering & Planning Documents (Local reference only, non-public)
+docs/internal/
+execution.md
+next-implementation.md
+test-dataset.md
+testing-plan.md
+frontend/AGENTS.md
+frontend/README.md
 
 # Python
 __pycache__/
 *.py[cod]
+*$py.class
 *.egg-info/
 .venv/
 venv/
+ENV/
 .pytest_cache/
-.env*
-!.env.example
+.coverage
+htmlcov/
+
+# Local Databases, Caches & Vector Storage
 *.db
 *.sqlite3
 *.db-journal
 qdrant_storage/
 
-
-# Node / Next.js
+# Node & Frontend Build Artifacts
 node_modules/
 .next/
 out/
 build/
 dist/
+*.tsbuildinfo
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 *.log
 
-# OS / editors
+# OS & Editor Specific Files
 .DS_Store
 Thumbs.db
 .vscode/
 .idea/
 .neon
-*.docx
-*.pdf
+.neon/
+~$*.pptx
+~$*.docx
+BrandSphere_AI_Round_2_Submission.docx
