@@ -1,4 +1,8 @@
 <p align="center">
+  <img src="frontend/public/BrandSphere-AI-Logo.png" alt="BrandSphere AI Logo" width="130" style="border-radius: 24px;" />
+</p>
+
+<p align="center">
   <img src="https://readme-typing-svg.herokuapp.com?font=Cambria&size=28&duration=4000&color=E86499&center=true&vCenter=true&width=1000&height=70&lines=BrandSphere+AI+%7C+Pre-Publication+Brand+Governance;Intelligent+Compliance+Engine+%7C+Team+CIPHER+CODERS;Safeguarding+Enterprise+Credibility+at+Scale" alt="Typing SVG" />
 </p>
 

@@ -1,5 +1,6 @@
-import BrandLoader from "@/components/BrandLoader";
 "use client";
+
+import BrandLoader from "@/components/BrandLoader";
 
 import { useEffect, useState, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";

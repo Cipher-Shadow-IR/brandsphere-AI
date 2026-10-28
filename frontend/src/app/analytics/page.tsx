@@ -1,5 +1,6 @@
-import BrandLoader from "@/components/BrandLoader";
 "use client";
+
+import BrandLoader from "@/components/BrandLoader";
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
