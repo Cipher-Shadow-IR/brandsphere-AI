@@ -76,42 +76,68 @@ Modern enterprises generate unprecedented volumes of public-facing copy across d
 
 ```plaintext
 brandsphere-AI/
+├── .env.example
+├── .gitignore
+├── .python-version
+├── README.md
+├── neon.ts
+├── package-lock.json
+├── package.json
+├── pytest.ini
 ├── 📁 backend/
+│   ├── .env.example
+│   ├── .python-version
+│   ├── requirements.txt
 │   ├── 📁 app/
 │   │   ├── __init__.py
-│   │   ├── main.py                  # FastAPI server, REST routers, CORS & lifespan migrations
-│   │   ├── database.py              # SQLAlchemy engine, session maker & connection pools
-│   │   ├── models.py                # Relational ORM models (Documents, Issues, Reviews, Guidelines, Facts)
-│   │   ├── schemas.py               # Pydantic v2 request/response validation schemas
-│   │   └── governance_engine.py     # Rule engine, fact grounding, Pillow CV, WCAG & readability
-│   ├── 📁 tests/
-│   │   ├── __init__.py
-│   │   ├── test_api.py              # Root health, upload validation, review flows, and analytics
-│   │   ├── test_extended_features.py# Knowledge base CRUD, fact sheets, 1-click remediation, certificates
-│   │   └── test_persistence.py      # SQLite disk persistence verification across restarts
-│   └── requirements.txt             # Python dependencies (FastAPI, SQLAlchemy, Pillow, Pytest)
-│
-├── 📁 frontend/
-│   ├── 📁 src/
-│   │   ├── 📁 app/
-│   │   │   ├── page.tsx             # Interactive landing page with live remediation simulator
-│   │   │   ├── layout.tsx           # Global HTML root layout with Claymorphism ground tokens
-│   │   │   ├── globals.css          # Authoritative Claymorphism CSS tokens & utility classes
-│   │   │   ├── 📁 dashboard/        # Operations dashboard with pastel KPI cushions & search filters
-│   │   │   ├── 📁 upload/           # Pre-publication scanner with visual multimodal dropzone
-│   │   │   ├── 📁 review/           # Multi-persona review studio, version diffs & certificate modal
-│   │   │   ├── 📁 guidelines/       # Dynamic Knowledge Base hub (Rules, Truth Library, Glossaries)
-│   │   │   └── 📁 analytics/        # SLA metrics, Guideline Clarity Index, severity charts
-│   │   ├── 📁 components/
-│   │   │   └── Navbar.tsx           # Responsive navigation bar with adaptive desktop/mobile hamburger
-│   │   └── 📁 lib/
-│   │       └── api.ts               # Resilient API client with automatic host detection
-│   ├── package.json                 # Next.js 16, React 19, Tailwind CSS dependencies
-│   └── tsconfig.json                # Strict TypeScript configuration
-│
-├── next-implementation.md           # Teammate onboarding & contribution roadmap
-├── brand_governance.db              # SQLite relational persistent database
-└── README.md                        # Project documentation (this file)
+│   │   ├── cache.py
+│   │   ├── database.py
+│   │   ├── governance_engine.py
+│   │   ├── llm_engine.py
+│   │   ├── main.py
+│   │   ├── models.py
+│   │   ├── rag_engine.py
+│   │   └── schemas.py
+│   └── 📁 tests/
+│       ├── conftest.py
+│       ├── test_api.py
+│       ├── test_enterprise_architecture.py
+│       ├── test_extended_features.py
+│       └── test_persistence.py
+└── 📁 frontend/
+    ├── .gitignore
+    ├── eslint.config.mjs
+    ├── next.config.ts
+    ├── package-lock.json
+    ├── package.json
+    ├── postcss.config.mjs
+    ├── tsconfig.json
+    ├── 📁 public/
+    │   ├── file.svg
+    │   ├── globe.svg
+    │   ├── next.svg
+    │   ├── vercel.svg
+    │   └── window.svg
+    └── 📁 src/
+        ├── 📁 app/
+        │   ├── favicon.ico
+        │   ├── globals.css
+        │   ├── layout.tsx
+        │   ├── page.tsx
+        │   ├── 📁 analytics/
+        │   │   └── page.tsx
+        │   ├── 📁 dashboard/
+        │   │   └── page.tsx
+        │   ├── 📁 guidelines/
+        │   │   └── page.tsx
+        │   ├── 📁 review/
+        │   │   └── page.tsx
+        │   └── 📁 upload/
+        │       └── page.tsx
+        ├── 📁 components/
+        │   └── Navbar.tsx
+        └── 📁 lib/
+            └── api.ts
 ```
 
 ---
