@@ -59,6 +59,7 @@ from .schemas import (
     VisualAnalyzeResponse,
     CertificateResponse
 )
+from .document_parser import parse_document_file
 from .governance_engine import (
     analyze_content,
     analyze_image_bytes,
@@ -460,6 +461,130 @@ async def upload_document(doc: ContentUpload, db: Session = Depends(get_db)):
     return {
         "document": new_doc.to_dict(),
         "issues_count": len(raw_issues)
+    }
+
+
+@app.post("/api/documents/upload-file", response_model=DocumentUploadResult, status_code=status.HTTP_201_CREATED)
+async def upload_document_file(
+    file: UploadFile = File(...),
+    title: Optional[str] = Form(None),
+    author: str = Form("Growth Marketing Agency"),
+    content_type: str = Form("document"),
+    image_url: Optional[str] = Form(None),
+    db: Session = Depends(get_db)
+):
+    if db.query(GuidelineModel).count() == 0:
+        seed_default_knowledge_base(db)
+        sync_knowledge_base_to_rag(db)
+
+    file_bytes = await file.read()
+    if not file_bytes:
+        raise HTTPException(status_code=400, detail="Uploaded file is empty.")
+
+    filename = file.filename or "document.txt"
+    parsed = parse_document_file(filename, file_bytes)
+    extracted_text = parsed.get("text", "").strip()
+
+    if not extracted_text:
+        raise HTTPException(status_code=400, detail="Could not extract readable text from the uploaded file.")
+
+    doc_title = title.strip() if title and title.strip() else filename
+    doc_id = str(uuid.uuid4())
+
+    cache_key = cache_service.hash_key("scan", extracted_text)
+    cached_scan = cache_service.get(cache_key)
+    if cached_scan:
+        raw_issues = []
+        for ci in cached_scan.get("issues", []):
+            iss_copy = dict(ci)
+            iss_copy["id"] = str(uuid.uuid4())
+            raw_issues.append(iss_copy)
+        readability = cached_scan.get("readability", compute_readability(extracted_text))
+    else:
+        raw_issues = analyze_content(extracted_text, db)
+        readability = compute_readability(extracted_text)
+        cache_service.set(cache_key, {"issues": raw_issues, "readability": readability}, ttl=3600)
+
+    detected_format = parsed.get("format", content_type)
+    new_doc = DocumentModel(
+        id=doc_id,
+        title=doc_title,
+        content=extracted_text,
+        content_type=detected_format if detected_format != "text" else "document",
+        author=author,
+        status="pending_review",
+        created_at=datetime.now(timezone.utc).isoformat(),
+        version=1,
+        readability_score=readability["flesch_reading_ease"],
+        wcag_score=95.0,
+        image_url=image_url
+    )
+    db.add(new_doc)
+
+    if image_url:
+        try:
+            header_split = image_url.split(",")
+            base64_data = header_split[1] if len(header_split) > 1 else header_split[0]
+            img_bytes = base64.b64decode(base64_data)
+            visual_res = analyze_image_bytes(img_bytes)
+            if visual_res.get("dominant_colors"):
+                new_doc.dominant_colors = ", ".join(visual_res["dominant_colors"][:4])
+            if "contrast_compliant_aa" in visual_res:
+                new_doc.wcag_score = 95.0 if visual_res["contrast_compliant_aa"] else 60.0
+            for v_iss in visual_res.get("issues", []):
+                raw_issues.append(v_iss)
+        except Exception:
+            pass
+
+    for issue_data in raw_issues:
+        issue_model = IssueModel(
+            id=issue_data["id"],
+            document_id=doc_id,
+            type=issue_data["type"],
+            severity=issue_data["severity"],
+            description=issue_data["description"],
+            guideline_reference=issue_data["guideline_reference"],
+            suggestion=issue_data["suggestion"],
+            citation=issue_data["citation"],
+            location=issue_data["location"],
+            resolved=issue_data.get("resolved", False),
+            original_text=issue_data.get("original_text")
+        )
+        db.add(issue_model)
+
+    rev = RevisionModel(
+        id=str(uuid.uuid4()),
+        document_id=doc_id,
+        version=1,
+        content=extracted_text,
+        change_summary=f"Parsed from native {detected_format.upper()} file '{filename}'",
+        edited_by=author,
+        created_at=datetime.now(timezone.utc).isoformat()
+    )
+    db.add(rev)
+
+    audit = AuditLogModel(
+        id=str(uuid.uuid4()),
+        document_id=doc_id,
+        actor=author,
+        role="Creator",
+        action="BINARY_DOCUMENT_PARSED",
+        details=f"Parsed '{filename}' ({detected_format.upper()}). Extracted {parsed.get('paragraph_count', 1)} paragraphs/blocks across {parsed.get('page_count', 1)} pages. {len(raw_issues)} issues flagged.",
+        created_at=datetime.now(timezone.utc).isoformat()
+    )
+    db.add(audit)
+
+    db.commit()
+    db.refresh(new_doc)
+
+    return {
+        "document": new_doc.to_dict(),
+        "issues_count": len(raw_issues),
+        "metadata": {
+            "format": detected_format,
+            "page_count": parsed.get("page_count", 1),
+            "paragraph_count": parsed.get("paragraph_count", 1)
+        }
     }
 
 

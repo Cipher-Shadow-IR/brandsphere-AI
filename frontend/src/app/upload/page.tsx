@@ -41,6 +41,9 @@ export default function UploadPage() {
   const [visualResult, setVisualResult] = useState<any>(null);
   const [analyzingVisual, setAnalyzingVisual] = useState(false);
 
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [fileMetadata, setFileMetadata] = useState<{ format: string; name: string; size: string; pages?: number } | null>(null);
+  const [parsingDoc, setParsingDoc] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<any>(null);
@@ -75,22 +78,63 @@ export default function UploadPage() {
   };
 
   
-  const handleDocFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleDocFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
+    const ext = file.name.split(".").pop()?.toLowerCase() || "";
+    const baseName = file.name.replace(/\.[^/.]+$/, "");
     if (!formData.title) {
-      setFormData((prev) => ({ ...prev, title: file.name.replace(/\.[^/.]+$/, "") }));
+      setFormData((prev) => ({ ...prev, title: baseName }));
     }
 
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      const text = event.target?.result as string;
-      if (text) {
-        setFormData((prev) => ({ ...prev, content: text }));
+    setSelectedFile(file);
+    setFileMetadata({
+      format: ext.toUpperCase(),
+      name: file.name,
+      size: `${(file.size / 1024).toFixed(1)} KB`
+    });
+
+    if (["pdf", "docx", "pptx"].includes(ext)) {
+      setParsingDoc(true);
+      setError(null);
+      try {
+        const uploadData = new FormData();
+        uploadData.append("file", file);
+        uploadData.append("title", formData.title || baseName);
+        uploadData.append("author", formData.author || "Growth Marketing Agency");
+        uploadData.append("content_type", ext === "pptx" ? "presentation" : "document");
+        if (selectedImage) uploadData.append("image_url", selectedImage);
+
+        const res = await fetch(`${API_BASE_URL}/api/documents/upload-file`, {
+          method: "POST",
+          body: uploadData
+        });
+        if (res.ok) {
+          const data = await res.json();
+          setResult(data);
+          if (data.metadata?.page_count) {
+            setFileMetadata((prev) => prev ? { ...prev, pages: data.metadata.page_count } : null);
+          }
+        } else {
+          const errData = await res.json().catch(() => null);
+          setError(errData?.detail || `Failed to parse ${ext.toUpperCase()} document`);
+        }
+      } catch (err: any) {
+        setError(err.message || "Failed to parse document");
+      } finally {
+        setParsingDoc(false);
       }
-    };
-    reader.readAsText(file);
+    } else {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const text = event.target?.result as string;
+        if (text) {
+          setFormData((prev) => ({ ...prev, content: text }));
+        }
+      };
+      reader.readAsText(file);
+    }
   };
 
   
@@ -292,17 +336,27 @@ export default function UploadPage() {
                     <input
                       type="file"
                       ref={fileInputRef}
-                      accept=".txt,.md,.json"
+                      accept=".txt,.md,.json,.pdf,.docx,.pptx"
                       onChange={handleDocFileUpload}
                       className="hidden"
                     />
                     <button
                       type="button"
+                      disabled={parsingDoc}
                       onClick={() => fileInputRef.current?.click()}
-                      className="clay-cushion-hover clay-pill-secondary w-full py-3 text-xs flex items-center justify-center gap-2 cursor-pointer"
+                      className="clay-cushion-hover clay-pill-secondary w-full py-3 text-xs flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
                     >
-                      <FileUp className="w-4 h-4 text-[#1f1823]" />
-                      <span>Browse .txt or .md file from local drive</span>
+                      {parsingDoc ? (
+                        <>
+                          <Loader2 className="w-4 h-4 animate-spin text-[#1f1823]" />
+                          <span>Parsing Multi-Page Binary Document...</span>
+                        </>
+                      ) : (
+                        <>
+                          <FileUp className="w-4 h-4 text-[#1f1823]" />
+                          <span>Browse .pdf, .docx, .pptx, or .txt file</span>
+                        </>
+                      )}
                     </button>
                   </div>
                 </div>

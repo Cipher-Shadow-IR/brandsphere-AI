@@ -111,6 +111,7 @@ class DocumentResponse(BaseModel):
 class DocumentUploadResult(BaseModel):
     document: DocumentResponse
     issues_count: int
+    metadata: Optional[Dict[str, Any]] = None
 
 
 class DocumentDetailResult(BaseModel):
