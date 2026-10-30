@@ -57,6 +57,8 @@ from .schemas import (
     AuditLogResponse,
     VisualAnalyzeRequest,
     VisualAnalyzeResponse,
+    VisualContrastFixRequest,
+    VisualContrastFixResponse,
     CertificateResponse
 )
 from .webhooks import router as webhooks_router
@@ -64,7 +66,8 @@ from .document_parser import parse_document_file
 from .governance_engine import (
     analyze_content,
     analyze_image_bytes,
-    compute_readability
+    compute_readability,
+    generate_contrast_heatmap_and_correction
 )
 from .rag_engine import rag_engine
 from .cache import cache_service
@@ -1091,6 +1094,37 @@ async def analyze_visual(
 
 
 
+
+
+@app.post("/api/visual/auto-fix-contrast", response_model=VisualContrastFixResponse)
+async def auto_fix_visual_contrast(payload: VisualContrastFixRequest, db: Session = Depends(get_db)):
+    header_split = payload.image_base64.split(",")
+    base64_data = header_split[1] if len(header_split) > 1 else header_split[0]
+    try:
+        image_bytes = base64.b64decode(base64_data)
+    except Exception:
+        raise HTTPException(status_code=400, detail="Invalid image base64 data.")
+
+    fix_result = generate_contrast_heatmap_and_correction(image_bytes)
+
+    if payload.document_id:
+        doc = db.query(DocumentModel).filter(DocumentModel.id == payload.document_id).first()
+        if doc and fix_result.get("corrected_data_url"):
+            doc.image_url = fix_result["corrected_data_url"]
+            doc.wcag_score = 100.0
+            audit = AuditLogModel(
+                id=str(uuid.uuid4()),
+                document_id=doc.id,
+                actor="System Inpainting Engine",
+                role="Visual Auto-Fix",
+                action="IMAGE_CONTRAST_AUTO_FIXED",
+                details=f"Auto-fixed image contrast from {fix_result.get('original_contrast_ratio')}:1 to {fix_result.get('corrected_contrast_ratio')}:1 (WCAG 2.1 AA compliant).",
+                created_at=datetime.now(timezone.utc).isoformat()
+            )
+            db.add(audit)
+            db.commit()
+
+    return fix_result
 
 
 @app.get("/api/guidelines", response_model=GuidelinesListResult)

@@ -258,6 +258,23 @@ class VisualAnalyzeResponse(BaseModel):
     contrast_compliant_aa: bool
     issues: List[Dict[str, Any]]
     recommendations: List[str]
+    heatmap_data_url: Optional[str] = None
+    corrected_data_url: Optional[str] = None
+    remedied_zones: Optional[List[str]] = None
+
+
+class VisualContrastFixRequest(BaseModel):
+    image_base64: str
+    document_id: Optional[str] = None
+
+
+class VisualContrastFixResponse(BaseModel):
+    original_contrast_ratio: float
+    corrected_contrast_ratio: float
+    wcag_compliant: bool
+    remedied_zones: List[str]
+    heatmap_data_url: str
+    corrected_data_url: str
 
 
 class CertificateResponse(BaseModel):
