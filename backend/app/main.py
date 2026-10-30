@@ -59,6 +59,7 @@ from .schemas import (
     VisualAnalyzeResponse,
     CertificateResponse
 )
+from .webhooks import router as webhooks_router
 from .document_parser import parse_document_file
 from .governance_engine import (
     analyze_content,
@@ -336,6 +337,8 @@ else:
         "http://localhost:8001",
         "https://brandsphere-ai.vercel.app",
     ]
+
+app.include_router(webhooks_router)
 
 app.add_middleware(
     CORSMiddleware,
