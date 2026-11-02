@@ -234,10 +234,10 @@ export default function UploadPage() {
             </p>
           </div>
 
-          {}
+          {/* Preset Buttons */}
           <div className="flex flex-col sm:items-end gap-2 shrink-0">
             <span className="text-xs text-[#3b3240] font-bold">Load Demo Presets:</span>
-            <div className="flex flex-wrap items-center gap-2">
+            <div id="tour-preset-buttons" className="flex flex-wrap items-center gap-2">
               <button
                 type="button"
                 onClick={() => loadPreset("high_risk")}
@@ -328,9 +328,9 @@ export default function UploadPage() {
                     <option value="social">Social Media Campaign Post</option>
                   </select>
                 </div>
-                <div>
+                <div id="tour-binary-dropzone">
                   <label className="block text-xs font-bold uppercase tracking-wider text-[#1f1823] mb-2">
-                    Import Text File (Optional)
+                    Import Text / Binary Document (PDF, Word, PPT)
                   </label>
                   <div className="flex items-center gap-2">
                     <input
@@ -484,6 +484,7 @@ export default function UploadPage() {
 
             {/* Submit Action Button */}
             <button
+              id="tour-scan-submit"
               type="submit"
               disabled={loading}
               className="clay-pill-primary w-full py-4 text-base flex items-center justify-center gap-2 shadow-xl"
@@ -587,8 +588,8 @@ export default function UploadPage() {
               </div>
             )}
 
-            {}
-            <div className="flex flex-col sm:flex-row items-center gap-4 pt-2">
+            {/* Results Action CTAs */}
+            <div id="tour-upload-complete-cta" className="flex flex-col sm:flex-row items-center gap-4 pt-2">
               <button
                 type="button"
                 onClick={() => router.push(`/review?id=${result.document.id}`)}

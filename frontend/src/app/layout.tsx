@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { TourProvider } from "@/components/EvaluatorTour";
 
 export const metadata: Metadata = {
   title: "BrandSphere AI — Intelligent Pre-Publication Brand Governance",
@@ -22,7 +23,9 @@ export default function RootLayout({
   return (
     <html lang="en" className="h-full antialiased" suppressHydrationWarning>
       <body className="min-h-full flex flex-col font-sans bg-[#f1f2fa] text-[#1f1823] selection:bg-[#f6a3ca] selection:text-[#1f1823]" suppressHydrationWarning>
-        {children}
+        <TourProvider>
+          {children}
+        </TourProvider>
       </body>
     </html>
   );

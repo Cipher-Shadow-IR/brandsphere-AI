@@ -12,12 +12,15 @@ import {
   BarChart3,
   BookOpen,
   Menu,
-  X
+  X,
+  Compass
 } from "lucide-react";
+import { useTour } from "@/components/EvaluatorTour";
 
 export default function Navbar() {
   const pathname = usePathname();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { isActive, startTour, resumeTour } = useTour();
 
   
   useEffect(() => {
@@ -91,15 +94,27 @@ export default function Navbar() {
           })}
         </nav>
 
-        {}
+        {/* Action Buttons */}
         <div className="flex items-center gap-2.5 sm:gap-3">
-          {}
+          {/* Evaluator Guided Tour Trigger */}
+          <button
+            type="button"
+            onClick={isActive ? resumeTour : startTour}
+            className="flex items-center gap-2 px-3.5 py-2 rounded-full bg-[#ded0f9] text-[#1f1823] text-xs font-black shadow-[2px_3px_8px_rgba(222,208,249,0.5),inset_2px_2px_3px_rgba(255,255,255,0.9),inset_-2px_-2px_3px_rgba(121,99,167,0.2)] border border-[#caaef2] hover:bg-[#f6a3ca] transition-all cursor-pointer active:scale-95"
+            title="Interactive Evaluator Tour & Guide"
+          >
+            <Compass className="w-4 h-4 text-[#1f1823] animate-spin-slow" />
+            <span className="hidden sm:inline">{isActive ? "Guide Active" : "🎯 Evaluator Guide"}</span>
+            <span className="sm:hidden font-black">Guide</span>
+          </button>
+
+          {/* Engine Status Indicator */}
           <div className="hidden xl:flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#c0efdc] text-xs font-black text-[#0e3b27] shadow-[2px_3px_8px_rgba(192,239,220,0.45),inset_2px_2px_3px_rgba(255,255,255,0.9),inset_-2px_-2px_3px_rgba(71,153,120,0.18)] border border-[#9ee2c5]">
             <span className="w-2.5 h-2.5 rounded-full bg-[#0e3b27] animate-pulse" />
             <span>Policy Engine Active</span>
           </div>
 
-          {}
+          {/* Upload Button */}
           <Link
             href="/upload"
             className="hidden sm:inline-flex clay-pill-primary px-5 py-2.5 text-xs items-center gap-2 text-[#1f1823] font-black"
@@ -164,8 +179,20 @@ export default function Navbar() {
               })}
             </div>
 
-            {}
+            {/* Quick Actions in Mobile Drawer */}
             <div className="pt-3 border-t border-[#e6e8f4] flex flex-col sm:flex-row items-center gap-3">
+              <button
+                type="button"
+                onClick={() => {
+                  setIsMenuOpen(false);
+                  if (isActive) resumeTour();
+                  else startTour();
+                }}
+                className="w-full py-3 px-5 rounded-2xl bg-[#ded0f9] text-[#1f1823] font-black text-xs flex items-center justify-center gap-2 border border-[#caaef2] shadow-sm cursor-pointer"
+              >
+                <Compass className="w-4 h-4 text-[#1f1823]" />
+                <span>🎯 Start / Resume Evaluator Tour</span>
+              </button>
               <Link
                 href="/upload"
                 onClick={() => setIsMenuOpen(false)}

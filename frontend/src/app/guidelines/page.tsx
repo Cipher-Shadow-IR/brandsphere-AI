@@ -264,8 +264,8 @@ export default function GuidelinesPage() {
           </button>
         </div>
 
-        {}
-        <div className="clay-cushion !bg-[#fffdf7] !rounded-[28px] p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        {/* Tabs */}
+        <div id="tour-guidelines-tabs" className="clay-cushion !bg-[#fffdf7] !rounded-[28px] p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-center gap-1.5 p-1 bg-[#f1f2fa] rounded-full shadow-inner overflow-x-auto text-xs font-bold">
             <button
               type="button"

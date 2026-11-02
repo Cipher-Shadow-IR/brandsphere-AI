@@ -410,8 +410,8 @@ function ReviewContent() {
       {}
       <div className="sticky top-[68px] z-30 px-4 sm:px-6 py-2.5 bg-[#f1f2fa]/95 backdrop-blur-md">
         <div className="max-w-7xl mx-auto clay-cushion !rounded-[24px] !bg-[#fffdf7] px-4 py-2.5 flex flex-col md:flex-row items-center justify-between gap-3 text-xs">
-          {}
-          <div className="flex items-center gap-2.5">
+          {/* Role Switching Bar */}
+          <div id="tour-role-switcher" className="flex items-center gap-2.5">
             <span className="font-extrabold text-[#1f1823]">Active Persona:</span>
             <div className="flex bg-[#f1f2fa] rounded-full p-1 gap-1 shadow-inner">
               <button
@@ -956,9 +956,9 @@ function ReviewContent() {
             </div>
           </div>
 
-          {}
+          {/* Right Column: Governance Audit & Action Items */}
           <div className="space-y-4">
-            <div className="clay-tray p-6 space-y-4 sticky top-[135px]">
+            <div id="tour-remediation-card" className="clay-tray p-6 space-y-4 sticky top-[135px]">
               <div className="flex items-center justify-between pb-3 border-b border-[#e6e8f4]">
                 <h2 className="text-base font-extrabold text-[#1f1823] flex items-center gap-2">
                   <Sparkles className="w-4 h-4 text-[#f6a3ca]" />

@@ -136,6 +136,7 @@ export default function Dashboard() {
 
           <div className="flex flex-wrap items-center gap-3">
             <button
+              id="tour-seed-demo"
               onClick={handleSeedDemo}
               className="clay-pill-secondary px-5 py-2.5 text-xs flex items-center gap-2 text-[#1f1823] font-bold"
             >
@@ -143,6 +144,7 @@ export default function Dashboard() {
               <span>Seed Demo Submissions</span>
             </button>
             <Link
+              id="tour-scan-cta"
               href="/upload"
               className="clay-pill-primary px-5 py-2.5 text-xs flex items-center gap-2 text-[#1f1823] font-bold"
             >
@@ -195,10 +197,10 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {}
+        {/* Filters and Search Bar */}
         <div className="clay-cushion !bg-[#fffdf7] !rounded-[28px] p-4 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4 border border-[#e2dfd5]">
-          {}
-          <div className="flex flex-wrap items-center gap-1.5 p-1.5 rounded-full bg-[#e6e8f4] shadow-inner text-xs font-bold">
+          {/* Status Filter Tabs */}
+          <div id="tour-status-filters" className="flex flex-wrap items-center gap-1.5 p-1.5 rounded-full bg-[#e6e8f4] shadow-inner text-xs font-bold">
             {["all", "pending_review", "approved", "needs_revision", "rejected"].map((st) => (
               <button
                 key={st}

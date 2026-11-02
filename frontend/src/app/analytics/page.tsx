@@ -266,7 +266,7 @@ window.onload = function() { window.print(); }
             </p>
           </div>
 
-          <div className="relative self-start">
+          <div id="tour-analytics-export" className="relative self-start">
             <button
               type="button"
               onClick={() => setExportOpen(!exportOpen)}

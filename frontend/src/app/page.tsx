@@ -55,9 +55,10 @@ export default function Home() {
               </p>
             </div>
 
-            {}
-            <div className="flex flex-wrap items-center gap-3.5 pt-2">
+            {/* Hero CTAs */}
+            <div id="tour-hero-actions" className="flex flex-wrap items-center gap-3.5 pt-2">
               <Link
+                id="tour-hero-scan"
                 href="/upload"
                 className="clay-pill-secondary !bg-[#fffdf7] !text-[#1f1823] px-7 py-3.5 text-sm font-black flex items-center gap-2 shadow-lg border border-[#e2dfd5]"
               >
